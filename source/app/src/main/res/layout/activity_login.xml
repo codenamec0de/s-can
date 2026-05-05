@@ -41,7 +41,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:contentDescription="@string/cd_app_logo"
-                    android:src="@drawable/ic_v4_wordmark" />
+                    android:src="@drawable/scan_logo" />
 
                 <TextView
                     android:layout_width="wrap_content"
