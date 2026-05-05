@@ -1,15 +1,42 @@
-Copyright (c) 2026 codenamec0de. All Rights Reserved.
+S'CAN — Proprietary License
+Copyright (c) 2026 Çağrı (Charlie) Alaf (GitHub: codenamec0de). All Rights Reserved.
 
-This source code is made available for viewing purposes only, as part of an
-academic portfolio and graduation project. No part of this software, including
-but not limited to the source code, design, architecture, algorithms, or
-documentation, may be copied, modified, merged, published, distributed,
-sublicensed, sold, or used in any derivative work without the express written
-permission of the copyright holder.
+This repository, including its source code and every other element of the
+project, is the exclusive intellectual property of the copyright holder.
+"The project" includes, without limitation:
 
-Unauthorized use, reproduction, or distribution of this software or any
-portion of it may result in civil and criminal penalties, and will be
-prosecuted to the maximum extent possible under the law.
+  - All source code, configuration, build scripts, and ProGuard/R8 rules
+    in this repository (Android app under `source/` and the AI sidecar
+    under `scan-ai/`).
+  - The project's name "S'CAN", branding, logos, and visual identity
+    (including `ScanLogo.png` and any derivative marks).
+  - The product design, user-experience flows, screen layouts, and
+    information architecture.
+  - The technical architecture, system design, algorithms, heuristics
+    (including but not limited to the SMS scam-classification pipeline,
+    Wi-Fi MITM analysis logic, and breach-tracking model), prompts, and
+    threat models.
+  - The original ideas, concepts, methodologies, and research outputs
+    behind the project, whether or not expressed in code.
+  - All accompanying documentation, the project knowledge vault, and any
+    written analysis derived from the project.
 
-For licensing inquiries, contact the copyright holder via GitHub:
-https://github.com/codenamec0de
+The repository is published in private form for the limited purposes of
+backup, academic portfolio review, and collaborator inspection. No
+license, express or implied, is granted to any other party for any other
+purpose.
+
+No part of the project may be copied, reproduced, modified, merged,
+published, distributed, sublicensed, sold, reverse-engineered, scraped
+for training data, or used as the basis for any derivative work,
+service, or product, in whole or in part, without the prior express
+written permission of the copyright holder. Quoting, citation, or
+academic reference is permitted only with proper attribution and only
+for non-commercial scholarly use.
+
+Unauthorised use, reproduction, or distribution of the project or any
+portion of it may result in civil and criminal liability and will be
+pursued to the fullest extent permitted by applicable law.
+
+For licensing inquiries, written-permission requests, or any commercial
+use, contact the copyright holder via GitHub: https://github.com/codenamec0de

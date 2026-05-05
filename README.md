@@ -17,9 +17,12 @@ University of Wollongong — final-year project
 
 </div>
 
-> **Private repository · All rights reserved.** Source is shared for backup
-> and collaborator review only. No license is granted for use, copying,
-> modification, or redistribution. See [LICENSE](LICENSE).
+> **Private repository · All rights reserved.** All source code, design,
+> branding, ideas, and concepts in this repository are the intellectual
+> property of Çağrı (Charlie) Alaf. The project is shared for backup and
+> collaborator review only — no license is granted for use, copying,
+> modification, redistribution, or derivative works. See [LICENSE](LICENSE)
+> and the [Intellectual property](#intellectual-property) section below.
 
 ---
 
@@ -34,6 +37,7 @@ University of Wollongong — final-year project
 - [Roadmap](#roadmap)
 - [Status](#status)
 - [Security](#security)
+- [Intellectual property](#intellectual-property)
 
 ---
 
@@ -168,3 +172,39 @@ See [CHANGELOG.md](CHANGELOG.md) for the full release history.
 
 Found a vulnerability? Please **don't** open a public issue — see
 [SECURITY.md](SECURITY.md) for private reporting channels and scope.
+
+---
+
+## Intellectual property
+
+S'CAN is an original work by **Çağrı (Charlie) Alaf** (GitHub
+[@codenamec0de](https://github.com/codenamec0de)), produced as a final-year
+project at the University of Wollongong. **All code, design, branding,
+ideas, concepts, architecture, algorithms, heuristics, prompts, threat
+models, and accompanying documentation in this repository are the
+exclusive intellectual property of the author.**
+
+This repository is shared in private form solely for backup, academic
+portfolio review, and collaborator inspection. Nothing here is
+open-source. In particular, **without prior written permission from the
+author**:
+
+- The source code, in whole or in part, may not be copied, modified,
+  redistributed, sublicensed, sold, or used in any derivative work or
+  product.
+- The project's name, branding (including the **S'CAN** mark and the
+  scan logo), product design, screen flows, and visual identity may not
+  be reused or imitated.
+- The ideas, concepts, methodologies, and research outputs (including
+  the SMS scam-classification pipeline, the Wi-Fi MITM analysis logic,
+  and the breach-tracking model) may not be repackaged, commercialised,
+  or claimed as another party's work.
+- The contents of this repository may not be scraped, mirrored, or
+  ingested into machine-learning training datasets.
+
+Quoting or citing the project for non-commercial academic purposes is
+welcome with proper attribution to **Çağrı (Charlie) Alaf — University of
+Wollongong, 2026**.
+
+For licensing inquiries, written-permission requests, or any commercial
+use, contact the author via GitHub. See [LICENSE](LICENSE) for full terms.
