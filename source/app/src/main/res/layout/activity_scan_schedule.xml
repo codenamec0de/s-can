@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/include_v4_topbar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Next-scan hero -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_home_status_card"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_v4_home_status_dot" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.13"
+                        android:text="@string/schedule_v4_next_label"
+                        android:textAllCaps="true"
+                        android:textColor="@color/v4_accent"
+                        android:textFontWeight="600"
+                        android:textSize="10.5sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvNextScan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="-0.022"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="600"
+                    android:textSize="22sp"
+                    tools:text="Tonight · 03:00" />
+
+                <TextView
+                    android:id="@+id/tvNextScanMeta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="monospace"
+                    android:textColor="@color/v4_fg2"
+                    android:textSize="11.5sp"
+                    tools:text="in 14 h 47 min · on Wi-Fi only" />
+            </LinearLayout>
+
+            <!-- Frequency segmented -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/schedule_v4_section_freq" />
+
+            <LinearLayout
+                android:id="@+id/freqRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_apps_segment_container"
+                android:orientation="horizontal"
+                android:padding="3dp">
+
+                <FrameLayout
+                    android:id="@+id/freqRealtime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/tvFreqRealtime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/schedule_v4_freq_realtime"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="11.5sp" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/freqHourly"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/tvFreqHourly"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/schedule_v4_freq_hourly"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="11.5sp" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/freqDaily"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/tvFreqDaily"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/schedule_v4_freq_daily"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="11.5sp" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/freqManual"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/tvFreqManual"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:text="@string/schedule_v4_freq_manual"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="11.5sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Time -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/schedule_v4_section_time" />
+
+            <LinearLayout
+                android:id="@+id/rowTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="14dp">
+
+                <ImageView
+                    style="@style/V4SettingsRowIcon"
+                    android:src="@drawable/ic_glyph_activity" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/schedule_v4_time_label"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="500"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvScheduleTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="600"
+                    android:textSize="16sp"
+                    tools:text="03:00" />
+
+                <ImageView style="@style/V4SettingsRowChevron" />
+            </LinearLayout>
+
+            <!-- Conditions -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/schedule_v4_section_conditions" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clipToOutline="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/rowWifiOnly"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_wifi" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/schedule_v4_cond_wifi_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/schedule_v4_cond_wifi_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swWifiOnly"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowCharging"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_refresh" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/schedule_v4_cond_charging_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/schedule_v4_cond_charging_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swCharging"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowDeep"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_shield" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/schedule_v4_cond_deep_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/schedule_v4_cond_deep_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swDeep"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Run now -->
+            <FrameLayout
+                android:id="@+id/btnRunNow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_button_primary"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingTop="13dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="13dp">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginEnd="8dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_glyph_refresh"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.0075"
+                        android:text="@string/schedule_v4_btn_run_now"
+                        android:textColor="@color/white"
+                        android:textFontWeight="600"
+                        android:textSize="13.5sp" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

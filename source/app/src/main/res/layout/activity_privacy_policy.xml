@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/include_v4_topbar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Heading -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="-0.025"
+                    android:lineSpacingMultiplier="1.2"
+                    android:text="@string/privacy_v4_heading"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="600"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:id="@+id/tvPrivacyMeta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="monospace"
+                    android:textColor="@color/v4_fg3"
+                    android:textSize="11sp"
+                    tools:text="Last updated · 02 May 2026 · v1.4" />
+            </LinearLayout>
+
+            <!-- Commitments -->
+            <LinearLayout
+                android:id="@+id/commitmentsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clipToOutline="true"
+                android:orientation="vertical" />
+
+            <!-- Sections -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/privacy_v4_section_sections" />
+
+            <LinearLayout
+                android:id="@+id/sectionsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clipToOutline="true"
+                android:orientation="vertical" />
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/btnReadFull"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_v4_button_secondary"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        style="@style/V4ButtonLabelDark"
+                        android:text="@string/privacy_v4_btn_full" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.5"
+                    android:text="@string/privacy_v4_contact"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="500"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

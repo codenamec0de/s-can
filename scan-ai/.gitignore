@@ -1,0 +1,24 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Runtime
+scan-ai.log
+*.log
+feedback.jsonl
+
+# Secrets — never commit
+tokens.json
+*.conf
+mullvad/
+.env
+
+# Phase 5 sandbox runtime data — user-derived, never commit
+crawler/screenshots/
+crawler/cache/
+
+# Phase 6 eval samples — large binaries
+eval/**/*.png
+eval/**/*.jpg

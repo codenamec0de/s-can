@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp">
+
+        <ImageView
+            android:id="@+id/ivStatusIcon"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:contentDescription="Status"
+            app:tint="@color/v4_ok"
+            tools:src="@drawable/ic_glyph_check" />
+
+        <TextView
+            android:id="@+id/tvCheckName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@color/v4_fg0"
+            android:textFontWeight="500"
+            android:textSize="13sp"
+            tools:text="Cleartext allowed" />
+
+        <TextView
+            android:id="@+id/tvSeverity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:textFontWeight="500"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:text="Flagged"
+            tools:textColor="@color/v4_warn"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvCheckDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:lineSpacingMultiplier="1.45"
+        android:paddingStart="40dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp"
+        android:textColor="@color/v4_fg2"
+        android:textFontWeight="500"
+        android:textSize="11sp"
+        android:visibility="gone"
+        tools:text="android:usesCleartextTraffic=true in manifest"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/integrityRowDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/v4_hairline" />
+</LinearLayout>

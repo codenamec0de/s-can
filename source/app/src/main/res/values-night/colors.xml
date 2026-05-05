@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─────────────────────────────────────────────────────────────
+         S'CAN V4 - Dark palette (default visual identity)
+         Cool near-black with subtle blue undertone, layered by elevation.
+         Cyan accent #22D3EE at full saturation for dark mode.
+         ───────────────────────────────────────────────────────────── -->
+
+    <!-- Surfaces -->
+    <color name="v4_bg">#08090C</color>
+    <color name="v4_surf1">#0F1116</color>
+    <color name="v4_surf2">#15181F</color>
+    <color name="v4_surf3">#1C2029</color>
+    <color name="v4_surf_tint">#08FFFFFF</color>
+    <color name="v4_hairline">#10FFFFFF</color>
+    <color name="v4_hairline2">#1AFFFFFF</color>
+
+    <!-- Foregrounds -->
+    <color name="v4_fg0">#F4F5F7</color>
+    <color name="v4_fg1">#C9CCD3</color>
+    <color name="v4_fg2">#8E939E</color>
+    <color name="v4_fg3">#5C616B</color>
+    <color name="v4_fg4">#3A3E47</color>
+
+    <!-- Accent (cyan, full saturation in dark) -->
+    <color name="v4_accent">#22D3EE</color>
+    <color name="v4_accent_soft">#67E8F9</color>
+    <color name="v4_accent_deep">#0891B2</color>
+    <color name="v4_accent_bg">#2422D3EE</color>
+    <color name="v4_accent_ring">#4D22D3EE</color>
+
+    <!-- Severity (refined, low-noise on dark) -->
+    <color name="v4_ok">#34D399</color>
+    <color name="v4_ok_bg">#1A34D399</color>
+    <color name="v4_warn">#FBBF24</color>
+    <color name="v4_warn_bg">#1CFBBF24</color>
+    <color name="v4_bad">#F87171</color>
+    <color name="v4_bad_bg">#1FF87171</color>
+
+    <!-- Glass / overlay -->
+    <color name="v4_glass_bg">#B814161C</color>
+    <color name="v4_glass_border">#14FFFFFF</color>
+
+    <!-- Reverse-compat aliases (same names as values/colors.xml - point at dark tokens) -->
+    <color name="primary">@color/v4_accent</color>
+    <color name="primary_variant">@color/v4_accent_deep</color>
+    <color name="primary_light">@color/v4_accent_soft</color>
+    <color name="secondary">@color/v4_accent_soft</color>
+
+    <color name="background_dark">@color/v4_bg</color>
+    <color name="background_light">@color/v4_bg</color>
+    <color name="surface_dark">@color/v4_surf2</color>
+    <color name="surface_variant">@color/v4_surf3</color>
+    <color name="card_dark">@color/v4_surf2</color>
+    <color name="card_light">@color/v4_surf2</color>
+    <color name="glass_surface">@color/v4_glass_bg</color>
+    <color name="glass_surface_strong">@color/v4_glass_bg</color>
+
+    <color name="text_primary">@color/v4_fg0</color>
+    <color name="text_primary_dark">@color/v4_fg0</color>
+    <color name="text_primary_light">@color/v4_fg0</color>
+    <color name="text_secondary">@color/v4_fg2</color>
+    <color name="text_secondary_dark">@color/v4_fg2</color>
+    <color name="text_secondary_light">@color/v4_fg2</color>
+    <color name="text_tertiary">@color/v4_fg3</color>
+    <color name="text_hint">@color/v4_fg3</color>
+
+    <color name="status_safe">@color/v4_ok</color>
+    <color name="status_safe_bg">@color/v4_ok_bg</color>
+    <color name="status_warning">@color/v4_warn</color>
+    <color name="status_warning_bg">@color/v4_warn_bg</color>
+    <color name="status_critical">@color/v4_bad</color>
+    <color name="status_critical_bg">@color/v4_bad_bg</color>
+
+    <color name="risk_high">@color/v4_bad</color>
+    <color name="risk_high_bg">@color/v4_bad_bg</color>
+    <color name="risk_medium">@color/v4_warn</color>
+    <color name="risk_medium_bg">@color/v4_warn_bg</color>
+    <color name="risk_low">@color/v4_ok</color>
+    <color name="risk_low_bg">@color/v4_ok_bg</color>
+
+    <color name="success">@color/v4_ok</color>
+    <color name="warning">@color/v4_warn</color>
+    <color name="error">@color/v4_bad</color>
+    <color name="info">@color/v4_accent</color>
+
+    <color name="divider_dark">@color/v4_hairline</color>
+    <color name="border_dark">@color/v4_hairline</color>
+    <color name="border_glow">@color/v4_accent</color>
+    <color name="border_light">@color/v4_hairline2</color>
+    <color name="nav_inactive">@color/v4_fg3</color>
+    <color name="nav_active">@color/v4_accent</color>
+
+    <color name="scan_blue">@color/v4_accent</color>
+    <color name="scan_bg_black">@color/v4_bg</color>
+    <color name="scan_card_dark">@color/v4_surf2</color>
+    <color name="scan_input_bg">@color/v4_surf3</color>
+    <color name="scan_input_hint">@color/v4_fg3</color>
+    <color name="scan_text_light">@color/v4_fg0</color>
+    <color name="scan_divider">@color/v4_hairline</color>
+
+    <color name="ink_0">@color/v4_bg</color>
+    <color name="ink_1">@color/v4_surf1</color>
+    <color name="ink_2">@color/v4_surf2</color>
+    <color name="ink_3">@color/v4_surf3</color>
+    <color name="ink_4">@color/v4_hairline</color>
+
+    <color name="fg_0">@color/v4_fg0</color>
+    <color name="fg_1">@color/v4_fg1</color>
+    <color name="fg_2">@color/v4_fg2</color>
+    <color name="fg_3">@color/v4_fg3</color>
+
+    <color name="scan_accent">@color/v4_accent</color>
+    <color name="scan_accent_dim">@color/v4_accent_deep</color>
+    <color name="scan_accent_bg">@color/v4_accent_bg</color>
+    <color name="scan_accent_highlight">@color/v4_accent_soft</color>
+
+    <color name="scan_ok">@color/v4_ok</color>
+    <color name="scan_ok_dim">@color/v4_ok</color>
+    <color name="scan_ok_bg">@color/v4_ok_bg</color>
+
+    <color name="scan_warn">@color/v4_warn</color>
+    <color name="scan_warn_dim">@color/v4_warn</color>
+    <color name="scan_warn_bg">@color/v4_warn_bg</color>
+
+    <color name="scan_bad">@color/v4_bad</color>
+    <color name="scan_bad_dim">@color/v4_bad</color>
+    <color name="scan_bad_bg">@color/v4_bad_bg</color>
+
+    <color name="scan_hairline">@color/v4_hairline</color>
+    <color name="scan_overlay_soft">@color/v4_surf_tint</color>
+    <color name="scan_overlay_softer">@color/v4_surf_tint</color>
+    <color name="scan_glass_bg">@color/v4_glass_bg</color>
+</resources>

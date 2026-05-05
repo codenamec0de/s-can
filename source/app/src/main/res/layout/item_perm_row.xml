@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingHorizontal="18dp"
+    android:paddingVertical="16dp">
+
+    <!-- Icon tile -->
+    <FrameLayout
+        android:id="@+id/permIconTile"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_v4_perm_icon_tile">
+
+        <ImageView
+            android:id="@+id/permIcon"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            app:tint="@color/v4_fg1"
+            tools:src="@drawable/ic_glyph_apps" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Title row + optional badge -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/permTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="-0.015"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="13.5sp"
+                tools:text="App access" />
+
+            <TextView
+                android:id="@+id/permOptionalBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_v4_perm_optional_tag"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.08"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:text="@string/perm_optional_badge"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="700"
+                android:textSize="9sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </LinearLayout>
+
+        <!-- Why -->
+        <TextView
+            android:id="@+id/permWhy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/montserrat"
+            android:lineSpacingMultiplier="1.5"
+            android:textColor="@color/v4_fg2"
+            android:textFontWeight="500"
+            android:textSize="11.5sp"
+            tools:text="Lets S'CAN read your installed app list." />
+
+        <!-- Tags row -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/permTagsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <!-- State pill (right-aligned) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:gravity="end|center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/permStatePill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_v4_perm_pill_idle"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="3dp">
+
+                <ImageView
+                    android:id="@+id/permStateIcon"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginEnd="5dp"
+                    android:importantForAccessibility="no"
+                    android:visibility="gone"
+                    app:tint="@color/v4_fg2"
+                    tools:src="@drawable/ic_glyph_check"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/permStateLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.08"
+                    android:textAllCaps="true"
+                    android:textColor="@color/v4_fg2"
+                    android:textFontWeight="600"
+                    android:textSize="10sp"
+                    tools:text="Not granted" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Detail line -->
+        <TextView
+            android:id="@+id/permDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
+            android:fontFamily="@font/montserrat"
+            android:lineSpacingMultiplier="1.45"
+            android:textColor="@color/v4_fg2"
+            android:textFontWeight="500"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:text="Detail / nudge text"
+            tools:visibility="visible" />
+
+        <!-- Inline CTA -->
+        <LinearLayout
+            android:id="@+id/permCta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="11dp"
+            android:background="@drawable/bg_v4_perm_cta_accent"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="7dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/permCtaLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@color/v4_accent"
+                android:textFontWeight="600"
+                android:textSize="11.5sp"
+                tools:text="Allow" />
+
+            <ImageView
+                android:id="@+id/permCtaIcon"
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:layout_marginStart="6dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_glyph_arrow_right"
+                app:tint="@color/v4_accent" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

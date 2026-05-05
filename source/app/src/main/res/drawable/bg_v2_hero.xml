@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hero card background: ink gradient + radial blue wash + hairline. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/bg_v2_hero_base" />
+    <item android:drawable="@drawable/bg_v2_hero_glow" />
+</layer-list>

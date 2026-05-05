@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Network security policy for S'CAN.
+
+    Default policy: cleartext denied for all hosts.
+
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │  DEVELOPMENT EXCEPTION — REVERT BEFORE RELEASE                      │
+    │                                                                     │
+    │  Cleartext HTTP is currently permitted to the AI sidecar host       │
+    │  192.168.0.152 so the developer can test the V1.4 SMS pipeline      │
+    │  against `python main.py` running on the LAN. This connection is    │
+    │  intended ONLY for the developers of this application during local  │
+    │  testing of the SMS scam-detection feature.                         │
+    │                                                                     │
+    │  Before V1.4 ships, item 2.2 of the V1.4 roadmap (Caddy reverse     │
+    │  proxy on :8443 + OkHttp CertificatePinner) must be completed and   │
+    │  the cleartextTrafficPermitted flag below restored to "false".      │
+    │  See scan_vault/syntheses/tls-setup-runbook.md.                     │
+    └─────────────────────────────────────────────────────────────────────┘
+-->
+<network-security-config>
+
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!--
+        DEV-ONLY cleartext exception for the AI sidecar host on the LAN.
+        The bundled @raw/scan_ai_cert anchor is retained so that once the
+        Caddy/TLS path lands, only this domain-config block needs editing
+        (set cleartextTrafficPermitted back to "false").
+    -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">192.168.0.152</domain>
+        <domain includeSubdomains="false">scan-ai.local</domain>
+        <domain includeSubdomains="false">scan-ai</domain>
+        <trust-anchors>
+            <certificates src="@raw/scan_ai_cert" />
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+
+</network-security-config>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Legacy path - kept so any previously-cached reports still share correctly -->
+    <cache-path
+        name="reports_cache"
+        path="/" />
+
+    <!-- Current save location: <external>/Android/data/com.uow.scan/files/Documents/SCAN Reports/
+         Visible to the user via Files > Internal Storage > Android > data > com.uow.scan,
+         and accessible without any runtime permissions on all supported API levels (26+). -->
+    <external-files-path
+        name="reports_external"
+        path="Documents/" />
+</paths>

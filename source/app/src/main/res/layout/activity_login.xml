@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:fitsSystemWindows="true">
+
+    <!-- Ambient cyan glow at the top -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:layout_gravity="top"
+        android:background="@drawable/bg_login_glow"
+        android:importantForAccessibility="no" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="28dp"
+            android:paddingTop="28dp"
+            android:paddingBottom="28dp">
+
+            <!-- Wordmark -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@string/cd_app_logo"
+                    android:src="@drawable/ic_v4_wordmark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="7dp"
+                    android:text="@string/app_name"
+                    android:textAppearance="@style/TextAppearance.SCAN.Brand" />
+            </LinearLayout>
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="-0.03"
+                android:lineSpacingMultiplier="1.1"
+                android:text="@string/login_welcome_back"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="28sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingMultiplier="1.45"
+                android:text="@string/login_subtitle"
+                android:textColor="@color/v4_fg2"
+                android:textFontWeight="500"
+                android:textSize="13.5sp" />
+
+            <!-- Email label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.12"
+                android:text="@string/email_label"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp" />
+
+            <!-- Email field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="7dp"
+                android:addStatesFromChildren="true"
+                android:background="@drawable/bg_v4_field_selector"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp">
+
+                <ImageView
+                    android:id="@+id/ivEmailIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_email"
+                    app:tint="@color/v4_fg3" />
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:autofillHints="emailAddress"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/email_placeholder"
+                    android:importantForAutofill="yes"
+                    android:inputType="textEmailAddress"
+                    android:letterSpacing="-0.005"
+                    android:maxLines="1"
+                    android:textColor="@color/v4_fg0"
+                    android:textColorHint="@color/v4_fg3"
+                    android:textFontWeight="500"
+                    android:textSize="14sp"
+                    tools:ignore="LabelFor" />
+            </LinearLayout>
+
+            <!-- Password label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.12"
+                android:text="@string/password_label"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp" />
+
+            <!-- Password field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="7dp"
+                android:addStatesFromChildren="true"
+                android:background="@drawable/bg_v4_field_selector"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="6dp">
+
+                <ImageView
+                    android:id="@+id/ivPasswordIcon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_lock"
+                    app:tint="@color/v4_fg3" />
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:autofillHints="password"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/password_placeholder"
+                    android:importantForAutofill="yes"
+                    android:inputType="textPassword"
+                    android:letterSpacing="-0.005"
+                    android:maxLines="1"
+                    android:textColor="@color/v4_fg0"
+                    android:textColorHint="@color/v4_fg3"
+                    android:textFontWeight="500"
+                    android:textSize="14sp"
+                    tools:ignore="LabelFor" />
+
+                <ImageButton
+                    android:id="@+id/btnTogglePassword"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/cd_toggle_password"
+                    android:padding="9dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_glyph_eye"
+                    app:tint="@color/v4_fg3" />
+            </LinearLayout>
+
+            <!-- Remember + Forgot row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:id="@+id/cbRememberWrap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingVertical="4dp">
+
+                        <FrameLayout
+                            android:id="@+id/cbRemember"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:background="@drawable/bg_v4_remember_selector"
+                            android:duplicateParentState="true">
+
+                            <ImageView
+                                android:id="@+id/ivRememberCheck"
+                                android:layout_width="11dp"
+                                android:layout_height="11dp"
+                                android:layout_gravity="center"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_check"
+                                android:visibility="gone"
+                                app:tint="@color/v4_bg" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/remember_me"
+                            android:textColor="@color/v4_fg1"
+                            android:textFontWeight="500"
+                            android:textSize="12.5sp" />
+                    </LinearLayout>
+                </FrameLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvForgotPassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/montserrat"
+                    android:padding="6dp"
+                    android:text="@string/forgot_short"
+                    android:textColor="@color/v4_accent"
+                    android:textFontWeight="600"
+                    android:textSize="12.5sp" />
+            </LinearLayout>
+
+            <!-- Sign in button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogin"
+                style="@style/V4.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="22dp"
+                android:fontFamily="@font/montserrat"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:letterSpacing="-0.005"
+                android:text="@string/sign_in_v4"
+                android:textAllCaps="false"
+                android:textColor="@color/v4_bg"
+                android:textFontWeight="600"
+                android:textSize="14sp"
+                app:icon="@drawable/ic_glyph_arrow_right"
+                app:iconGravity="end"
+                app:iconPadding="8dp"
+                app:iconSize="16dp"
+                app:iconTint="@color/v4_bg" />
+
+            <!-- OR divider -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/v4_hairline" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.12"
+                    android:text="@string/or_uppercase"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="600"
+                    android:textSize="10.5sp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/v4_hairline" />
+            </LinearLayout>
+
+            <!-- Google sign-in button -->
+            <LinearLayout
+                android:id="@+id/btnGoogle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_v4_google_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_google" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="-0.005"
+                    android:text="@string/continue_with_google"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="600"
+                    android:textSize="13.5sp" />
+            </LinearLayout>
+
+            <!-- Spacer pushes footer to bottom when content fits -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="24dp" />
+
+            <!-- Footer -->
+            <LinearLayout
+                android:id="@+id/tvSignUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="6dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/login_new_here"
+                    android:textColor="@color/v4_fg2"
+                    android:textFontWeight="500"
+                    android:textSize="12.5sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/login_create_account"
+                    android:textColor="@color/v4_accent"
+                    android:textFontWeight="600"
+                    android:textSize="12.5sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/v4_accent"
+        android:visibility="gone" />
+
+</FrameLayout>

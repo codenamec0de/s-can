@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="18dp"
+    android:paddingTop="14dp"
+    android:paddingEnd="18dp"
+    android:paddingBottom="6dp">
+
+    <FrameLayout
+        android:id="@+id/btnBack"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/bg_v4_top_bar_button"
+        android:clickable="true"
+        android:contentDescription="@string/fp_back_cd"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/v4_fg1" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvTopBarTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:fontFamily="@font/montserrat"
+        android:letterSpacing="-0.0125"
+        android:textColor="@color/v4_fg0"
+        android:textFontWeight="600"
+        android:textSize="16sp"
+        tools:ignore="MissingDefaultResource"
+        xmlns:tools="http://schemas.android.com/tools" />
+</LinearLayout>

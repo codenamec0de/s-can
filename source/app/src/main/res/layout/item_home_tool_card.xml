@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_v4_tool_card_idle"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="top"
+    android:orientation="horizontal"
+    android:padding="14dp">
+
+    <FrameLayout
+        android:id="@+id/toolIconTile"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_v4_perm_icon_tile">
+
+        <ImageView
+            android:id="@+id/toolIcon"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            app:tint="@color/v4_fg2"
+            tools:src="@drawable/ic_glyph_wifi" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/toolTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:letterSpacing="-0.015"
+            android:textColor="@color/v4_fg0"
+            android:textFontWeight="600"
+            android:textSize="13.5sp"
+            tools:text="Wi-Fi Security" />
+
+        <TextView
+            android:id="@+id/toolDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:fontFamily="@font/montserrat"
+            android:lineSpacingMultiplier="1.45"
+            android:textColor="@color/v4_fg2"
+            android:textFontWeight="500"
+            android:textSize="11.5sp"
+            tools:text="Audits networks for MITM risk, captive portals, weak crypto." />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/toolToggle"
+        android:layout_width="36dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/bg_v4_tool_toggle_off"
+        android:clickable="true"
+        android:focusable="true">
+
+        <View
+            android:id="@+id/toolToggleThumb"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="2dp"
+            android:background="@drawable/bg_v4_tool_toggle_thumb_off" />
+    </FrameLayout>
+</LinearLayout>

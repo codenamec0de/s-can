@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive launcher foreground.
+  The 108x108 viewport reserves 18dp of safe-zone padding on every side. We inset
+  by 20dp and use gravity=fill so the bitmap scales to the safe-zone box instead
+  of drawing at native (2000x2000) size — otherwise launchers only show the centre
+  pixels of the source PNG.
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:inset="20dp">
+    <bitmap
+        android:gravity="fill"
+        android:src="@drawable/scan_logo" />
+</inset>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─────────────────────────────────────────────────────────────
+         S'CAN V4 - Light palette
+         Cool neutrals · cyan accent · low-noise severity
+         Token names: bg, surf1-3, hairlines, fg0-4, accent, severity
+         Backwards-compat aliases at the bottom keep old layouts working.
+         ───────────────────────────────────────────────────────────── -->
+
+    <!-- Surfaces -->
+    <color name="v4_bg">#F5F6F8</color>
+    <color name="v4_surf1">#FFFFFF</color>
+    <color name="v4_surf2">#FFFFFF</color>
+    <color name="v4_surf3">#FAFBFC</color>
+    <color name="v4_surf_tint">#05000000</color>
+    <color name="v4_hairline">#140F1116</color>
+    <color name="v4_hairline2">#240F1116</color>
+
+    <!-- Foregrounds -->
+    <color name="v4_fg0">#0B0D12</color>
+    <color name="v4_fg1">#2B2F36</color>
+    <color name="v4_fg2">#5C616B</color>
+    <color name="v4_fg3">#8E939E</color>
+    <color name="v4_fg4">#C9CCD3</color>
+
+    <!-- Accent (cyan, light-mode = deep variant for AA contrast) -->
+    <color name="v4_accent">#0891B2</color>
+    <color name="v4_accent_soft">#67E8F9</color>
+    <color name="v4_accent_deep">#0891B2</color>
+    <color name="v4_accent_bg">#1E22D3EE</color>
+    <color name="v4_accent_ring">#4022D3EE</color>
+
+    <!-- Severity -->
+    <color name="v4_ok">#059669</color>
+    <color name="v4_ok_bg">#1A059669</color>
+    <color name="v4_warn">#B45309</color>
+    <color name="v4_warn_bg">#1AB45309</color>
+    <color name="v4_bad">#DC2626</color>
+    <color name="v4_bad_bg">#1ADC2626</color>
+
+    <!-- Glass / overlay -->
+    <color name="v4_glass_bg">#C7FFFFFF</color>
+    <color name="v4_glass_border">#140F1116</color>
+
+    <!-- Reverse-compat - every old name resolves to a V4 token -->
+    <color name="primary">@color/v4_accent</color>
+    <color name="primary_variant">@color/v4_accent_deep</color>
+    <color name="primary_light">@color/v4_accent_soft</color>
+    <color name="secondary">@color/v4_accent_soft</color>
+
+    <color name="background_dark">@color/v4_bg</color>
+    <color name="background_light">@color/v4_bg</color>
+    <color name="surface_dark">@color/v4_surf2</color>
+    <color name="surface_variant">@color/v4_surf3</color>
+    <color name="card_dark">@color/v4_surf2</color>
+    <color name="card_light">@color/v4_surf2</color>
+    <color name="glass_surface">@color/v4_glass_bg</color>
+    <color name="glass_surface_strong">@color/v4_glass_bg</color>
+
+    <color name="text_primary">@color/v4_fg0</color>
+    <color name="text_primary_dark">@color/v4_fg0</color>
+    <color name="text_primary_light">@color/v4_fg0</color>
+    <color name="text_secondary">@color/v4_fg2</color>
+    <color name="text_secondary_dark">@color/v4_fg2</color>
+    <color name="text_secondary_light">@color/v4_fg2</color>
+    <color name="text_tertiary">@color/v4_fg3</color>
+    <color name="text_hint">@color/v4_fg3</color>
+
+    <color name="status_safe">@color/v4_ok</color>
+    <color name="status_safe_bg">@color/v4_ok_bg</color>
+    <color name="status_warning">@color/v4_warn</color>
+    <color name="status_warning_bg">@color/v4_warn_bg</color>
+    <color name="status_critical">@color/v4_bad</color>
+    <color name="status_critical_bg">@color/v4_bad_bg</color>
+
+    <color name="risk_high">@color/v4_bad</color>
+    <color name="risk_high_bg">@color/v4_bad_bg</color>
+    <color name="risk_medium">@color/v4_warn</color>
+    <color name="risk_medium_bg">@color/v4_warn_bg</color>
+    <color name="risk_low">@color/v4_ok</color>
+    <color name="risk_low_bg">@color/v4_ok_bg</color>
+
+    <color name="success">@color/v4_ok</color>
+    <color name="warning">@color/v4_warn</color>
+    <color name="error">@color/v4_bad</color>
+    <color name="info">@color/v4_accent</color>
+
+    <color name="divider_dark">@color/v4_hairline</color>
+    <color name="border_dark">@color/v4_hairline</color>
+    <color name="border_glow">@color/v4_accent</color>
+    <color name="border_light">@color/v4_hairline2</color>
+    <color name="nav_inactive">@color/v4_fg3</color>
+    <color name="nav_active">@color/v4_accent</color>
+
+    <color name="scan_blue">@color/v4_accent</color>
+    <color name="scan_bg_black">@color/v4_bg</color>
+    <color name="scan_card_dark">@color/v4_surf2</color>
+    <color name="scan_input_bg">@color/v4_surf3</color>
+    <color name="scan_input_hint">@color/v4_fg3</color>
+    <color name="scan_text_light">@color/v4_fg0</color>
+    <color name="scan_divider">@color/v4_hairline</color>
+
+    <color name="ink_0">@color/v4_bg</color>
+    <color name="ink_1">@color/v4_surf1</color>
+    <color name="ink_2">@color/v4_surf2</color>
+    <color name="ink_3">@color/v4_surf3</color>
+    <color name="ink_4">@color/v4_hairline</color>
+
+    <color name="fg_0">@color/v4_fg0</color>
+    <color name="fg_1">@color/v4_fg1</color>
+    <color name="fg_2">@color/v4_fg2</color>
+    <color name="fg_3">@color/v4_fg3</color>
+
+    <color name="scan_accent">@color/v4_accent</color>
+    <color name="scan_accent_dim">@color/v4_accent_deep</color>
+    <color name="scan_accent_bg">@color/v4_accent_bg</color>
+    <color name="scan_accent_highlight">@color/v4_accent_soft</color>
+
+    <color name="scan_ok">@color/v4_ok</color>
+    <color name="scan_ok_dim">@color/v4_ok</color>
+    <color name="scan_ok_bg">@color/v4_ok_bg</color>
+
+    <color name="scan_warn">@color/v4_warn</color>
+    <color name="scan_warn_dim">@color/v4_warn</color>
+    <color name="scan_warn_bg">@color/v4_warn_bg</color>
+
+    <color name="scan_bad">@color/v4_bad</color>
+    <color name="scan_bad_dim">@color/v4_bad</color>
+    <color name="scan_bad_bg">@color/v4_bad_bg</color>
+
+    <color name="scan_hairline">@color/v4_hairline</color>
+    <color name="scan_overlay_soft">@color/v4_surf_tint</color>
+    <color name="scan_overlay_softer">@color/v4_surf_tint</color>
+    <color name="scan_glass_bg">@color/v4_glass_bg</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+</resources>

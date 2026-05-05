@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ─────────────────────────────────────────────────────────────
+         S'CAN V4 Theme - DayNight, cyan accent, hairline borders
+         Dark by default visual identity; light tokens still ship for
+         system-light users.
+         ───────────────────────────────────────────────────────────── -->
+    <style name="Theme.Scan" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/v4_accent</item>
+        <item name="colorPrimaryVariant">@color/v4_accent_deep</item>
+        <item name="colorOnPrimary">@color/v4_bg</item>
+        <item name="colorSecondary">@color/v4_accent_soft</item>
+        <item name="colorOnSecondary">@color/v4_bg</item>
+
+        <item name="android:colorBackground">@color/v4_bg</item>
+        <item name="colorSurface">@color/v4_surf2</item>
+        <item name="colorOnSurface">@color/v4_fg0</item>
+        <item name="colorOnSurfaceVariant">@color/v4_fg2</item>
+        <item name="colorOutline">@color/v4_hairline2</item>
+        <item name="colorOutlineVariant">@color/v4_hairline</item>
+
+        <item name="android:statusBarColor">@color/v4_bg</item>
+        <item name="android:navigationBarColor">@color/v4_bg</item>
+        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
+        <item name="android:windowLightNavigationBar">@bool/window_light_status_bar</item>
+
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="fontFamily">@font/montserrat</item>
+
+        <item name="materialButtonStyle">@style/V4.Button.Primary</item>
+        <item name="materialCardViewStyle">@style/V4.Card</item>
+    </style>
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.Scan.Splash" parent="Theme.Scan">
+        <item name="android:windowBackground">@color/v4_bg</item>
+    </style>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         Legacy styles - kept for layouts that reference them
+         ───────────────────────────────────────────────────────────── -->
+    <style name="CardStyle">
+        <item name="android:background">@drawable/bg_v4_surface</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="PrimaryButton">
+        <item name="android:background">@drawable/bg_v4_button_primary</item>
+        <item name="android:textColor">@color/v4_bg</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+
+    <style name="SecondaryButton">
+        <item name="android:background">@drawable/bg_v4_button_secondary</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         V4 Component Styles
+         ───────────────────────────────────────────────────────────── -->
+
+    <style name="V4.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/v4_surf2</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/v4_hairline</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="V4.Card.Elevated" parent="V4.Card">
+        <item name="cardElevation">8dp</item>
+    </style>
+
+    <style name="V4.Button.Primary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/v4_accent</item>
+        <item name="android:textColor">@color/v4_bg</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0.005</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+
+    <style name="V4.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="strokeColor">@color/v4_hairline2</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+    </style>
+
+    <style name="V4.Button.Ghost" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/v4_fg1</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         V4 Text Appearances (keep old names; remap sizes/colors)
+         ───────────────────────────────────────────────────────────── -->
+
+    <style name="TextAppearance.SCAN" parent="android:TextAppearance" />
+
+    <!-- Eyebrow / section label - uppercase 600 -->
+    <style name="TextAppearance.SCAN.Eyebrow">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/v4_fg3</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.13</item>
+    </style>
+
+    <style name="TextAppearance.SCAN.EyebrowTiny">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/v4_fg3</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.12</item>
+    </style>
+
+    <!-- Greeting / page title -->
+    <style name="TextAppearance.SCAN.HeadingLarge">
+        <item name="android:textSize">26sp</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:lineSpacingMultiplier">1.05</item>
+    </style>
+
+    <!-- Score number - hero monospace -->
+    <style name="TextAppearance.SCAN.ScoreNumber">
+        <item name="android:textSize">56sp</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:letterSpacing">-0.04</item>
+        <item name="android:textFontWeight">600</item>
+    </style>
+
+    <style name="TextAppearance.SCAN.ScoreSuffix">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/v4_fg2</item>
+        <item name="android:fontFamily">monospace</item>
+    </style>
+
+    <!-- Metric / KPI value -->
+    <style name="TextAppearance.SCAN.Numeric">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textFontWeight">600</item>
+    </style>
+
+    <style name="TextAppearance.SCAN.StatValue">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <!-- Body / list rows -->
+    <style name="TextAppearance.SCAN.Title">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">-0.005</item>
+    </style>
+
+    <style name="TextAppearance.SCAN.Body">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/v4_fg1</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:lineSpacingMultiplier">1.45</item>
+    </style>
+
+    <style name="TextAppearance.SCAN.Detail">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/v4_fg2</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <style name="TextAppearance.SCAN.DetailMuted">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/v4_fg3</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <!-- Pill / severity label -->
+    <style name="TextAppearance.SCAN.Pill">
+        <item name="android:textSize">10sp</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.09</item>
+    </style>
+
+    <style name="TextAppearance.SCAN.StatusChip">
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">600</item>
+    </style>
+
+    <style name="TextAppearance.SCAN.Cta">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/v4_bg</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">0.005</item>
+    </style>
+
+    <!-- Timestamp / mono mini -->
+    <style name="TextAppearance.SCAN.Timestamp">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/v4_fg3</item>
+        <item name="android:fontFamily">monospace</item>
+    </style>
+
+    <!-- Wordmark -->
+    <style name="TextAppearance.SCAN.Brand">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="android:letterSpacing">0.13</item>
+    </style>
+
+    <!-- ─────────────────────────────────────────────────────────────
+         V4 Settings list rows (shared by fragment_settings.xml)
+         ───────────────────────────────────────────────────────────── -->
+
+    <style name="V4SettingsSectionLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/v4_fg3</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textSize">10.5sp</item>
+        <item name="android:letterSpacing">0.13</item>
+        <item name="android:paddingStart">22dp</item>
+        <item name="android:paddingTop">22dp</item>
+        <item name="android:paddingEnd">22dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
+
+    <style name="V4SettingsRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <style name="V4SettingsRowSimple" parent="V4SettingsRow" />
+
+    <style name="V4SettingsRowIcon">
+        <item name="android:layout_width">16dp</item>
+        <item name="android:layout_height">16dp</item>
+        <item name="android:importantForAccessibility">no</item>
+        <item name="android:tint">@color/v4_fg2</item>
+    </style>
+
+    <style name="V4SettingsRowText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="V4SettingsRowTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="V4SettingsRowDesc">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textColor">@color/v4_fg3</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="V4SettingsRowSimpleLabel">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textColor">@color/v4_fg0</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="V4SettingsRowChevron">
+        <item name="android:layout_width">14dp</item>
+        <item name="android:layout_height">14dp</item>
+        <item name="android:importantForAccessibility">no</item>
+        <item name="android:src">@drawable/ic_glyph_chevron</item>
+        <item name="android:tint">@color/v4_fg3</item>
+    </style>
+
+    <style name="V4SettingsDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/v4_hairline</item>
+    </style>
+
+    <!-- Mono value used on the right of settings rows -->
+    <style name="V4MonoValue">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">@color/v4_fg3</item>
+        <item name="android:textSize">11.5sp</item>
+    </style>
+
+    <!-- Centered label inside primary/secondary FrameLayout buttons -->
+    <style name="V4ButtonLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:letterSpacing">0.0075</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">13dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">13dp</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textSize">13.5sp</item>
+    </style>
+
+    <style name="V4ButtonLabelLight" parent="V4ButtonLabel">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="V4ButtonLabelDark" parent="V4ButtonLabel">
+        <item name="android:textColor">@color/v4_fg0</item>
+    </style>
+
+    <style name="V4ButtonLabelDanger" parent="V4ButtonLabel">
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp">
+
+        <View
+            android:id="@+id/findingBar"
+            android:layout_width="3dp"
+            android:layout_height="22dp"
+            android:background="@color/v4_bad" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/findingText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="-0.005"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="500"
+                android:textSize="13sp"
+                tools:text="Caught accessing sensitive data in background" />
+
+            <TextView
+                android:id="@+id/findingDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@color/v4_fg2"
+                android:textFontWeight="500"
+                android:textSize="11sp"
+                tools:text="12 alerts recorded by S'CAN" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/findingRowDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/v4_hairline" />
+</LinearLayout>

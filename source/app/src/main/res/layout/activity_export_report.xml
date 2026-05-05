@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/include_v4_topbar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Intro -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="20dp"
+                android:lineSpacingMultiplier="1.55"
+                android:text="@string/export_v4_intro"
+                android:textColor="@color/v4_fg2"
+                android:textSize="13sp" />
+
+            <!-- ─────────────  Format  ───────────── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.13"
+                android:text="@string/export_v4_section_format"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/cardFormatPdf"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_v4_surface"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="14dp">
+
+                    <TextView
+                        android:id="@+id/tvFormatPdfLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:letterSpacing="0.04"
+                        android:text="@string/export_v4_format_pdf"
+                        android:textColor="@color/v4_fg0"
+                        android:textFontWeight="700"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/export_v4_format_pdf_sub"
+                        android:textColor="@color/v4_fg3"
+                        android:textSize="10.5sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardFormatJson"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_v4_surface"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="14dp">
+
+                    <TextView
+                        android:id="@+id/tvFormatJsonLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:letterSpacing="0.04"
+                        android:text="@string/export_v4_format_json"
+                        android:textColor="@color/v4_fg0"
+                        android:textFontWeight="700"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/export_v4_format_json_sub"
+                        android:textColor="@color/v4_fg3"
+                        android:textSize="10.5sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardFormatCsv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_v4_surface"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="14dp">
+
+                    <TextView
+                        android:id="@+id/tvFormatCsvLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:letterSpacing="0.04"
+                        android:text="@string/export_v4_format_csv"
+                        android:textColor="@color/v4_fg0"
+                        android:textFontWeight="700"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/export_v4_format_csv_sub"
+                        android:textColor="@color/v4_fg3"
+                        android:textSize="10.5sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ─────────────  Date range  ───────────── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.13"
+                android:text="@string/export_v4_section_range"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_apps_segment_container"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:padding="3dp">
+
+                <FrameLayout
+                    android:id="@+id/segRange7d"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/tvSegRange7d"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center"
+                        android:text="@string/export_v4_range_7d"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="12sp" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/segRange30d"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/tvSegRange30d"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center"
+                        android:text="@string/export_v4_range_30d"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="12sp" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/segRange90d"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/tvSegRange90d"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center"
+                        android:text="@string/export_v4_range_90d"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="12sp" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/segRangeAll"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/tvSegRangeAll"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center"
+                        android:text="@string/export_v4_range_all"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="12sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- ─────────────  Include  ───────────── -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.13"
+                android:text="@string/export_v4_section_include"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical">
+
+                <LinearLayout style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_warn" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/export_v4_inc_findings" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swIncFindings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_bell" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/export_v4_inc_alerts" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swIncAlerts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_sms" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/export_v4_inc_sms" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swIncSms"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_document" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/export_v4_inc_scans" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swIncScans"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ─────────────  Estimated size hero  ───────────── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="12dp">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_document"
+                    app:tint="@color/v4_accent" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:text="@string/export_v4_estimated_size"
+                        android:textColor="@color/v4_fg0"
+                        android:textFontWeight="600"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvEstimatedSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/v4_fg3"
+                        android:textSize="11sp"
+                        tools:text="~1.2 MB · 84 pages" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ─────────────  Status / progress  ───────────── -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:indeterminateTint="@color/v4_accent"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="center_horizontal"
+                android:lineSpacingMultiplier="1.4"
+                android:textColor="@color/v4_fg2"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <!-- ─────────────  Actions  ───────────── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnGenerate"
+                    style="@style/V4.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:fontFamily="@font/montserrat"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="@string/export_v4_btn_generate"
+                    android:textAllCaps="false"
+                    android:textFontWeight="600"
+                    android:textSize="13.5sp"
+                    app:icon="@drawable/ic_glyph_arrow_right"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
+                    app:iconSize="14dp"
+                    app:iconTint="@color/v4_bg" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEmail"
+                    style="@style/V4.Button.Ghost"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/montserrat"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="@string/export_v4_btn_email"
+                    android:textAllCaps="false"
+                    android:textFontWeight="600"
+                    android:textSize="13.5sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnViewHistory"
+                    style="@style/V4.Button.Ghost"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/montserrat"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="@string/export_v4_btn_history"
+                    android:textAllCaps="false"
+                    android:textFontWeight="500"
+                    android:textSize="12.5sp" />
+            </LinearLayout>
+
+            <!-- Hidden legacy view kept for binding compat -->
+            <View
+                android:id="@+id/btnShare"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

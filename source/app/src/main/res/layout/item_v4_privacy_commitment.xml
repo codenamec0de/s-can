@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="13dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="13dp">
+
+        <FrameLayout
+            android:id="@+id/commitIconTile"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/bg_v4_perm_icon_tile">
+
+            <ImageView
+                android:id="@+id/commitIcon"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                tools:src="@drawable/ic_glyph_check"
+                tools:tint="@color/v4_ok" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/commitTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="13sp"
+                tools:text="On-device only" />
+
+            <TextView
+                android:id="@+id/commitDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingMultiplier="1.5"
+                android:textColor="@color/v4_fg2"
+                android:textFontWeight="500"
+                android:textSize="11.5sp"
+                tools:text="All scan data stays on your phone unless you set up a server." />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/commitDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/v4_hairline" />
+</LinearLayout>

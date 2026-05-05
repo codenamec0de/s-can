@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <!-- TopBar: back + "App info" -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="6dp">
+
+        <FrameLayout
+            android:id="@+id/btnBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_v4_top_bar_button"
+            android:clickable="true"
+            android:contentDescription="@string/fp_back_cd"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/v4_fg1" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:letterSpacing="-0.0125"
+            android:text="@string/app_info"
+            android:textColor="@color/v4_fg0"
+            android:textFontWeight="600"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- App identity card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_v4_app_detail_icon_tile">
+
+                        <ImageView
+                            android:id="@+id/ivAppIcon"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="App icon" />
+
+                        <TextView
+                            android:id="@+id/tvAppInitial"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/montserrat"
+                            android:textColor="@color/v4_fg1"
+                            android:textFontWeight="600"
+                            android:textSize="22sp"
+                            android:visibility="gone"
+                            tools:text="f" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvAppName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="-0.02"
+                            android:textColor="@color/v4_fg0"
+                            android:textFontWeight="600"
+                            android:textSize="19sp"
+                            tools:text="Facebook" />
+
+                        <TextView
+                            android:id="@+id/tvPackageName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:ellipsize="end"
+                            android:fontFamily="monospace"
+                            android:maxLines="1"
+                            android:textColor="@color/v4_fg3"
+                            android:textSize="11sp"
+                            tools:text="com.facebook.katana" />
+
+                        <TextView
+                            android:id="@+id/tvRiskBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="0.08"
+                            android:paddingStart="7dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="7dp"
+                            android:paddingBottom="3dp"
+                            android:textAllCaps="true"
+                            android:textFontWeight="700"
+                            android:textSize="9.5sp"
+                            android:visibility="gone"
+                            tools:background="@drawable/bg_v4_perm_pill_bad"
+                            tools:text="High risk"
+                            tools:textColor="@color/v4_bad"
+                            tools:visibility="visible" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/v4_hairline" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="0.1"
+                            android:text="@string/version"
+                            android:textAllCaps="true"
+                            android:textColor="@color/v4_fg3"
+                            android:textFontWeight="600"
+                            android:textSize="9.5sp" />
+
+                        <TextView
+                            android:id="@+id/tvVersion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.02"
+                            android:textColor="@color/v4_fg0"
+                            android:textFontWeight="600"
+                            android:textSize="22sp"
+                            tools:text="452.0" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/v4_hairline" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="0.1"
+                            android:text="@string/app_detail_metric_permissions"
+                            android:textAllCaps="true"
+                            android:textColor="@color/v4_fg3"
+                            android:textFontWeight="600"
+                            android:textSize="9.5sp" />
+
+                        <TextView
+                            android:id="@+id/tvPermissionCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.02"
+                            android:textColor="@color/v4_fg0"
+                            android:textFontWeight="600"
+                            android:textSize="22sp"
+                            tools:text="22" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/v4_hairline" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="0.1"
+                            android:text="@string/trackers"
+                            android:textAllCaps="true"
+                            android:textColor="@color/v4_fg3"
+                            android:textFontWeight="600"
+                            android:textSize="9.5sp" />
+
+                        <TextView
+                            android:id="@+id/tvTrackerCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.02"
+                            android:text="—"
+                            android:textColor="@color/v4_warn"
+                            android:textFontWeight="600"
+                            android:textSize="22sp"
+                            tools:text="8" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Open in Android Settings + helper -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/btnManagePermissions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_v4_button_secondary"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.0075"
+                        android:paddingStart="16dp"
+                        android:paddingTop="13dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="13dp"
+                        android:text="@string/app_detail_open_settings_cta"
+                        android:textColor="@color/v4_fg0"
+                        android:textFontWeight="600"
+                        android:textSize="13.5sp" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.5"
+                    android:text="@string/app_detail_open_settings_helper"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="500"
+                    android:textSize="10.5sp" />
+            </LinearLayout>
+
+            <!-- ─── Findings ─── -->
+            <LinearLayout
+                android:id="@+id/sectionFindings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.13"
+                    android:paddingStart="20dp"
+                    android:paddingTop="22dp"
+                    android:paddingEnd="20dp"
+                    android:paddingBottom="10dp"
+                    android:text="@string/app_detail_findings_title"
+                    android:textAllCaps="true"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="600"
+                    android:textSize="10.5sp" />
+
+                <LinearLayout
+                    android:id="@+id/findingsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/bg_v4_surface"
+                    android:clipChildren="true"
+                    android:clipToOutline="true"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <!-- ─── Privacy critical ─── -->
+            <LinearLayout
+                android:id="@+id/sectionPrivacyCritical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingTop="22dp"
+                    android:paddingEnd="20dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.13"
+                        android:text="@string/privacy_critical"
+                        android:textAllCaps="true"
+                        android:textColor="@color/v4_fg3"
+                        android:textFontWeight="600"
+                        android:textSize="10.5sp" />
+
+                    <TextView
+                        android:id="@+id/tvPrivacyCriticalCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/v4_fg3"
+                        android:textSize="11sp"
+                        tools:text="3" />
+
+                    <ImageButton
+                        android:id="@+id/btnSensitiveInfo"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="6dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="What are sensitive permissions?"
+                        android:src="@drawable/ic_info"
+                        app:tint="@color/v4_fg3" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPrivacyCritical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/bg_v4_surface"
+                    android:clipToOutline="true"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never" />
+            </LinearLayout>
+
+            <!-- ─── Standard access (collapsible) ─── -->
+            <LinearLayout
+                android:id="@+id/sectionStandardAccess"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/headerStandardAccess"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingTop="22dp"
+                    android:paddingEnd="20dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.13"
+                        android:text="@string/standard_access"
+                        android:textAllCaps="true"
+                        android:textColor="@color/v4_fg3"
+                        android:textFontWeight="600"
+                        android:textSize="10.5sp" />
+
+                    <TextView
+                        android:id="@+id/tvStandardAccessCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/v4_fg3"
+                        android:textSize="11sp"
+                        tools:text="14" />
+
+                    <ImageView
+                        android:id="@+id/ivStandardAccessArrow"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="Toggle"
+                        android:src="@drawable/ic_arrow_down"
+                        app:tint="@color/v4_fg3" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvStandardAccess"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/bg_v4_surface"
+                    android:clipToOutline="true"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- ─── App integrity ─── -->
+            <LinearLayout
+                android:id="@+id/sectionIntegrity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingTop="22dp"
+                    android:paddingEnd="20dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.13"
+                        android:text="@string/app_detail_integrity_title"
+                        android:textAllCaps="true"
+                        android:textColor="@color/v4_fg3"
+                        android:textFontWeight="600"
+                        android:textSize="10.5sp" />
+
+                    <TextView
+                        android:id="@+id/tvIntegrityStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.08"
+                        android:paddingStart="7dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="7dp"
+                        android:paddingBottom="3dp"
+                        android:textAllCaps="true"
+                        android:textFontWeight="700"
+                        android:textSize="9.5sp"
+                        android:visibility="gone"
+                        tools:background="@drawable/bg_v4_perm_pill_warn"
+                        tools:text="Warnings"
+                        tools:textColor="@color/v4_warn"
+                        tools:visibility="visible" />
+                </LinearLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/bg_v4_surface">
+
+                    <ProgressBar
+                        android:id="@+id/progressIntegrity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="14dp"
+                        android:indeterminateTint="@color/v4_accent" />
+
+                    <LinearLayout
+                        android:id="@+id/integrityChecklist"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- ─── Trackers ─── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:paddingTop="22dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.13"
+                    android:text="@string/trackers"
+                    android:textAllCaps="true"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="600"
+                    android:textSize="10.5sp" />
+
+                <TextView
+                    android:id="@+id/tvTrackerStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/loading_trackers"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="500"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp">
+
+                <ProgressBar
+                    android:id="@+id/progressTrackers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="20dp"
+                    android:indeterminateTint="@color/v4_accent" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvTrackers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_v4_surface"
+                    android:clipToOutline="true"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <!-- Hidden legacy controls (kept for binding compatibility) -->
+            <TextView
+                android:id="@+id/tvDataUsage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnUninstall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvAlertCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

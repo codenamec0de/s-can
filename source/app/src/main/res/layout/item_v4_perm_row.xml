@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="11dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="11dp">
+
+        <ImageView
+            android:id="@+id/ivPermIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:importantForAccessibility="no"
+            app:tint="@color/v4_fg2"
+            tools:src="@drawable/ic_v4_glyph_camera" />
+
+        <TextView
+            android:id="@+id/tvPermName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@color/v4_fg0"
+            android:textFontWeight="500"
+            android:textSize="13sp"
+            tools:text="Camera" />
+
+        <TextView
+            android:id="@+id/tvPermStatePill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:letterSpacing="0.08"
+            android:paddingStart="7dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="3dp"
+            android:textAllCaps="true"
+            android:textFontWeight="700"
+            android:textSize="9.5sp"
+            android:visibility="gone"
+            tools:background="@drawable/bg_v4_perm_pill_bad"
+            tools:text="Used in BG"
+            tools:textColor="@color/v4_bad"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvPermStateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@color/v4_fg3"
+            android:textFontWeight="500"
+            android:textSize="11sp"
+            tools:text="Granted" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/permRowDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/v4_hairline" />
+</LinearLayout>

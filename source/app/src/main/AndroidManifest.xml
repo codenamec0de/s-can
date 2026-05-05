@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Internet for Firebase and Exodus API -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- V1.4 Wi-Fi Security Analyzer (read-only - no CHANGE_WIFI_STATE because we never
+         re-associate or toggle Wi-Fi from the app; reintroduce only when "disconnect from
+         unsafe network" UX actually lands). -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission
+        android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="33" />
+    
+    <!-- Query all installed packages -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+    
+    <!-- V1.4 SMS scam detection: only RECEIVE_SMS is wired today. READ_SMS would be needed
+         for the planned inbox-bootstrap flow (V1.4 SMS roadmap §8.2); reintroduce when that
+         lands. Each restricted permission is a separate Play Store policy line item. -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    
+    <!-- For data usage statistics -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- For foreground services -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Restart monitoring service after reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Keep CPU alive during background scans -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Request battery optimization exemption -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Scan"
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:targetApi="31">
+        
+        <!-- Splash Activity -->
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Scan.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Login Activity -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+        
+        <!-- Sign Up Activity -->
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- Forgot Password Activity (V4) -->
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- Permissions Activity (V4 onboarding) -->
+        <activity
+            android:name=".PermissionsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+        
+        <!-- Main Activity with Navigation -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+            
+        <!-- App Detail Activity -->
+        <activity
+            android:name=".AppDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+        
+        <!-- Scan Activity -->
+        <activity
+            android:name=".ScanActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- Breach Checker Activity -->
+        <activity
+            android:name=".BreachCheckerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- Score History Activity -->
+        <activity
+            android:name=".ScoreHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- Export Report Activity -->
+        <activity
+            android:name=".ExportReportActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- Report History Activity -->
+        <activity
+            android:name=".ReportHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- Scan Comparison Activity -->
+        <activity
+            android:name=".ScanComparisonActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- Terminator Activity -->
+        <activity
+            android:name=".TerminatorActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- V1.4 Wi-Fi Security Activity -->
+        <activity
+            android:name=".WifiSecurityActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- FileProvider for sharing PDF reports -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- Persistent monitoring service -->
+        <service
+            android:name=".service.ScanMonitorService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Security monitoring - scans background app data usage to protect user privacy" />
+        </service>
+
+        <!-- Test data usage service -->
+        <service
+            android:name=".service.TestDataUsageService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <!-- Restart monitoring after device reboot -->
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Detect new app installs and updates -->
+        <receiver
+            android:name=".receiver.AppInstallReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <!-- V1.4 SMS Scam Detection receiver -->
+        <receiver
+            android:name=".receiver.SmsBroadcastReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- V1.4 SMS Scam Activity -->
+        <activity
+            android:name=".SmsScamActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- V1.4 SMS onboarding screen -->
+        <activity
+            android:name=".SmsOnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- V1.4 AI server config -->
+        <activity
+            android:name=".AiServerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- V1.4 Settings sub-screens -->
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+        <activity
+            android:name=".PrivacyPolicyActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+        <activity
+            android:name=".NotificationsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+        <activity
+            android:name=".ScanScheduleActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+        <activity
+            android:name=".DataStorageActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+    </application>
+
+</manifest>

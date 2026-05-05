@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="breach_v4_eyebrow_exposed">
+        <item quantity="one">Exposed in %d breach</item>
+        <item quantity="other">Exposed in %d breaches</item>
+    </plurals>
+    <plurals name="breach_v4_n_breaches">
+        <item quantity="one">%d breach</item>
+        <item quantity="other">%d breaches</item>
+    </plurals>
+    <plurals name="breach_v4_time_minutes">
+        <item quantity="one">%d minute ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
+    <plurals name="breach_v4_time_hours">
+        <item quantity="one">%d hour ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+    <plurals name="breach_v4_time_days">
+        <item quantity="one">%d day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+</resources>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="top"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="13dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="13dp">
+
+        <FrameLayout
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_v4_alert_avatar"
+            android:clipToOutline="true">
+
+            <ImageView
+                android:id="@+id/ivAlertAppIcon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="App icon"
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvAlertAppInitial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@color/v4_fg1"
+                android:textFontWeight="600"
+                android:textSize="13sp"
+                tools:text="f" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Header line: app + perm pill + time -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvAlertAppName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="-0.005"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="600"
+                    android:textSize="12.5sp"
+                    tools:text="Facebook" />
+
+                <LinearLayout
+                    android:id="@+id/permPill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="6dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="6dp"
+                    android:paddingBottom="2dp"
+                    tools:background="@drawable/bg_v4_perm_pill_bad">
+
+                    <ImageView
+                        android:id="@+id/ivPermPillIcon"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_marginEnd="4dp"
+                        android:importantForAccessibility="no"
+                        tools:src="@drawable/ic_v4_glyph_pin"
+                        tools:tint="@color/v4_bad" />
+
+                    <TextView
+                        android:id="@+id/tvPermPillLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.06"
+                        android:textAllCaps="true"
+                        android:textFontWeight="700"
+                        android:textSize="9.5sp"
+                        tools:text="Location"
+                        tools:textColor="@color/v4_bad" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/tvAlertTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:textColor="@color/v4_fg3"
+                    android:textSize="10.5sp"
+                    tools:text="10:02" />
+            </LinearLayout>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvAlertTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="-0.0025"
+                android:lineSpacingMultiplier="1.4"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="500"
+                android:textSize="13sp"
+                tools:text="Background location read while screen off" />
+
+            <!-- Detail -->
+            <TextView
+                android:id="@+id/tvAlertDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingMultiplier="1.45"
+                android:textColor="@color/v4_fg2"
+                android:textFontWeight="500"
+                android:textSize="11.5sp"
+                android:visibility="gone"
+                tools:text="Coarse + fine accuracy · app was not in foreground"
+                tools:visibility="visible" />
+
+            <!-- Pattern card -->
+            <LinearLayout
+                android:id="@+id/patternCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="9dp"
+                android:background="@drawable/bg_v4_pattern_card"
+                android:orientation="vertical"
+                android:paddingStart="11dp"
+                android:paddingTop="9dp"
+                android:paddingEnd="11dp"
+                android:paddingBottom="9dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_glyph_activity"
+                        app:tint="@color/v4_fg2" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.1"
+                        android:text="@string/alerts_v4_pattern_label"
+                        android:textAllCaps="true"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/tvPatternCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textFontWeight="600"
+                        android:textSize="10.5sp"
+                        tools:text="7× · ~every 22 min"
+                        tools:textColor="@color/v4_bad" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/sparklineContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="7dp"
+                    android:gravity="bottom"
+                    android:orientation="horizontal"
+                    android:weightSum="24" />
+
+                <TextView
+                    android:id="@+id/tvPatternSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/montserrat"
+                    android:lineSpacingMultiplier="1.4"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="500"
+                    android:textSize="10.5sp"
+                    tools:text="Reaches Location every 20–25 min during work hours, even when backgrounded." />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/alertRowDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/v4_hairline" />
+</LinearLayout>

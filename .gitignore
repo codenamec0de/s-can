@@ -1,0 +1,70 @@
+# ─────────────────────────────────────────────────────────────────────────
+# S'CAN — root .gitignore
+# Anything sensitive (keystores, API keys, sidecar tokens) MUST stay out of git
+# even though the repo is private. Defence-in-depth in case the repo ever
+# flips to public or a collaborator clones it.
+# ─────────────────────────────────────────────────────────────────────────
+
+# ─────────── Android: build artefacts ───────────
+**/build/
+**/.gradle/
+**/.cxx/
+*.iml
+.kotlin/
+captures/
+release/
+debug/
+
+# ─────────── Android: local environment ───────────
+**/local.properties
+
+# ─────────── Android: IDE state ───────────
+.idea/
+.vscode/
+.fleet/
+*.swp
+*.swo
+
+# ─────────── App-signing secrets — NEVER COMMIT ───────────
+# Losing or leaking these means the app can be re-signed by an attacker
+# (Play Store identity is tied to the keystore).
+**/keystore.properties
+**/*.jks
+**/*.keystore
+**/*.p12
+**/*.pem
+**/*.pfx
+
+# ─────────── Firebase / Google Services config ───────────
+# Contains the project's google-services API keys. These are publishable but
+# they identify the project; keep them private until the repo is public.
+**/google-services.json
+**/GoogleService-Info.plist
+
+# ─────────── Python sidecar (scan-ai/) ───────────
+**/venv/
+**/__pycache__/
+**/.pytest_cache/
+*.py[cod]
+*.egg-info/
+**/feedback.jsonl
+**/tokens.json
+**/scan-ai.log
+**/=*
+
+# ─────────── Logs / temp / OS ───────────
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─────────── Generated reports ───────────
+**/SCAN_Report_*.pdf
+**/SCAN_Report_*.json
+**/SCAN_Report_*.csv
+
+# ─────────── Misc ───────────
+*.bak
+*.orig
+.claude/

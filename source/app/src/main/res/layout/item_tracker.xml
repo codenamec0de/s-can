@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/trackerRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="11dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="11dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@drawable/bg_v4_sev_dot_warn" />
+
+            <TextView
+                android:id="@+id/tvTrackerName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="13sp"
+                tools:text="Facebook Analytics" />
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_glyph_chevron"
+                app:tint="@color/v4_fg3"
+                xmlns:app="http://schemas.android.com/apk/res-auto" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTrackerCategories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="3dp"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@color/v4_fg2"
+            android:textFontWeight="500"
+            android:textSize="11.5sp"
+            tools:text="Analytics, Profiling" />
+
+        <TextView
+            android:id="@+id/tvTrackerDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/montserrat"
+            android:lineSpacingMultiplier="1.25"
+            android:maxLines="2"
+            android:textColor="@color/v4_fg3"
+            android:textFontWeight="400"
+            android:textSize="11.5sp"
+            tools:text="Facebook Analytics provides ad tracking, attribution and audience targeting for app publishers." />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/trackerRowDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/v4_hairline" />
+</LinearLayout>

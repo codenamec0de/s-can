@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:fitsSystemWindows="true">
+
+    <!-- Ambient cyan glow at top -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:background="@drawable/bg_v4_perm_glow" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/permScroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="120dp">
+
+            <!-- Top bar - Skip on right -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="22dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="4dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/btnSkip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/montserrat"
+                    android:padding="8dp"
+                    android:text="@string/perm_skip"
+                    android:textColor="@color/v4_fg2"
+                    android:textFontWeight="600"
+                    android:textSize="12.5sp" />
+            </LinearLayout>
+
+            <!-- Hero -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="28dp"
+                android:paddingTop="14dp">
+
+                <!-- Step badge -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_v4_perm_step_badge"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="9dp"
+                    android:paddingVertical="4dp">
+
+                    <ImageView
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_glyph_shield"
+                        app:tint="@color/v4_accent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.14"
+                        android:text="@string/perm_step_indicator"
+                        android:textAllCaps="true"
+                        android:textColor="@color/v4_accent"
+                        android:textFontWeight="600"
+                        android:textSize="10.5sp" />
+                </LinearLayout>
+
+                <!-- Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="-0.03"
+                    android:lineSpacingMultiplier="1.15"
+                    android:text="@string/perm_hero_title"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="600"
+                    android:textSize="26sp" />
+
+                <!-- Subtitle -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:fontFamily="@font/montserrat"
+                    android:lineSpacingMultiplier="1.5"
+                    android:text="@string/perm_hero_subtitle"
+                    android:textColor="@color/v4_fg2"
+                    android:textFontWeight="500"
+                    android:textSize="13sp" />
+
+                <!-- Progress meter -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.12"
+                        android:text="@string/perm_progress_label"
+                        android:textAllCaps="true"
+                        android:textColor="@color/v4_fg3"
+                        android:textFontWeight="600"
+                        android:textSize="10.5sp" />
+
+                    <TextView
+                        android:id="@+id/tvProgressCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/v4_fg1"
+                        android:textFontWeight="600"
+                        android:textSize="11.5sp"
+                        tools:text="0 / 6" />
+                </LinearLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="7dp"
+                    android:background="@drawable/bg_v4_perm_progress_track">
+
+                    <View
+                        android:id="@+id/progressFill"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_v4_perm_progress_fill" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Required section label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.12"
+                android:text="@string/perm_section_required"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp" />
+
+            <!-- Required group card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/rowAppAccess"
+                    layout="@layout/item_perm_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/v4_hairline" />
+
+                <include
+                    android:id="@+id/rowSms"
+                    layout="@layout/item_perm_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/v4_hairline" />
+
+                <include
+                    android:id="@+id/rowNetwork"
+                    layout="@layout/item_perm_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/v4_hairline" />
+
+                <include
+                    android:id="@+id/rowUsage"
+                    layout="@layout/item_perm_row" />
+            </LinearLayout>
+
+            <!-- Optional section label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.12"
+                android:text="@string/perm_section_optional"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp" />
+
+            <!-- Optional group card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/rowAlerts"
+                    layout="@layout/item_perm_row" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/v4_hairline" />
+
+                <include
+                    android:id="@+id/rowBattery"
+                    layout="@layout/item_perm_row" />
+            </LinearLayout>
+
+            <!-- Privacy reassurance card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:gravity="top"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="12dp">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginTop="1dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_lock"
+                    app:tint="@color/v4_accent" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/montserrat"
+                    android:lineSpacingMultiplier="1.55"
+                    android:text="@string/perm_privacy_reassurance_prefix"
+                    android:textColor="@color/v4_fg2"
+                    android:textFontWeight="500"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- Spacer so sticky bar doesn't cover bottom card content while scrolling -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Sticky bottom CTA bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/v4_bg"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="18dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPrimary"
+            style="@style/V4.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:fontFamily="@font/montserrat"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:letterSpacing="-0.005"
+            android:text="@string/perm_cta_allow_required"
+            android:textFontWeight="600"
+            app:icon="@drawable/ic_glyph_check"
+            app:iconGravity="end"
+            app:iconPadding="8dp"
+            app:iconSize="16dp"
+            app:iconTint="@color/v4_bg" />
+
+        <TextView
+            android:id="@+id/btnDecideLater"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/montserrat"
+            android:padding="6dp"
+            android:text="@string/perm_decide_later"
+            android:textColor="@color/v4_fg3"
+            android:textFontWeight="600"
+            android:textSize="12sp" />
+    </LinearLayout>
+</FrameLayout>

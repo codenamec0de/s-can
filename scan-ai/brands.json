@@ -1,0 +1,107 @@
+[
+  {
+    "brand": "Australia Post",
+    "aliases": ["AusPost", "auspost"],
+    "domains": ["auspost.com.au"],
+    "keywords": ["parcel", "delivery", "tracking", "redelivery"],
+    "visual_hint": "red and white, stylised white P inside a red square logo"
+  },
+  {
+    "brand": "Commonwealth Bank",
+    "aliases": ["CommBank", "CBA", "NetBank"],
+    "domains": ["commbank.com.au", "commonwealthbank.com.au", "netbank.com.au"],
+    "keywords": ["account", "banking", "transaction", "verify"],
+    "visual_hint": "yellow and black, black diamond/star logo on yellow"
+  },
+  {
+    "brand": "ANZ Bank",
+    "aliases": ["ANZ"],
+    "domains": ["anz.com.au", "anz.com"],
+    "keywords": ["account", "banking", "transaction", "verify"],
+    "visual_hint": "navy blue with bright blue, three-petal lotus mark"
+  },
+  {
+    "brand": "Westpac",
+    "aliases": ["Westpac Banking"],
+    "domains": ["westpac.com.au"],
+    "keywords": ["account", "banking", "transaction", "verify"],
+    "visual_hint": "bold red with white W mark"
+  },
+  {
+    "brand": "National Australia Bank",
+    "aliases": ["NAB"],
+    "domains": ["nab.com.au"],
+    "keywords": ["account", "banking", "transaction", "verify"],
+    "visual_hint": "red star logo on white, lower-case nab wordmark"
+  },
+  {
+    "brand": "Australian Taxation Office",
+    "aliases": ["ATO", "myTax"],
+    "domains": ["ato.gov.au"],
+    "keywords": ["tax", "refund", "return", "lodge", "TFN", "ABN"],
+    "visual_hint": "navy blue government masthead, Australian coat of arms, ATO wordmark"
+  },
+  {
+    "brand": "myGov",
+    "aliases": ["MyGov", "my.gov"],
+    "domains": ["my.gov.au", "mygovid.gov.au"],
+    "keywords": ["government", "services", "sign in", "inbox"],
+    "visual_hint": "dark teal/green header with white myGov wordmark, kangaroo-paw style icon"
+  },
+  {
+    "brand": "Telstra",
+    "aliases": ["Telstra"],
+    "domains": ["telstra.com.au", "telstra.com"],
+    "keywords": ["bill", "data", "plan", "mobile", "broadband"],
+    "visual_hint": "stylised T mark, navy blue with magenta accents"
+  },
+  {
+    "brand": "Optus",
+    "aliases": ["Optus"],
+    "domains": ["optus.com.au"],
+    "keywords": ["bill", "data", "plan", "mobile", "broadband"],
+    "visual_hint": "bright yellow starburst/oval optus logo on dark background"
+  },
+  {
+    "brand": "Medicare",
+    "aliases": ["Medicare Australia"],
+    "domains": ["servicesaustralia.gov.au", "humanservices.gov.au"],
+    "keywords": ["medicare", "claim", "rebate", "card", "health"],
+    "visual_hint": "green and yellow Medicare card design, Australian government coat of arms"
+  },
+  {
+    "brand": "Centrelink",
+    "aliases": ["Centrelink"],
+    "domains": ["servicesaustralia.gov.au", "centrelink.gov.au"],
+    "keywords": ["payment", "benefit", "jobseeker", "youth allowance"],
+    "visual_hint": "Services Australia teal/green branding, government coat of arms"
+  },
+  {
+    "brand": "Linkt",
+    "aliases": ["Linkt", "CityLink", "E-Tag"],
+    "domains": ["linkt.com.au"],
+    "keywords": ["toll", "etag", "payment", "trip", "fine"],
+    "visual_hint": "purple and yellow Linkt wordmark, toll/road imagery"
+  },
+  {
+    "brand": "Service NSW",
+    "aliases": ["ServiceNSW", "Service NSW"],
+    "domains": ["service.nsw.gov.au"],
+    "keywords": ["licence", "registration", "rebate", "voucher"],
+    "visual_hint": "navy blue NSW masthead, blue waratah icon, white wordmark"
+  },
+  {
+    "brand": "Woolworths",
+    "aliases": ["Woolworths", "Woolies"],
+    "domains": ["woolworths.com.au"],
+    "keywords": ["order", "delivery", "rewards", "everyday"],
+    "visual_hint": "fresh green with white stylised W (apple-leaf shape)"
+  },
+  {
+    "brand": "Coles",
+    "aliases": ["Coles"],
+    "domains": ["coles.com.au"],
+    "keywords": ["order", "delivery", "flybuys", "pickup"],
+    "visual_hint": "bold red with white Coles wordmark, lowercase script"
+  }
+]

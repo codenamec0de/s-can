@@ -1,0 +1,717 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">S\'CAN</string>
+    <string name="app_tagline">Your Apps, Your Control.</string>
+
+    <!-- Login (V4) -->
+    <string name="login">Login</string>
+    <string name="login_title_prefix">Log in to my </string>
+    <string name="login_title_highlight">S\'can</string>
+    <string name="login_welcome_back">Welcome back.</string>
+    <string name="login_subtitle">Sign in to continue securing your device.</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="login_new_here">New here? </string>
+    <string name="login_create_account">Create an account</string>
+    <string name="email">Email</string>
+    <string name="email_label">EMAIL</string>
+    <string name="email_hint">E-mail</string>
+    <string name="email_placeholder">you@domain.com</string>
+    <string name="password">Password</string>
+    <string name="password_label">PASSWORD</string>
+    <string name="password_hint">Password</string>
+    <string name="password_placeholder">••••••••••</string>
+
+    <!-- Sign Up (V4) -->
+    <string name="su_step1_title">Create your account.</string>
+    <string name="su_step1_subtitle">Just two steps. Your data stays on your device.</string>
+    <string name="su_step2_title">Secure it with\na strong password.</string>
+    <string name="su_step2_subtitle">Passwords are hashed locally. We never see them.</string>
+    <string name="su_name_label">FULL NAME</string>
+    <string name="su_name_placeholder">Jane Doe</string>
+    <string name="su_email_label">EMAIL</string>
+    <string name="su_email_placeholder">you@domain.com</string>
+    <string name="su_email_hint">We\'ll send a verification link.</string>
+    <string name="su_email_error">Please enter a valid email address.</string>
+    <string name="su_password_label">PASSWORD</string>
+    <string name="su_password_placeholder">At least 8 characters</string>
+    <string name="su_confirm_label">CONFIRM PASSWORD</string>
+    <string name="su_confirm_placeholder">Repeat password</string>
+    <string name="su_confirm_mismatch">Passwords don\'t match.</string>
+    <string name="su_confirm_match">Looks good.</string>
+    <string name="su_strength_default">Use 12+ chars, a number, and a symbol</string>
+    <string name="su_strength_too_short">Too short</string>
+    <string name="su_strength_weak">Weak</string>
+    <string name="su_strength_fair">Fair</string>
+    <string name="su_strength_strong">Strong</string>
+    <string name="su_strength_excellent">Excellent</string>
+    <string name="su_agreement">I agree to the Terms of Service and Privacy Policy.</string>
+    <string name="su_continue">Continue</string>
+    <string name="su_create_account">Create account</string>
+    <string name="su_or">OR</string>
+    <string name="su_google">Sign up with Google</string>
+    <string name="su_already_account">Already have one? </string>
+    <string name="su_sign_in">Sign in</string>
+    <string name="su_step_indicator_1">1 / 2</string>
+    <string name="su_step_indicator_2">2 / 2</string>
+    <string name="su_privacy_note">S\'CAN stores account data locally and syncs only via your self-hosted server.</string>
+    <string name="su_back_cd">Back</string>
+
+    <!-- Forgot Password (V4) -->
+    <string name="fp_step1_title">Forgot your\npassword?</string>
+    <string name="fp_step1_subtitle">Enter the email tied to your account. We\'ll send a link to reset your password.</string>
+    <string name="fp_step2_title">Check your\ninbox.</string>
+    <string name="fp_step2_subtitle_prefix">We sent a reset link to </string>
+    <string name="fp_step2_subtitle_suffix">. The link expires in 30 minutes.</string>
+    <string name="fp_email_label">EMAIL</string>
+    <string name="fp_email_placeholder">you@domain.com</string>
+    <string name="fp_email_hint">We\'ll never share your email.</string>
+    <string name="fp_email_error">Please enter a valid email address.</string>
+    <string name="fp_send_cta">Send reset link</string>
+    <string name="fp_sending">Sending…</string>
+    <string name="fp_remember_prefix">Remember it? </string>
+    <string name="fp_remember_link">Back to sign in</string>
+    <string name="fp_inbox_sender">S\'CAN Security</string>
+    <string name="fp_inbox_meta">noreply@scan.app · just now</string>
+    <string name="fp_inbox_pill">Sent</string>
+    <string name="fp_inbox_subject">Reset your S\'CAN password</string>
+    <string name="fp_inbox_body">Click the secure link inside to choose a new password. Ignore this if you didn\'t request it.</string>
+    <string name="fp_steps_label">What to do next</string>
+    <string name="fp_step_1">Open the email from S\'CAN Security</string>
+    <string name="fp_step_2">Tap the reset link (valid for 30 minutes)</string>
+    <string name="fp_step_3">Choose a new strong password</string>
+    <string name="fp_resend_default">Didn\'t get the email? Check spam, or</string>
+    <string name="fp_resend_action">Resend</string>
+    <string name="fp_resend_done">Sent again. Check your inbox.</string>
+    <string name="fp_resend_done_pill">✓ Sent</string>
+    <string name="fp_back_to_signin">Back to sign in</string>
+    <string name="fp_wrong_email_prefix">Wrong email? </string>
+    <string name="fp_wrong_email_link">Use a different one</string>
+    <string name="fp_privacy_footer">For your security, we never confirm whether an email is registered.</string>
+    <string name="fp_network_error">Couldn\'t reach the server. Check your connection and try again.</string>
+    <string name="fp_back_cd">Back</string>
+
+    <!-- Home (V4) -->
+    <string name="home_eyebrow_format">%1$s · %2$s</string>
+    <string name="home_greeting_morning">Good morning,</string>
+    <string name="home_greeting_afternoon">Good afternoon,</string>
+    <string name="home_greeting_evening">Good evening,</string>
+    <string name="home_greeting_night">Hi there,</string>
+    <string name="home_greeting_findings_zero">all clear today.</string>
+    <string name="home_greeting_findings_one">1 thing to look at.</string>
+    <string name="home_greeting_findings_n">%d things to look at.</string>
+    <string name="home_status_label">System status</string>
+    <string name="home_status_zero">No findings on your radar</string>
+    <string name="home_status_one">1 finding needs your attention</string>
+    <string name="home_status_n">%d findings need your attention</string>
+    <string name="home_status_meta">Last scan %1$s · %2$d apps audited</string>
+    <string name="home_status_meta_never">Never scanned · tap below to start</string>
+    <string name="home_cta_scan">Run new scan</string>
+    <string name="home_cta_scanning">Scanning…</string>
+    <string name="home_cta_view_apps">View apps</string>
+    <string name="home_section_tools">Active tools</string>
+    <string name="home_section_attention">Needs attention</string>
+    <string name="home_section_attention_see_all">See all</string>
+    <string name="home_attention_empty">Nothing to flag right now.</string>
+    <string name="home_tool_wifi_title">Wi-Fi Security</string>
+    <string name="home_tool_wifi_desc">Audits networks for MITM risk, captive portals, weak crypto.</string>
+    <string name="home_tool_terminator_title">Terminator</string>
+    <string name="home_tool_terminator_desc">Auto-revokes camera, mic, and location when apps go to background.</string>
+    <string name="home_tool_sms_title">SMS Scam Detection</string>
+    <string name="home_tool_sms_desc">Analyzes incoming SMS via your self-hosted AI server.</string>
+    <string name="home_tool_verdict_title">SMS Verdicts</string>
+    <string name="home_tool_verdict_desc">Review past SMS analysis verdicts and details.</string>
+    <string name="home_tool_breach_title">Breach Checker</string>
+    <string name="home_tool_breach_desc">Checks whether your email has been exposed in known data breaches.</string>
+    <string name="home_time_just_now">just now</string>
+    <string name="home_time_minutes_ago">%d min ago</string>
+    <string name="home_time_hours_ago">%d hr ago</string>
+    <string name="home_time_days_ago">%d days ago</string>
+    <string name="home_bell_cd">Notifications</string>
+
+    <!-- Apps (V4) -->
+    <string name="apps_title">Apps</string>
+    <string name="apps_count_format">%d scanned</string>
+    <string name="apps_subtitle">Apps that touched a critical permission in the background are flagged.</string>
+    <string name="apps_search_placeholder">Search apps or permissions…</string>
+    <string name="apps_filter_all">All</string>
+    <string name="apps_filter_flagged">Flagged</string>
+    <string name="apps_filter_clean">Clean</string>
+    <string name="apps_sev_flag">Flag</string>
+    <string name="apps_sev_review">Review</string>
+    <string name="apps_evidence_clean">No critical permissions granted</string>
+    <string name="apps_evidence_warn">Critical permissions granted - no background usage</string>
+    <string name="apps_evidence_bad_format">Background %1$s · %2$d× this week</string>
+    <string name="apps_empty">No apps match this filter.</string>
+    <string name="apps_loading">Loading…</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="forgot_short">Forgot?</string>
+    <string name="or">Or</string>
+    <string name="or_uppercase">OR</string>
+    <string name="or_sign_in_with">OR SIGN IN WITH</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="continue_with_facebook">Continue with Facebook</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="sign_in_v4">Sign in</string>
+    <string name="cd_toggle_password">Toggle password visibility</string>
+    <string name="cd_app_logo">S\'CAN logo</string>
+
+    <!-- Permissions screen (V4) -->
+    <string name="perm_step_indicator">Step 2 of 2</string>
+    <string name="perm_skip">Skip</string>
+    <string name="perm_decide_later">Decide later</string>
+    <string name="perm_hero_title">A few permissions,\nthen we can begin.</string>
+    <string name="perm_hero_subtitle">S\'CAN runs on-device. Each permission powers a specific tool, but don\'t worry, nothing leaves your phone. S\'CAN never collects session data, account info, or activity.</string>
+    <string name="perm_progress_label">Granted</string>
+    <string name="perm_section_required">Required</string>
+    <string name="perm_section_optional">Optional · improves the experience</string>
+
+    <string name="perm_apps_title">App access</string>
+    <string name="perm_apps_why">Lets S\'CAN read your installed app list and their declared permissions to find risky combinations.</string>
+
+    <string name="perm_sms_title">SMS scam scanning</string>
+    <string name="perm_sms_why">Analyzes incoming messages for phishing and scam indicators using your AI server.</string>
+
+    <string name="perm_network_title">Network scanning</string>
+    <string name="perm_network_why">Audits the Wi-Fi you connect to for MITM risks, weak crypto, and captive portals.</string>
+    <string name="perm_network_detail">Android requires Location to read Wi-Fi metadata. We never log your coordinates.</string>
+
+    <string name="perm_usage_title">Usage insights</string>
+    <string name="perm_usage_why">Detects which apps touch the camera, mic, and location while running in the background.</string>
+
+    <string name="perm_alerts_title">Alerts</string>
+    <string name="perm_alerts_why">Notifies you the moment a finding appears, instead of waiting for you to open the app.</string>
+
+    <string name="perm_battery_title">Background scanning</string>
+    <string name="perm_battery_why">Lets scans keep running when the phone is idle, so the Home screen is always fresh.</string>
+
+    <string name="perm_optional_badge">Optional</string>
+
+    <string name="perm_state_auto">Auto-granted</string>
+    <string name="perm_state_idle">Not granted</string>
+    <string name="perm_state_requesting">Requesting…</string>
+    <string name="perm_state_granted">Allowed</string>
+    <string name="perm_state_denied">Denied</string>
+    <string name="perm_state_settings">Opens Settings</string>
+
+    <string name="perm_cta_allow">Allow</string>
+    <string name="perm_cta_retry">Retry</string>
+    <string name="perm_cta_open">Open</string>
+
+    <string name="perm_detail_denied">You denied this. Some features will be limited until allowed.</string>
+    <string name="perm_detail_settings">This requires opening Android Settings. We\'ll guide you back.</string>
+
+    <string name="perm_privacy_reassurance_prefix">Permissions can be revoked any time from </string>
+    <string name="perm_privacy_reassurance_path">Settings → Privacy</string>
+    <string name="perm_privacy_reassurance_suffix">. S\'CAN works offline by default. Telemetry is opt-in.</string>
+
+    <string name="perm_cta_allow_required">Allow required permissions</string>
+    <string name="perm_cta_continue">Continue to S\'CAN</string>
+
+    <!-- Permission categories (used in App Detail) -->
+    <string name="privacy_critical">Privacy Critical</string>
+    <string name="standard_access">Standard Access</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_apps">Apps</string>
+    <string name="nav_activity">Activity</string>
+    <string name="nav_settings">Settings</string>
+    <!-- Legacy keys retained for backward compatibility -->
+    <string name="nav_audit">Apps</string>
+    <string name="nav_monitor">Monitor</string>
+    <string name="nav_alerts">Activity</string>
+    
+    <!-- Home -->
+    <string name="security_scan">Security Scan</string>
+    <string name="scan_device">Scan Device</string>
+    <string name="scanning_device">Scanning Device…</string>
+    <string name="scan_complete">Scan Complete</string>
+    <string name="apps_scanned">%d apps scanned</string>
+    <string name="estimated_time">Estimated time remaining: %s</string>
+    <string name="cancel_scan">Cancel Scan</string>
+    
+    <!-- Audit -->
+    <string name="app_audit">App Audit</string>
+    <string name="search_apps">Search for apps</string>
+    <string name="all">All</string>
+    <string name="high_risk">High Risk</string>
+    <string name="medium_risk">Medium Risk</string>
+    <string name="low_risk">Low Risk</string>
+    <string name="high_count">High (%d)</string>
+    <string name="medium_count">Medium (%d)</string>
+    <string name="low_count">Low (%d)</string>
+    
+    <!-- App Detail -->
+    <string name="permissions">Permissions</string>
+    <string name="trackers">Trackers</string>
+    <string name="app_info">App Info</string>
+    <string name="open_settings">Open App Settings</string>
+    <string name="manage_permissions">Manage Permissions</string>
+    <string name="uninstall">Uninstall</string>
+    <string name="version">Version</string>
+    <string name="package_name">Package Name</string>
+    <string name="installed_date">Installed</string>
+    <string name="last_updated">Last Updated</string>
+    <string name="no_trackers">No trackers detected</string>
+    <string name="loading_trackers">Loading tracker information…</string>
+    <string name="tracker_error">Could not load tracker info</string>
+    <string name="tracker_detail_open_website">Open website</string>
+    <string name="tracker_detail_no_description">No description available.</string>
+
+    <!-- App Detail (V4) -->
+    <string name="app_detail_metric_permissions">Permissions</string>
+    <string name="app_detail_open_settings_cta">Open in Android Settings</string>
+    <string name="app_detail_open_settings_helper">S\'CAN cannot uninstall apps directly. Manage permissions or remove the app from Android\'s app settings.</string>
+    <string name="app_detail_findings_title">Findings</string>
+    <string name="app_detail_integrity_title">App integrity</string>
+    <string name="app_detail_finding_bg_alerts_one">Caught accessing sensitive data in background</string>
+    <string name="app_detail_finding_bg_alerts_detail_one">1 alert recorded by S\'CAN</string>
+    <string name="app_detail_finding_bg_alerts_detail_n">%d alerts recorded by S\'CAN</string>
+    <string name="app_detail_finding_trackers">%d trackers detected</string>
+    <string name="app_detail_finding_trackers_detail">Embedded analytics, advertising, or profiling SDKs</string>
+    <string name="app_detail_perm_state_granted">Granted</string>
+    <string name="app_detail_perm_state_used_in_bg">Used in BG</string>
+    <string name="app_detail_integrity_pass">Pass</string>
+    <string name="app_detail_integrity_flagged">Flagged</string>
+    <string name="app_detail_risk_high">High risk</string>
+    <string name="app_detail_risk_medium">Review</string>
+    <string name="app_detail_risk_low">Clean</string>
+    
+    <!-- Scan Status -->
+    <string name="status_completed">Completed</string>
+    <string name="status_scanning">Scanning…</string>
+    <string name="status_pending">Pending</string>
+    <string name="status_analyzing">Analyzing…</string>
+    <string name="status_completing">Completing…</string>
+    <string name="view_results">View Results</string>
+    
+    <!-- Scan Steps -->
+    <string name="scan_sms">SMS Database Check</string>
+    <string name="scan_sms_desc">No malicious links found in recent messages.</string>
+    <string name="scan_permissions">App Permissions</string>
+    <string name="scan_network">Network Security</string>
+    <string name="scan_malware">Malware Heuristic</string>
+    <string name="waiting_to_start">Waiting to start…</string>
+    
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="account">Account</string>
+    <string name="logout">Logout</string>
+    <string name="about">About</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_of_service">Terms of Service</string>
+    
+    <!-- Alerts -->
+    <string name="alerts">Alerts</string>
+    <string name="no_alerts">No alerts at this time</string>
+    <string name="alerts_desc">Security alerts will appear here</string>
+    <string name="alerts_monitoring_desc">Background permission usage alerts will appear here as apps are detected</string>
+    <string name="clear_all">Clear all</string>
+    
+    <!-- SMS Scam Detection -->
+    <string name="sms_scam_detection">SMS Scam Detection</string>
+    <string name="sms_scam_desc">AI-powered scam and phishing SMS detection</string>
+    <string name="sms_no_verdicts">No SMS verdicts yet</string>
+    <string name="sms_empty_desc">When SMS scam detection is enabled, incoming messages will be analyzed by AI and results will appear here</string>
+    <string name="sms_enable_detection">Enable SMS Scam Detection</string>
+    <string name="sms_server_url_hint">Server URL (e.g. http://100.x.x.x:8000)</string>
+    <string name="sms_server_token_hint">Bearer Token</string>
+    <string name="sms_test_connection">Test Connection</string>
+    <string name="sms_send_test">Test SMS</string>
+
+    <!-- SMS V4 -->
+    <string name="sms_v4_screen_title">Verdicts</string>
+    <string name="sms_v4_subtitle">SMS analyzed by your self-hosted AI server.</string>
+    <string name="sms_v4_more_analyzed">%d more messages analyzed</string>
+    <string name="sms_v4_settings_cd">SMS detection settings</string>
+    <string name="sms_v4_no_verdicts_title">No verdicts yet</string>
+    <string name="sms_v4_no_verdicts_desc">Incoming messages will be analyzed by your AI server and the results will appear here.</string>
+    <string name="sms_v4_clear_all">Clear all</string>
+    <string name="sms_v4_label_safe">Safe</string>
+    <string name="sms_v4_label_suspicious">Suspicious</string>
+    <string name="sms_v4_label_scam">Scam</string>
+
+    <!-- SMS Onboarding V4 -->
+    <string name="sms_onboarding_title">SMS Scam Detection</string>
+    <string name="sms_onboarding_desc">S\'CAN can analyze incoming SMS messages for scams using your self-hosted AI server.</string>
+    <string name="sms_onboarding_what_means">What this means</string>
+    <string name="sms_onboarding_bullet_1">S\'CAN will read incoming SMS messages</string>
+    <string name="sms_onboarding_bullet_2">Message text is sent to YOUR server over TLS</string>
+    <string name="sms_onboarding_bullet_3">No data leaves your infrastructure</string>
+    <string name="sms_onboarding_bullet_4">You can disable this at any time in Settings</string>
+    <string name="sms_onboarding_perm_note">This requires the RECEIVE_SMS permission. You can skip this and enable it later.</string>
+    <string name="sms_onboarding_enable">Enable SMS Detection</string>
+    <string name="sms_onboarding_skip">Skip for now</string>
+    <string name="sms_onboarding_close_cd">Close</string>
+
+    <!-- AI Server Config V4 -->
+    <string name="ai_server_title">SMS Detection · Server</string>
+    <string name="ai_server_desc">Configure the self-hosted AI server S\'CAN sends SMS messages to. Status is checked automatically.</string>
+    <string name="ai_server_status_unreachable">Server unreachable</string>
+    <string name="ai_server_status_unreachable_meta">Last checked %s · Connection timed out</string>
+    <string name="ai_server_status_connected">Connected</string>
+    <string name="ai_server_status_connected_meta">AI model ready · checked just now</string>
+    <string name="ai_server_status_warn">Authentication failed</string>
+    <string name="ai_server_status_warn_meta">Server returned 401 — token may be wrong or expired</string>
+    <string name="ai_server_status_idle">Not configured</string>
+    <string name="ai_server_status_idle_meta">Enter your server URL and token below.</string>
+    <string name="ai_server_status_checking">Checking…</string>
+    <string name="ai_server_status_checking_meta">Pinging server</string>
+    <string name="ai_server_url_label">Server URL</string>
+    <string name="ai_server_url_placeholder">http://100.x.x.x:8000</string>
+    <string name="ai_server_url_error_timeout">Connection timed out — is the server running?</string>
+    <string name="ai_server_url_error_invalid">Enter a valid URL</string>
+    <string name="ai_server_token_label">Bearer token</string>
+    <string name="ai_server_token_placeholder">Paste your token</string>
+    <string name="ai_server_show_token_cd">Show / hide token</string>
+    <string name="ai_server_save">Save configuration</string>
+    <string name="ai_server_saved">Settings saved</string>
+    <string name="ai_server_test">Test connection</string>
+    <string name="ai_server_status_reference">Status reference</string>
+    <string name="ai_server_ref_unreachable_t">URL not reachable</string>
+    <string name="ai_server_ref_unreachable_d">Could not connect. Check IP/port and that the server is running.</string>
+    <string name="ai_server_ref_auth_t">Authentication failed</string>
+    <string name="ai_server_ref_auth_d">Server returned 401. Token may be wrong or expired.</string>
+    <string name="ai_server_ref_tls_t">TLS certificate mismatch</string>
+    <string name="ai_server_ref_tls_d">Cert doesn\'t match the pinned cert. Possible MITM, or cert was rotated.</string>
+    <string name="ai_server_ref_ok_t">Connected</string>
+    <string name="ai_server_ref_ok_d">Server reachable and AI model responding.</string>
+
+    <!-- Alerts V4 -->
+    <string name="alerts_v4_title">Alerts</string>
+    <string name="alerts_v4_subtitle">Every permission read, network leak, and pattern S\'CAN noticed. Newest first.</string>
+    <string name="alerts_v4_metric_today">Today</string>
+    <string name="alerts_v4_metric_critical">Critical</string>
+    <string name="alerts_v4_metric_patterns">Patterns</string>
+    <string name="alerts_v4_filter_all">All</string>
+    <string name="alerts_v4_filter_critical">Critical</string>
+    <string name="alerts_v4_filter_patterns">Patterns</string>
+    <string name="alerts_v4_group_today">Today</string>
+    <string name="alerts_v4_group_yesterday">Yesterday</string>
+    <string name="alerts_v4_group_earlier">Earlier this week</string>
+    <string name="alerts_v4_group_older">Older</string>
+    <string name="alerts_v4_count_one">%d alert</string>
+    <string name="alerts_v4_count_n">%d alerts</string>
+    <string name="alerts_v4_pattern_label">Pattern · last 24h</string>
+    <string name="alerts_v4_pattern_count_cadence">%1$d× · ~%2$s</string>
+    <string name="alerts_v4_cadence_minutes">every %d min</string>
+    <string name="alerts_v4_cadence_hours">every %.1f hrs</string>
+    <string name="alerts_v4_cadence_irregular">irregular</string>
+    <string name="alerts_v4_pattern_summary_n">%1$s pulled %2$s %3$d× across the last 24h.</string>
+    <string name="alerts_v4_pattern_summary_evening">Highest density in the evening.</string>
+    <string name="alerts_v4_pattern_summary_work">Most reads happen during work hours.</string>
+    <string name="alerts_v4_pattern_summary_morning">Mostly in the morning.</string>
+    <string name="alerts_v4_pattern_summary_night">Most reads happen overnight.</string>
+    <string name="alerts_v4_end_of_timeline">End of timeline · %1$d flagged of %2$d</string>
+    <string name="alerts_v4_settings_cd">Alerts settings</string>
+    <string name="alerts_v4_empty_title">No alerts yet</string>
+    <string name="alerts_v4_empty_desc">When apps quietly read sensitive data in the background, S\'CAN logs it here.</string>
+
+    <!-- Settings V4 -->
+    <string name="settings_v4_title">Settings</string>
+    <string name="settings_v4_profile_meta">Account · 2FA enabled</string>
+    <string name="settings_v4_section_tools">Tools</string>
+    <string name="settings_v4_section_account">Account</string>
+    <string name="settings_v4_section_general">General</string>
+    <string name="settings_v4_tool_wifi_title">Wi-Fi Security</string>
+    <string name="settings_v4_tool_wifi_desc">Analyze the current network: auth, PMF, evil-twin, DNS</string>
+    <string name="settings_v4_tool_terminator_title">Terminator</string>
+    <string name="settings_v4_tool_terminator_desc">Auto-revoke permissions on app minimize</string>
+    <string name="settings_v4_tool_sms_toggle_title">SMS Scam Detection</string>
+    <string name="settings_v4_tool_sms_toggle_desc">Forward incoming SMS to your AI server</string>
+    <string name="settings_v4_tool_sms_verdicts_title">SMS Verdicts</string>
+    <string name="settings_v4_tool_sms_verdicts_desc">Past verdicts, server config, test message</string>
+    <string name="settings_v4_account_profile_title">Profile</string>
+    <string name="settings_v4_account_profile_desc">Email, password, MFA</string>
+    <string name="settings_v4_account_notifications_title">Notifications</string>
+    <string name="settings_v4_account_notifications_desc">Findings alerts, SMS verdicts, scan results</string>
+    <string name="settings_v4_account_schedule_title">Scan Schedule</string>
+    <string name="settings_v4_account_schedule_desc">Daily at 03:00 · on Wi-Fi only</string>
+    <string name="settings_v4_account_data_title">Data &amp; Storage</string>
+    <string name="settings_v4_account_data_desc_format">Local DB · %s</string>
+    <string name="settings_v4_account_data_desc_unknown">Local DB · size unavailable</string>
+    <string name="settings_v4_general_about">About</string>
+    <string name="settings_v4_general_privacy">Privacy Policy</string>
+    <string name="settings_v4_general_export">Export Report</string>
+    <string name="settings_v4_general_breach">Breach Checker</string>
+    <string name="settings_v4_logout">Logout</string>
+    <string name="settings_v4_version_format">S\'CAN v%s</string>
+    <string name="settings_v4_coming_soon_title">Coming soon</string>
+    <string name="settings_v4_coming_soon_msg">%s isn\'t wired up yet — we\'ll surface it in a future build.</string>
+
+    <!-- About V4 -->
+    <string name="about_v4_title">About</string>
+    <string name="about_v4_tagline">On-device privacy auditor that watches what your apps actually do — not what they promise.</string>
+    <string name="about_v4_section_build">Build info</string>
+    <string name="about_v4_row_version">Version</string>
+    <string name="about_v4_row_engine">Engine</string>
+    <string name="about_v4_row_engine_value">scan-core 0.9</string>
+    <string name="about_v4_row_tracker_db">Tracker DB</string>
+    <string name="about_v4_row_tracker_db_value">Exodus</string>
+    <string name="about_v4_section_credits">Credits</string>
+    <string name="about_v4_row_uow">Made at UOW</string>
+    <string name="about_v4_row_uow_value">2026</string>
+    <string name="about_v4_row_licenses">Open-source licenses</string>
+    <string name="about_v4_row_acks">Acknowledgements</string>
+    <string name="about_v4_btn_feedback">Send feedback</string>
+    <string name="about_v4_btn_website">Visit website</string>
+    <string name="about_v4_build_format">v%1$s · build %2$s</string>
+
+    <!-- Privacy Policy V4 -->
+    <string name="privacy_v4_title">Privacy Policy</string>
+    <string name="privacy_v4_heading">What S\'CAN collects.</string>
+    <string name="privacy_v4_meta_format">Last updated · %1$s · v%2$s</string>
+    <string name="privacy_v4_commit_ondevice_t">On-device only</string>
+    <string name="privacy_v4_commit_ondevice_d">All scan data stays on your phone unless you set up a server.</string>
+    <string name="privacy_v4_commit_telemetry_t">No telemetry</string>
+    <string name="privacy_v4_commit_telemetry_d">We don\'t collect crash reports unless you opt in.</string>
+    <string name="privacy_v4_commit_sdks_t">No third-party SDKs</string>
+    <string name="privacy_v4_commit_sdks_d">No analytics, ads, or trackers ship in the app.</string>
+    <string name="privacy_v4_commit_ai_t">You bring the AI</string>
+    <string name="privacy_v4_commit_ai_d">SMS scanning sends text to YOUR self-hosted server over TLS.</string>
+    <string name="privacy_v4_section_sections">Sections</string>
+    <string name="privacy_v4_section_1">1. Information we process</string>
+    <string name="privacy_v4_section_2">2. How permissions are used</string>
+    <string name="privacy_v4_section_3">3. Your self-hosted AI server</string>
+    <string name="privacy_v4_section_4">4. Data retention &amp; deletion</string>
+    <string name="privacy_v4_section_5">5. Security &amp; encryption</string>
+    <string name="privacy_v4_section_6">6. Your rights (GDPR / APP)</string>
+    <string name="privacy_v4_section_7">7. Contact &amp; disclosure</string>
+    <string name="privacy_v4_btn_full">Read full policy</string>
+    <string name="privacy_v4_contact">Questions? privacy@scan.app</string>
+
+    <!-- Profile V4 -->
+    <string name="profile_v4_title">Profile</string>
+    <string name="profile_v4_btn_edit">Edit</string>
+    <string name="profile_v4_section_account">Account</string>
+    <string name="profile_v4_row_email">Email</string>
+    <string name="profile_v4_row_password">Change password</string>
+    <string name="profile_v4_row_password_meta">Updated %s</string>
+    <string name="profile_v4_row_2fa">Two-factor auth</string>
+    <string name="profile_v4_section_sessions">Active sessions</string>
+    <string name="profile_v4_session_current">This device · %s</string>
+    <string name="profile_v4_session_signout">Sign out</string>
+    <string name="profile_v4_btn_delete">Delete account</string>
+    <string name="profile_v4_delete_helper">Removes your account and clears all on-device data.</string>
+
+    <!-- Notifications V4 -->
+    <string name="notif_v4_title">Notifications</string>
+    <string name="notif_v4_section_categories">Alert categories</string>
+    <string name="notif_v4_findings_t">Critical findings</string>
+    <string name="notif_v4_findings_d">Background camera, mic or location use</string>
+    <string name="notif_v4_sms_t">SMS scam verdicts</string>
+    <string name="notif_v4_sms_d">Each time the AI server flags a message</string>
+    <string name="notif_v4_scans_t">Scan results</string>
+    <string name="notif_v4_scans_d">Summary after each scheduled scan completes</string>
+    <string name="notif_v4_weekly_t">Weekly digest</string>
+    <string name="notif_v4_weekly_d">Sunday 18:00 · summary of the week</string>
+    <string name="notif_v4_score_t">Privacy score drop</string>
+    <string name="notif_v4_score_d">When score drops 10+ points</string>
+    <string name="notif_v4_section_delivery">Delivery</string>
+    <string name="notif_v4_sound">Sound</string>
+    <string name="notif_v4_vibrate">Vibrate</string>
+    <string name="notif_v4_lockscreen_t">Show on lock screen</string>
+    <string name="notif_v4_lockscreen_d">Hide content on lock screen</string>
+    <string name="notif_v4_section_quiet">Quiet hours</string>
+    <string name="notif_v4_quiet_t">Mute non-critical alerts</string>
+    <string name="notif_v4_quiet_d">Critical findings still come through</string>
+    <string name="notif_v4_quiet_from">From</string>
+    <string name="notif_v4_quiet_to">To</string>
+
+    <!-- Scan Schedule V4 -->
+    <string name="schedule_v4_title">Scan Schedule</string>
+    <string name="schedule_v4_next_label">Next scan</string>
+    <string name="schedule_v4_next_value">Tonight · %s</string>
+    <string name="schedule_v4_next_meta_format">in %1$s · %2$s</string>
+    <string name="schedule_v4_meta_wifi">on Wi-Fi only</string>
+    <string name="schedule_v4_meta_any">on any network</string>
+    <string name="schedule_v4_section_freq">Frequency</string>
+    <string name="schedule_v4_freq_realtime">Real-time</string>
+    <string name="schedule_v4_freq_hourly">Hourly</string>
+    <string name="schedule_v4_freq_daily">Daily</string>
+    <string name="schedule_v4_freq_manual">Manual</string>
+    <string name="schedule_v4_section_time">Time</string>
+    <string name="schedule_v4_time_label">Run at</string>
+    <string name="schedule_v4_section_conditions">Conditions</string>
+    <string name="schedule_v4_cond_wifi_t">Wi-Fi only</string>
+    <string name="schedule_v4_cond_wifi_d">Skip on cellular</string>
+    <string name="schedule_v4_cond_charging_t">While charging</string>
+    <string name="schedule_v4_cond_charging_d">Defer until plugged in</string>
+    <string name="schedule_v4_cond_deep_t">Deep scan</string>
+    <string name="schedule_v4_cond_deep_d">Tracker &amp; manifest analysis · slower</string>
+    <string name="schedule_v4_btn_run_now">Run scan now</string>
+
+    <!-- Data &amp; Storage V4 -->
+    <string name="storage_v4_title">Data &amp; Storage</string>
+    <string name="storage_v4_label">Local database</string>
+    <string name="storage_v4_seg_history">Scan history</string>
+    <string name="storage_v4_seg_verdicts">SMS verdicts</string>
+    <string name="storage_v4_seg_findings">Findings cache</string>
+    <string name="storage_v4_seg_app_meta">App metadata</string>
+    <string name="storage_v4_section_retention">Retention</string>
+    <string name="storage_v4_keep_history">Keep scan history</string>
+    <string name="storage_v4_keep_verdicts">Keep SMS verdicts</string>
+    <string name="storage_v4_auto_purge">Auto-purge cache</string>
+    <string name="storage_v4_section_backup">Backup</string>
+    <string name="storage_v4_backup_export">Export local DB</string>
+    <string name="storage_v4_backup_export_value">.sqlite</string>
+    <string name="storage_v4_backup_restore">Restore from backup</string>
+    <string name="storage_v4_btn_clear_cache">Clear cache (%s)</string>
+    <string name="storage_v4_btn_wipe">Wipe all S\'CAN data</string>
+    <string name="storage_v4_wipe_helper">Removes scan history, verdicts, and cached findings. Account is preserved.</string>
+    <string name="storage_v4_unit_mb">MB</string>
+    <string name="storage_v4_days_format">%d days</string>
+
+    <!-- Home V4 — coming-soon tools -->
+    <string name="home_tool_netmon_title">Network Traffic Monitor</string>
+    <string name="home_tool_netmon_desc">Follows network traffic to see where applications talk to — exposing their actual behaviour.</string>
+    <string name="home_tool_dns_title">DNS Leak Detection</string>
+    <string name="home_tool_dns_desc">Flags any app that bypasses your chosen DNS resolver — proves, app by app, whether your Private DNS or VPN is honoured.</string>
+    <string name="home_tool_coming_soon_pill">Coming soon</string>
+    <string name="home_tool_coming_soon_toast">%s ships in a future build.</string>
+
+    <!-- Breach Checker (V4) -->
+    <string name="breach_v4_title">Breach Checker</string>
+    <string name="breach_v4_section_credentials">Credentials</string>
+    <string name="breach_v4_section_history">Breach history</string>
+    <string name="breach_v4_email_hint">Email address</string>
+    <string name="breach_v4_apikey_hint">HIBP API key</string>
+    <string name="breach_v4_apikey_help">Get a free API key at haveibeenpwned.com/API/Key</string>
+    <string name="breach_v4_btn_rescan">Re-scan</string>
+    <string name="breach_v4_btn_save_check">Save and check</string>
+    <string name="breach_v4_btn_add_address">Add address</string>
+    <string name="breach_v4_btn_add_address_full">Add another address</string>
+    <string name="breach_v4_btn_change_password">Change password</string>
+    <string name="breach_v4_btn_mark_resolved">Mark resolved</string>
+    <string name="breach_v4_section_addresses">Monitored addresses</string>
+    <string name="breach_v4_status_clean">Clean</string>
+    <string name="breach_v4_status_not_checked">Not checked</string>
+    <string name="breach_v4_pill_resolved">Resolved</string>
+    <string name="breach_v4_dialog_add_title">Add monitored address</string>
+    <string name="breach_v4_dialog_add_save">Add</string>
+    <string name="breach_v4_dialog_remove_title">Remove address</string>
+    <string name="breach_v4_dialog_remove_body">Stop monitoring %1$s? Cached breach results for this address will be deleted.</string>
+    <string name="breach_v4_dialog_remove_confirm">Remove</string>
+    <string name="breach_v4_address_limit_reached">Limit of %1$d addresses reached</string>
+    <string name="breach_v4_err_address_limit">You can monitor up to %1$d addresses.</string>
+    <string name="breach_v4_err_address_duplicate">That address is already on the list.</string>
+    <string name="breach_v4_err_no_address">Add an address before re-scanning.</string>
+    <string name="breach_v4_err_open_url">Could not open the breach site.</string>
+    <string name="breach_v4_eyebrow_idle">No checks yet</string>
+    <string name="breach_v4_eyebrow_clean">No exposures found</string>
+    <string name="breach_v4_meta_idle">Run your first check below.</string>
+    <string name="breach_v4_meta_last_checked">Last checked · %1$s</string>
+    <string name="breach_v4_no_email">No email on file</string>
+    <string name="breach_v4_disclosed_prefix">Disclosed %1$s</string>
+    <string name="breach_v4_data_exposed_label">Data exposed</string>
+    <string name="breach_v4_pill_action_needed">Action needed</string>
+    <string name="breach_v4_pill_caution">Caution</string>
+    <string name="breach_v4_pill_low">Low risk</string>
+    <string name="breach_v4_status_checking">Checking breaches…</string>
+    <string name="breach_v4_status_error_prefix">Error: %1$s</string>
+    <string name="breach_v4_status_network_error">Network error. Check your connection and API key.</string>
+    <string name="breach_v4_err_email_required">Enter an email address</string>
+    <string name="breach_v4_err_email_invalid">Enter a valid email</string>
+    <string name="breach_v4_err_apikey_required">HIBP API key is required</string>
+    <string name="breach_v4_attribution">Powered by HIBP. Email is hashed locally and only the prefix is sent — k-anonymity.</string>
+    <string name="breach_v4_time_just_now">just now</string>
+
+    <!-- Wi-Fi Security (V4) -->
+    <string name="wifi_v4_title">Wi-Fi Security</string>
+    <string name="wifi_v4_score_unit">/ 100</string>
+    <string name="wifi_v4_eyebrow_connected">Connected</string>
+    <string name="wifi_v4_eyebrow_not_connected">Disconnected</string>
+    <string name="wifi_v4_no_network">Not connected</string>
+    <string name="wifi_v4_unknown_network">Unknown network</string>
+    <string name="wifi_v4_connect_prompt">Connect to a Wi-Fi network to analyse it.</string>
+    <string name="wifi_v4_metric_cipher">Cipher</string>
+    <string name="wifi_v4_metric_cipher_sub">AES</string>
+    <string name="wifi_v4_metric_pmf">PMF</string>
+    <string name="wifi_v4_metric_pmf_sub">802.11w</string>
+    <string name="wifi_v4_metric_pmf_required">Required</string>
+    <string name="wifi_v4_metric_pmf_capable">Capable</string>
+    <string name="wifi_v4_metric_pmf_off">Off</string>
+    <string name="wifi_v4_metric_signal">Signal</string>
+    <string name="wifi_v4_metric_signal_sub">dBm</string>
+    <string name="wifi_v4_section_findings">Findings</string>
+    <string name="wifi_v4_section_findings_count">Findings · %1$d of %2$d need attention</string>
+    <string name="wifi_v4_section_details">Network details</string>
+    <string name="wifi_v4_pill_critical">Critical</string>
+    <string name="wifi_v4_pill_high">High</string>
+    <string name="wifi_v4_pill_medium">Medium</string>
+    <string name="wifi_v4_pill_low">Low</string>
+    <string name="wifi_v4_pill_info">Info</string>
+    <string name="wifi_v4_pill_ok">OK</string>
+    <string name="wifi_v4_grade_good">Good</string>
+    <string name="wifi_v4_grade_fair">Fair</string>
+    <string name="wifi_v4_grade_poor">Poor</string>
+    <string name="wifi_v4_grade_critical">Critical</string>
+    <string name="wifi_v4_grade_not_connected">Not connected</string>
+    <string name="wifi_v4_btn_rescan">Re-scan</string>
+    <string name="wifi_v4_btn_rescan_full">Re-scan network</string>
+    <string name="wifi_v4_btn_export">Export findings</string>
+    <string name="wifi_v4_btn_grant">Grant permission</string>
+    <string name="wifi_v4_perm_eyebrow">Permission required</string>
+    <string name="wifi_v4_perm_body">Wi-Fi scan permission is required for deep analysis (evil-twin detection, capability parsing, same-SSID clustering).</string>
+    <string name="wifi_v4_last_scan_just_now">Last scan · just now</string>
+    <string name="wifi_v4_detail_status">Status</string>
+    <string name="wifi_v4_detail_bssid">BSSID</string>
+    <string name="wifi_v4_detail_standard">Standard</string>
+    <string name="wifi_v4_detail_band">Band</string>
+    <string name="wifi_v4_detail_auth">Auth</string>
+    <string name="wifi_v4_detail_cipher">Cipher</string>
+    <string name="wifi_v4_detail_pmf">PMF</string>
+    <string name="wifi_v4_detail_rssi">RSSI</string>
+    <string name="wifi_v4_detail_wps">WPS</string>
+    <string name="wifi_v4_detail_hidden">Hidden</string>
+    <string name="wifi_v4_detail_mac_rand">MAC rand.</string>
+    <string name="wifi_v4_detail_captive">Captive portal</string>
+    <string name="wifi_v4_detail_internet">Internet</string>
+    <string name="wifi_v4_detail_dns">DNS</string>
+    <string name="wifi_v4_detail_peers">SSID peers</string>
+
+    <!-- Export Report (V4) -->
+    <string name="export_v4_title">Export Report</string>
+    <string name="export_v4_intro">Generate a portable report of your privacy posture. Useful for auditors or your own records.</string>
+    <string name="export_v4_section_format">Format</string>
+    <string name="export_v4_section_range">Date range</string>
+    <string name="export_v4_section_include">Include</string>
+    <string name="export_v4_format_pdf">PDF</string>
+    <string name="export_v4_format_pdf_sub">Readable</string>
+    <string name="export_v4_format_json">JSON</string>
+    <string name="export_v4_format_json_sub">Machine</string>
+    <string name="export_v4_format_csv">CSV</string>
+    <string name="export_v4_format_csv_sub">Tabular</string>
+    <string name="export_v4_range_7d">7 d</string>
+    <string name="export_v4_range_30d">30 d</string>
+    <string name="export_v4_range_90d">90 d</string>
+    <string name="export_v4_range_all">All</string>
+    <string name="export_v4_inc_findings">Findings &amp; severities</string>
+    <string name="export_v4_inc_alerts">Alert timeline</string>
+    <string name="export_v4_inc_sms">SMS verdicts</string>
+    <string name="export_v4_inc_scans">Raw scan logs</string>
+    <string name="export_v4_estimated_size">Estimated size</string>
+    <string name="export_v4_estimated_pages">%1$s · ~%2$d pages</string>
+    <string name="export_v4_btn_generate">Generate report</string>
+    <string name="export_v4_btn_email">Email to me</string>
+    <string name="export_v4_btn_history">View past reports</string>
+    <string name="export_v4_status_gathering">Gathering data…</string>
+    <string name="export_v4_status_writing">Writing %1$s…</string>
+    <string name="export_v4_status_saved_downloads">Saved to Downloads / SCAN Reports\n%1$s</string>
+    <string name="export_v4_status_saved_files">Saved to Files › Android › data › com.uow.scan\n%1$s</string>
+    <string name="export_v4_status_error">Error: %1$s</string>
+    <string name="export_v4_err_no_sections">Enable at least one section to include.</string>
+    <string name="export_v4_err_generate_failed">Failed to generate the report.</string>
+    <string name="export_v4_err_generate_first">Generate the report first, then choose Email.</string>
+    <string name="export_v4_email_subject">S\'CAN Privacy Report</string>
+    <string name="export_v4_email_body">Attached is the S\'CAN privacy report generated on this device.</string>
+    <string name="export_v4_email_chooser">Email report</string>
+
+    <!-- General -->
+    <string name="loading">Loading…</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+</resources>

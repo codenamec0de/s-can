@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/include_v4_topbar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Storage hero -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.13"
+                    android:text="@string/storage_v4_label"
+                    android:textAllCaps="true"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="600"
+                    android:textSize="10.5sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="bottom"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvStorageTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:letterSpacing="-0.04"
+                        android:textColor="@color/v4_fg0"
+                        android:textFontWeight="600"
+                        android:textSize="32sp"
+                        tools:text="4.2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginBottom="3dp"
+                        android:fontFamily="monospace"
+                        android:text="@string/storage_v4_unit_mb"
+                        android:textColor="@color/v4_fg3"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Stacked bar -->
+                <LinearLayout
+                    android:id="@+id/storageBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@color/v4_hairline"
+                    android:orientation="horizontal" />
+
+                <!-- Legend -->
+                <LinearLayout
+                    android:id="@+id/storageLegend"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <!-- Retention -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/storage_v4_section_retention" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clipToOutline="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/rowKeepHistory"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_activity" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/storage_v4_keep_history" />
+
+                    <TextView
+                        android:id="@+id/tvKeepHistoryValue"
+                        style="@style/V4MonoValue"
+                        tools:text="90 days" />
+
+                    <ImageView style="@style/V4SettingsRowChevron" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowKeepVerdicts"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_sms" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/storage_v4_keep_verdicts" />
+
+                    <TextView
+                        android:id="@+id/tvKeepVerdictsValue"
+                        style="@style/V4MonoValue"
+                        tools:text="30 days" />
+
+                    <ImageView style="@style/V4SettingsRowChevron" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowAutoPurge"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_v4_glyph_storage" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/storage_v4_auto_purge" />
+
+                    <TextView
+                        android:id="@+id/tvAutoPurgeValue"
+                        style="@style/V4MonoValue"
+                        tools:text="Weekly" />
+
+                    <ImageView style="@style/V4SettingsRowChevron" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Backup -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/storage_v4_section_backup" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clipToOutline="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/rowExportDb"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_v4_glyph_document" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/storage_v4_backup_export" />
+
+                    <TextView
+                        style="@style/V4MonoValue"
+                        android:text="@string/storage_v4_backup_export_value" />
+
+                    <ImageView style="@style/V4SettingsRowChevron" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowRestoreDb"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_refresh" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/storage_v4_backup_restore" />
+
+                    <ImageView style="@style/V4SettingsRowChevron" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/btnClearCache"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_v4_button_secondary"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/tvClearCacheLabel"
+                        style="@style/V4ButtonLabelDark"
+                        tools:text="Clear cache (0.7 MB)" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/btnWipe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_v4_button_danger"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        style="@style/V4ButtonLabelDanger"
+                        android:text="@string/storage_v4_btn_wipe" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.5"
+                    android:text="@string/storage_v4_wipe_helper"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="500"
+                    android:textSize="10.5sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

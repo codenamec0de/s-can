@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/bg_v4_surface"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- ─── Row 1: severity tile + name/date + resolved pill ─── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/sevTile"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_v4_breach_tile_warn">
+
+            <ImageView
+                android:id="@+id/sevIcon"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_glyph_warn"
+                app:tint="@color/v4_warn"
+                xmlns:app="http://schemas.android.com/apk/res-auto" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvBreachName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="-0.014"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="14sp"
+                tools:text="LinkedIn" />
+
+            <TextView
+                android:id="@+id/tvBreachDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="monospace"
+                android:textColor="@color/v4_fg3"
+                android:textSize="11sp"
+                tools:text="Disclosed Jun 2021" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSeverity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_v4_perm_pill_bad"
+            android:fontFamily="@font/montserrat"
+            android:letterSpacing="0.067"
+            android:paddingHorizontal="7dp"
+            android:paddingVertical="3dp"
+            android:textAllCaps="true"
+            android:textColor="@color/v4_bad"
+            android:textFontWeight="700"
+            android:textSize="9.5sp"
+            tools:text="Action needed" />
+    </LinearLayout>
+
+    <!-- ─── Row 2: 'Data exposed' label ─── -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:fontFamily="@font/montserrat"
+        android:letterSpacing="0.1"
+        android:text="@string/breach_v4_data_exposed_label"
+        android:textAllCaps="true"
+        android:textColor="@color/v4_fg3"
+        android:textFontWeight="600"
+        android:textSize="10.5sp" />
+
+    <!-- ─── Row 3: chips for each exposed-data type ─── -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/chipContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <!-- ─── Row 4 (optional): description ─── -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textColor="@color/v4_fg2"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <!-- ─── Row 5 (optional): pwn count ─── -->
+    <TextView
+        android:id="@+id/tvPwnCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="monospace"
+        android:textColor="@color/v4_fg3"
+        android:textSize="11sp"
+        android:visibility="gone" />
+
+    <!-- ─── Row 6 (only when not resolved): action buttons ─── -->
+    <LinearLayout
+        android:id="@+id/actionRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChangePassword"
+            style="@style/V4.Button.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:fontFamily="@font/montserrat"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="@string/breach_v4_btn_change_password"
+            android:textAllCaps="false"
+            android:textFontWeight="600"
+            android:textSize="12.5sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMarkResolved"
+            style="@style/V4.Button.Ghost"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginStart="4dp"
+            android:fontFamily="@font/montserrat"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:text="@string/breach_v4_btn_mark_resolved"
+            android:textAllCaps="false"
+            android:textFontWeight="600"
+            android:textSize="12.5sp" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <!-- Close (X) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="18dp">
+
+        <FrameLayout
+            android:id="@+id/btnClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_v4_top_bar_button"
+            android:clickable="true"
+            android:contentDescription="@string/sms_onboarding_close_cd"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_v4_glyph_close"
+                app:tint="@color/v4_fg1" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Hero block -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingStart="28dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="28dp">
+
+        <FrameLayout
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_v4_hero_icon_tile">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_glyph_sms"
+                app:tint="@color/v4_accent" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:letterSpacing="-0.025"
+            android:lineSpacingMultiplier="1.2"
+            android:text="@string/sms_onboarding_title"
+            android:textColor="@color/v4_fg0"
+            android:textFontWeight="600"
+            android:textSize="24sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.6"
+            android:maxWidth="310dp"
+            android:text="@string/sms_onboarding_desc"
+            android:textColor="@color/v4_fg2"
+            android:textFontWeight="500"
+            android:textSize="13.5sp" />
+
+        <!-- "What this means" surface -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/bg_v4_surface"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.13"
+                android:text="@string/sms_onboarding_what_means"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp" />
+
+            <LinearLayout
+                android:id="@+id/bulletsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.5"
+            android:maxWidth="310dp"
+            android:text="@string/sms_onboarding_perm_note"
+            android:textColor="@color/v4_fg3"
+            android:textFontWeight="500"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <!-- Actions -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+        android:paddingBottom="28dp">
+
+        <FrameLayout
+            android:id="@+id/btnEnable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_v4_button_primary"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.0075"
+                android:paddingStart="16dp"
+                android:paddingTop="13dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="13dp"
+                android:text="@string/sms_onboarding_enable"
+                android:textColor="@color/white"
+                android:textFontWeight="600"
+                android:textSize="13.5sp" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/btnSkip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/sms_onboarding_skip"
+            android:textColor="@color/v4_fg2"
+            android:textFontWeight="500"
+            android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

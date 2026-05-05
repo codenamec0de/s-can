@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="100dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!-- Top bar: wordmark + bell tile -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="4dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:contentDescription="@string/cd_app_logo"
+                    android:src="@drawable/scan_logo" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <FrameLayout
+                    android:id="@+id/btnNotifications"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_v4_home_bell_tile"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/home_bell_cd"
+                        android:src="@drawable/ic_glyph_bell"
+                        app:tint="@color/v4_fg1" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Greeting -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="14dp">
+
+                <TextView
+                    android:id="@+id/tvGreetingEyebrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.15"
+                    android:textAllCaps="true"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="600"
+                    android:textSize="10.5sp"
+                    tools:text="Tuesday · 10:13" />
+
+                <TextView
+                    android:id="@+id/tvGreetingHead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="-0.03"
+                    android:lineSpacingMultiplier="1.05"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="600"
+                    android:textSize="28sp"
+                    tools:text="Good morning," />
+
+                <TextView
+                    android:id="@+id/tvGreetingSub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="-0.03"
+                    android:lineSpacingMultiplier="1.05"
+                    android:textColor="@color/v4_fg2"
+                    android:textFontWeight="600"
+                    android:textSize="28sp"
+                    tools:text="2 things to look at." />
+            </LinearLayout>
+
+            <!-- System status hero card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_v4_home_status_card"
+                android:orientation="vertical"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_v4_home_status_dot" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.14"
+                        android:text="@string/home_status_label"
+                        android:textAllCaps="true"
+                        android:textColor="@color/v4_accent"
+                        android:textFontWeight="600"
+                        android:textSize="10.5sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvStatusHeadline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="-0.015"
+                    android:lineSpacingMultiplier="1.3"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="600"
+                    android:textSize="18sp"
+                    tools:text="2 findings need your attention" />
+
+                <TextView
+                    android:id="@+id/tvStatusMeta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/v4_fg2"
+                    android:textFontWeight="500"
+                    android:textSize="12sp"
+                    tools:text="Last scan 2 min ago · 31 apps audited" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnScan"
+                        style="@style/V4.Button.Primary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:fontFamily="@font/montserrat"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:letterSpacing="0.005"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/home_cta_scan"
+                        android:textFontWeight="600"
+                        android:textSize="13.5sp"
+                        app:icon="@drawable/ic_glyph_refresh"
+                        app:iconGravity="start"
+                        app:iconPadding="6dp"
+                        app:iconSize="15dp"
+                        app:iconTint="@color/v4_bg" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnViewApps"
+                        style="@style/V4.Button.Secondary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/montserrat"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:letterSpacing="0.005"
+                        android:paddingHorizontal="16dp"
+                        android:text="@string/home_cta_view_apps"
+                        android:textColor="@color/v4_fg0"
+                        android:textFontWeight="600"
+                        android:textSize="13.5sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Active tools section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.14"
+                android:text="@string/home_section_tools"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp">
+
+                <include
+                    android:id="@+id/toolWifi"
+                    layout="@layout/item_home_tool_card" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
+
+                <include
+                    android:id="@+id/toolSms"
+                    layout="@layout/item_home_tool_card" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
+
+                <include
+                    android:id="@+id/toolBreach"
+                    layout="@layout/item_home_tool_card" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
+
+                <include
+                    android:id="@+id/toolTerminator"
+                    layout="@layout/item_home_tool_card_coming_soon" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
+
+                <include
+                    android:id="@+id/toolNetworkMonitor"
+                    layout="@layout/item_home_tool_card_coming_soon" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp" />
+
+                <include
+                    android:id="@+id/toolDnsLeak"
+                    layout="@layout/item_home_tool_card_coming_soon" />
+            </LinearLayout>
+
+            <!-- Needs attention section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="22dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.14"
+                    android:text="@string/home_section_attention"
+                    android:textAllCaps="true"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="600"
+                    android:textSize="10.5sp" />
+
+                <TextView
+                    android:id="@+id/tvSeeAllAttention"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/montserrat"
+                    android:padding="2dp"
+                    android:text="@string/home_section_attention_see_all"
+                    android:textColor="@color/v4_accent"
+                    android:textFontWeight="600"
+                    android:textSize="11.5sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/attentionContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvAttentionEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:padding="22dp"
+                    android:text="@string/home_attention_empty"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="500"
+                    android:textSize="12.5sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

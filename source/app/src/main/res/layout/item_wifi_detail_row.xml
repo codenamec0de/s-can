@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
+
+    <TextView
+        android:id="@+id/tvDetailKey"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:letterSpacing="0.025"
+        android:textColor="@color/v4_fg3"
+        android:textSize="11sp"
+        tools:text="BSSID" />
+
+    <TextView
+        android:id="@+id/tvDetailValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:fontFamily="monospace"
+        android:gravity="end"
+        android:maxLines="1"
+        android:textColor="@color/v4_fg0"
+        android:textSize="12sp"
+        tools:text="cc:2d:21:fc:da:d1" />
+</LinearLayout>

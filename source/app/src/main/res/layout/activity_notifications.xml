@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/include_v4_topbar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Alert categories -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/notif_v4_section_categories" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clipToOutline="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/rowFindings"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_warn" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/notif_v4_findings_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/notif_v4_findings_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swFindings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowSms"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_sms" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/notif_v4_sms_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/notif_v4_sms_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swSms"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowScans"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_refresh" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/notif_v4_scans_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/notif_v4_scans_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swScans"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowWeekly"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_v4_glyph_document" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/notif_v4_weekly_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/notif_v4_weekly_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swWeekly"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowScoreDrop"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_activity" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/notif_v4_score_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/notif_v4_score_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swScoreDrop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Delivery -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/notif_v4_section_delivery" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clipToOutline="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/rowSound"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_bell" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/notif_v4_sound" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swSound"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowVibrate"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_bell" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/notif_v4_vibrate" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swVibrate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/rowLockScreen"
+                    style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_lock" />
+
+                    <LinearLayout style="@style/V4SettingsRowText">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/notif_v4_lockscreen_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/notif_v4_lockscreen_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swLockScreen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Quiet hours -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/notif_v4_section_quiet" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/V4SettingsRowTitle"
+                            android:text="@string/notif_v4_quiet_t" />
+
+                        <TextView
+                            style="@style/V4SettingsRowDesc"
+                            android:text="@string/notif_v4_quiet_d" />
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swQuiet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/quietTimeRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:id="@+id/quietFromBox"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_v4_alert_avatar"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingStart="12dp"
+                            android:paddingTop="10dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/montserrat"
+                                android:letterSpacing="0.1"
+                                android:text="@string/notif_v4_quiet_from"
+                                android:textAllCaps="true"
+                                android:textColor="@color/v4_fg3"
+                                android:textFontWeight="600"
+                                android:textSize="9.5sp" />
+
+                            <TextView
+                                android:id="@+id/tvQuietFromValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:fontFamily="monospace"
+                                android:textColor="@color/v4_fg0"
+                                android:textFontWeight="600"
+                                android:textSize="16sp"
+                                tools:text="22:00" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/quietToBox"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_v4_alert_avatar"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingStart="12dp"
+                            android:paddingTop="10dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/montserrat"
+                                android:letterSpacing="0.1"
+                                android:text="@string/notif_v4_quiet_to"
+                                android:textAllCaps="true"
+                                android:textColor="@color/v4_fg3"
+                                android:textFontWeight="600"
+                                android:textSize="9.5sp" />
+
+                            <TextView
+                                android:id="@+id/tvQuietToValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:fontFamily="monospace"
+                                android:textColor="@color/v4_fg0"
+                                android:textFontWeight="600"
+                                android:textSize="16sp"
+                                tools:text="07:00" />
+                        </LinearLayout>
+                    </FrameLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

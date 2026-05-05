@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/include_v4_topbar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:paddingBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Hero: app mark + version -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="24dp"
+                android:paddingBottom="8dp">
+
+                <FrameLayout
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:background="@drawable/bg_v4_hero_icon_tile">
+
+                    <ImageView
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_gravity="center"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/scan_logo" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.13"
+                    android:text="@string/app_name"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="700"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:id="@+id/tvAboutBuildMeta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="monospace"
+                    android:textColor="@color/v4_fg3"
+                    android:textSize="11.5sp"
+                    tools:text="v1.4 · build 2026.05.04" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.6"
+                    android:paddingStart="40dp"
+                    android:paddingEnd="40dp"
+                    android:text="@string/about_v4_tagline"
+                    android:textColor="@color/v4_fg2"
+                    android:textFontWeight="500"
+                    android:textSize="12.5sp" />
+            </LinearLayout>
+
+            <!-- Build info -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/about_v4_section_build" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clipToOutline="true"
+                android:orientation="vertical">
+
+                <LinearLayout style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_v4_glyph_document" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/about_v4_row_version" />
+
+                    <TextView
+                        android:id="@+id/tvAboutVersion"
+                        style="@style/V4MonoValue"
+                        tools:text="1.4.2" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_v4_glyph_storage" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/about_v4_row_engine" />
+
+                    <TextView
+                        style="@style/V4MonoValue"
+                        android:text="@string/about_v4_row_engine_value" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout style="@style/V4SettingsRow">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_check" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/about_v4_row_tracker_db" />
+
+                    <TextView
+                        android:id="@+id/tvAboutTrackerDb"
+                        style="@style/V4MonoValue"
+                        tools:text="Exodus · 12 May" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Credits -->
+            <TextView
+                style="@style/V4SettingsSectionLabel"
+                android:text="@string/about_v4_section_credits" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:clipToOutline="true"
+                android:orientation="vertical">
+
+                <LinearLayout style="@style/V4SettingsRow">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/scan_logo" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/about_v4_row_uow" />
+
+                    <TextView
+                        style="@style/V4MonoValue"
+                        android:text="@string/about_v4_row_uow_value" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/btnLicenses"
+                    style="@style/V4SettingsRowSimple">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_v4_glyph_document" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/about_v4_row_licenses" />
+
+                    <ImageView style="@style/V4SettingsRowChevron" />
+                </LinearLayout>
+
+                <View style="@style/V4SettingsDivider" />
+
+                <LinearLayout
+                    android:id="@+id/btnAcks"
+                    style="@style/V4SettingsRowSimple">
+
+                    <ImageView
+                        style="@style/V4SettingsRowIcon"
+                        android:src="@drawable/ic_glyph_shield" />
+
+                    <TextView
+                        style="@style/V4SettingsRowSimpleLabel"
+                        android:text="@string/about_v4_row_acks" />
+
+                    <ImageView style="@style/V4SettingsRowChevron" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/btnFeedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_v4_button_secondary"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        style="@style/V4ButtonLabelDark"
+                        android:text="@string/about_v4_btn_feedback" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/btnWebsite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:padding="13dp"
+                    android:text="@string/about_v4_btn_website"
+                    android:textColor="@color/v4_fg2"
+                    android:textFontWeight="500"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

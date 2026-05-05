@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp">
+
+        <View
+            android:id="@+id/sessionDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/bg_v4_sev_dot_ok" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvSessionDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="12.5sp"
+                tools:text="Pixel 8 Pro" />
+
+            <TextView
+                android:id="@+id/tvSessionLoc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="500"
+                android:textSize="10.5sp"
+                tools:text="Wollongong, AU · this device" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSessionAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@color/v4_bad"
+            android:textFontWeight="600"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:text="Sign out"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/sessionDivider"
+        style="@style/V4SettingsDivider" />
+</LinearLayout>

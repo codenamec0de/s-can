@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_v4_surface"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Top row: severity dot + sender + verdict pill -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/indicatorUnread"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:background="@drawable/bg_v4_sev_dot_warn" />
+
+        <TextView
+            android:id="@+id/tvSmsSender"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="@font/montserrat"
+            android:letterSpacing="-0.005"
+            android:maxLines="1"
+            android:textColor="@color/v4_fg0"
+            android:textFontWeight="600"
+            android:textSize="13.5sp"
+            tools:text="+61 400 987 654" />
+
+        <TextView
+            android:id="@+id/tvVerdictBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:letterSpacing="0.08"
+            android:paddingStart="7dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="3dp"
+            android:textAllCaps="true"
+            android:textFontWeight="700"
+            android:textSize="9.5sp"
+            tools:background="@drawable/bg_v4_perm_pill_bad"
+            tools:text="Scam"
+            tools:textColor="@color/v4_bad" />
+    </LinearLayout>
+
+    <!-- Body -->
+    <TextView
+        android:id="@+id/tvSmsPreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/montserrat"
+        android:lineSpacingMultiplier="1.55"
+        android:maxLines="3"
+        android:textColor="@color/v4_fg1"
+        android:textFontWeight="500"
+        android:textSize="12.5sp"
+        tools:text="“Your Aus Post package is held. Pay $2 fee to release: http://aus-p0st.cc/track”" />
+
+    <!-- Time + tags row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvSmsTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textColor="@color/v4_fg3"
+            android:textSize="10.5sp"
+            tools:text="Today 09:44" />
+
+        <TextView
+            android:id="@+id/tvTagSuffix"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="@font/montserrat"
+            android:maxLines="1"
+            android:textFontWeight="500"
+            android:textSize="10.5sp"
+            android:visibility="gone"
+            tools:text="· URL flagged"
+            tools:textColor="@color/v4_bad"
+            tools:visibility="visible" />
+    </LinearLayout>
+</LinearLayout>
