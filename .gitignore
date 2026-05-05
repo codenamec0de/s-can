@@ -25,6 +25,9 @@ debug/
 *.swp
 *.swo
 
+# ─────────── Obsidian vault state (per-machine workspace) ───────────
+**/.obsidian/
+
 # ─────────── App-signing secrets — NEVER COMMIT ───────────
 # Losing or leaking these means the app can be re-signed by an attacker
 # (Play Store identity is tied to the keystore).

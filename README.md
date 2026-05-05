@@ -81,11 +81,18 @@ somewhere reachable from the device — see
 .
 ├── source/        # Android Studio project (Kotlin, Gradle, R8 release config)
 ├── scan-ai/       # Python FastAPI sidecar (SMS classifier + URL analyser)
+├── docs/          # V1.4.2 project knowledge vault — open as Obsidian vault
 ├── ScanLogo.png   # App brand asset (master copy)
 ├── CHANGELOG.md   # Versioned change history
 ├── SECURITY.md    # Vulnerability disclosure policy
 └── LICENSE        # Proprietary — All rights reserved
 ```
+
+**Documentation:** `docs/` is an [Obsidian](https://obsidian.md) vault
+covering the architecture, dependencies, build config, components, data
+layer, sidecar API, and roadmap for V1.4.2. Start at
+[`docs/Index.md`](docs/Index.md). Renders fine on GitHub too — no
+Obsidian required for read-only browsing.
 
 ---
 
