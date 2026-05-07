@@ -586,13 +586,14 @@ class BreachCheckerActivity : AppCompatActivity() {
         return PreferencesManager.getBreachAddresses(this).firstOrNull()
     }
 
-    private fun getApiKey(): String? =
-        getSharedPreferences("scan_prefs", Context.MODE_PRIVATE).getString("hibp_api_key", null)
+    // Bundled HIBP API key for demo / tester builds — paid by the developer,
+    // intentionally embedded so testers don't need to provision their own key.
+    private val embeddedHibpApiKey = "781dcc5259a6477995aa3ebf9f7f3aa2"
 
-    private fun saveApiKey(key: String) {
-        getSharedPreferences("scan_prefs", Context.MODE_PRIVATE)
-            .edit().putString("hibp_api_key", key).apply()
-    }
+    private fun getApiKey(): String? = embeddedHibpApiKey
+
+    @Suppress("unused")
+    private fun saveApiKey(key: String) { /* no-op: key is bundled */ }
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 

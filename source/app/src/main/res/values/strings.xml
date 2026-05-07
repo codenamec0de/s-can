@@ -53,7 +53,7 @@
     <string name="su_sign_in">Sign in</string>
     <string name="su_step_indicator_1">1 / 2</string>
     <string name="su_step_indicator_2">2 / 2</string>
-    <string name="su_privacy_note">S\'CAN stores account data locally and syncs only via your self-hosted server.</string>
+    <string name="su_privacy_note">S\'CAN stores account data locally; only SMS Scam Detection (opt-in) sends data off-device, and only over TLS to a pinned classifier.</string>
     <string name="su_back_cd">Back</string>
 
     <!-- Forgot Password (V4) -->
@@ -117,7 +117,7 @@
     <string name="home_tool_terminator_title">Terminator</string>
     <string name="home_tool_terminator_desc">Auto-revokes camera, mic, and location when apps go to background.</string>
     <string name="home_tool_sms_title">SMS Scam Detection</string>
-    <string name="home_tool_sms_desc">Analyzes incoming SMS via your self-hosted AI server.</string>
+    <string name="home_tool_sms_desc">Analyzes incoming SMS via S\'CAN\'s AI sidecar over TLS.</string>
     <string name="home_tool_verdict_title">SMS Verdicts</string>
     <string name="home_tool_verdict_desc">Review past SMS analysis verdicts and details.</string>
     <string name="home_tool_breach_title">Breach Checker</string>
@@ -315,30 +315,37 @@
     <string name="sms_no_verdicts">No SMS verdicts yet</string>
     <string name="sms_empty_desc">When SMS scam detection is enabled, incoming messages will be analyzed by AI and results will appear here</string>
     <string name="sms_enable_detection">Enable SMS Scam Detection</string>
-    <string name="sms_server_url_hint">Server URL (e.g. http://100.x.x.x:8000)</string>
-    <string name="sms_server_token_hint">Bearer Token</string>
     <string name="sms_test_connection">Test Connection</string>
     <string name="sms_send_test">Test SMS</string>
 
     <!-- SMS V4 -->
     <string name="sms_v4_screen_title">Verdicts</string>
-    <string name="sms_v4_subtitle">SMS analyzed by your self-hosted AI server.</string>
+    <string name="sms_v4_subtitle">SMS analyzed by S\'CAN\'s AI sidecar.</string>
     <string name="sms_v4_more_analyzed">%d more messages analyzed</string>
     <string name="sms_v4_settings_cd">SMS detection settings</string>
     <string name="sms_v4_no_verdicts_title">No verdicts yet</string>
-    <string name="sms_v4_no_verdicts_desc">Incoming messages will be analyzed by your AI server and the results will appear here.</string>
+    <string name="sms_v4_no_verdicts_desc">Incoming messages will be analyzed by S\'CAN\'s AI sidecar and the results will appear here.</string>
     <string name="sms_v4_clear_all">Clear all</string>
     <string name="sms_v4_label_safe">Safe</string>
     <string name="sms_v4_label_suspicious">Suspicious</string>
     <string name="sms_v4_label_scam">Scam</string>
 
+    <!-- Connection status pill on the SMS Verdicts screen — tap to re-check -->
+    <string name="sms_v4_conn_cd">Connection status — tap to recheck</string>
+    <string name="sms_v4_conn_checking">Checking connection…</string>
+    <string name="sms_v4_conn_ok">AI server connected</string>
+    <string name="sms_v4_conn_warn">Server reached, model not ready</string>
+    <string name="sms_v4_conn_bad">AI server unreachable</string>
+    <string name="sms_v4_conn_bad_code">AI server unreachable · HTTP %1$d</string>
+    <string name="sms_v4_conn_cached">Cached on-device mode (network bypassed)</string>
+
     <!-- SMS Onboarding V4 -->
     <string name="sms_onboarding_title">SMS Scam Detection</string>
-    <string name="sms_onboarding_desc">S\'CAN can analyze incoming SMS messages for scams using your self-hosted AI server.</string>
+    <string name="sms_onboarding_desc">S\'CAN analyzes incoming SMS for scams using its AI sidecar — or an on-device cached model if you prefer.</string>
     <string name="sms_onboarding_what_means">What this means</string>
     <string name="sms_onboarding_bullet_1">S\'CAN will read incoming SMS messages</string>
-    <string name="sms_onboarding_bullet_2">Message text is sent to YOUR server over TLS</string>
-    <string name="sms_onboarding_bullet_3">No data leaves your infrastructure</string>
+    <string name="sms_onboarding_bullet_2">Message text is sent over TLS to scan-api.scan-ai.xyz (cert-pinned)</string>
+    <string name="sms_onboarding_bullet_3">The classifier never logs message content</string>
     <string name="sms_onboarding_bullet_4">You can disable this at any time in Settings</string>
     <string name="sms_onboarding_perm_note">This requires the RECEIVE_SMS permission. You can skip this and enable it later.</string>
     <string name="sms_onboarding_enable">Enable SMS Detection</string>
@@ -347,34 +354,34 @@
 
     <!-- AI Server Config V4 -->
     <string name="ai_server_title">SMS Detection · Server</string>
-    <string name="ai_server_desc">Configure the self-hosted AI server S\'CAN sends SMS messages to. Status is checked automatically.</string>
+    <string name="ai_server_desc">S\'CAN forwards incoming SMS to the public AI sidecar over TLS. Override the URL below if you run your own. Flip the switch above to classify offline using a cached on-device model.</string>
     <string name="ai_server_status_unreachable">Server unreachable</string>
     <string name="ai_server_status_unreachable_meta">Last checked %s · Connection timed out</string>
     <string name="ai_server_status_connected">Connected</string>
     <string name="ai_server_status_connected_meta">AI model ready · checked just now</string>
-    <string name="ai_server_status_warn">Authentication failed</string>
-    <string name="ai_server_status_warn_meta">Server returned 401 — token may be wrong or expired</string>
-    <string name="ai_server_status_idle">Not configured</string>
-    <string name="ai_server_status_idle_meta">Enter your server URL and token below.</string>
+    <string name="ai_server_status_warn">Server reached, model not ready</string>
+    <string name="ai_server_status_warn_meta">Health endpoint returned an unexpected status</string>
+    <string name="ai_server_status_idle">Idle</string>
+    <string name="ai_server_status_idle_meta">Hit refresh to ping the server.</string>
+    <string name="ai_server_status_cached_meta">Cached on-device model active · network bypassed</string>
     <string name="ai_server_status_checking">Checking…</string>
     <string name="ai_server_status_checking_meta">Pinging server</string>
     <string name="ai_server_url_label">Server URL</string>
-    <string name="ai_server_url_placeholder">http://100.x.x.x:8000</string>
+    <string name="ai_server_url_placeholder">https://scan-api.scan-ai.xyz/</string>
     <string name="ai_server_url_error_timeout">Connection timed out — is the server running?</string>
     <string name="ai_server_url_error_invalid">Enter a valid URL</string>
-    <string name="ai_server_token_label">Bearer token</string>
-    <string name="ai_server_token_placeholder">Paste your token</string>
-    <string name="ai_server_show_token_cd">Show / hide token</string>
+    <string name="ai_server_cached_toggle">Cached</string>
+    <string name="ai_server_cached_toggle_cd">Use cached on-device classifier instead of contacting the AI server</string>
     <string name="ai_server_save">Save configuration</string>
     <string name="ai_server_saved">Settings saved</string>
     <string name="ai_server_test">Test connection</string>
     <string name="ai_server_status_reference">Status reference</string>
     <string name="ai_server_ref_unreachable_t">URL not reachable</string>
-    <string name="ai_server_ref_unreachable_d">Could not connect. Check IP/port and that the server is running.</string>
-    <string name="ai_server_ref_auth_t">Authentication failed</string>
-    <string name="ai_server_ref_auth_d">Server returned 401. Token may be wrong or expired.</string>
+    <string name="ai_server_ref_unreachable_d">Could not connect. Check the URL and that the server is running.</string>
+    <string name="ai_server_ref_warn_t">Server reached, model not ready</string>
+    <string name="ai_server_ref_warn_d">Health endpoint returned an unexpected status. Check the shim and Ollama on the host.</string>
     <string name="ai_server_ref_tls_t">TLS certificate mismatch</string>
-    <string name="ai_server_ref_tls_d">Cert doesn\'t match the pinned cert. Possible MITM, or cert was rotated.</string>
+    <string name="ai_server_ref_tls_d">Cert doesn\'t match the pinned cert. Possible MITM, or the Cloudflare intermediate rotated.</string>
     <string name="ai_server_ref_ok_t">Connected</string>
     <string name="ai_server_ref_ok_d">Server reachable and AI model responding.</string>
 
@@ -469,11 +476,11 @@
     <string name="privacy_v4_commit_sdks_t">No third-party SDKs</string>
     <string name="privacy_v4_commit_sdks_d">No analytics, ads, or trackers ship in the app.</string>
     <string name="privacy_v4_commit_ai_t">You bring the AI</string>
-    <string name="privacy_v4_commit_ai_d">SMS scanning sends text to YOUR self-hosted server over TLS.</string>
+    <string name="privacy_v4_commit_ai_d">SMS scanning sends text over TLS to S\'CAN\'s pinned classifier (or your override). Cached on-device mode bypasses the network.</string>
     <string name="privacy_v4_section_sections">Sections</string>
     <string name="privacy_v4_section_1">1. Information we process</string>
     <string name="privacy_v4_section_2">2. How permissions are used</string>
-    <string name="privacy_v4_section_3">3. Your self-hosted AI server</string>
+    <string name="privacy_v4_section_3">3. AI classifier &amp; cached fallback</string>
     <string name="privacy_v4_section_4">4. Data retention &amp; deletion</string>
     <string name="privacy_v4_section_5">5. Security &amp; encryption</string>
     <string name="privacy_v4_section_6">6. Your rights (GDPR / APP)</string>
@@ -714,4 +721,10 @@
     <string name="retry">Retry</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+
+    <!-- Notification listener (Phase 1 — verified privacy observations) -->
+    <string name="notif_listener_service_label">S\'CAN — verified privacy observations</string>
+    <string name="notif_listener_banner_title">Turn on verified observations</string>
+    <string name="notif_listener_banner_body">Let S\'CAN read system privacy notifications so we can confirm exactly which app used your camera, mic, or location. One tap, no surveillance.</string>
+    <string name="notif_listener_banner_cta">Enable</string>
 </resources>

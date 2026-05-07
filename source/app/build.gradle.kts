@@ -1,23 +1,8 @@
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
-}
-
-// Read keystore credentials out of the project root's keystore.properties so signing
-// secrets stay out of source control. File format:
-//   storeFile=scan-release.jks
-//   storePassword=...
-//   keyAlias=scan
-//   keyPassword=...
-val keystorePropsFile = rootProject.file("keystore.properties")
-val keystoreProps = Properties().apply {
-    if (keystorePropsFile.exists()) {
-        keystorePropsFile.inputStream().use { load(it) }
-    }
 }
 
 android {
@@ -28,29 +13,10 @@ android {
         applicationId = "com.uow.scan"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.4"
+        versionCode = 5
+        versionName = "1.4.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // SHA-256 of the AI sidecar's SubjectPublicKeyInfo, base64-encoded.
-        // Rotation = code change. See scan_vault/syntheses/tls-setup-runbook.md.
-        buildConfigField(
-            "String",
-            "SCAN_AI_CERT_PIN",
-            "\"sha256/3u/pW+fQlDD96hrBeFQO7qNH5E7kIPHczvYxOOG9R+c=\""
-        )
-    }
-
-    signingConfigs {
-        if (keystoreProps.isNotEmpty()) {
-            create("release") {
-                storeFile = file(keystoreProps.getProperty("storeFile"))
-                storePassword = keystoreProps.getProperty("storePassword")
-                keyAlias = keystoreProps.getProperty("keyAlias")
-                keyPassword = keystoreProps.getProperty("keyPassword")
-            }
-        }
     }
 
     buildTypes {
@@ -61,9 +27,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            if (keystoreProps.isNotEmpty()) {
-                signingConfig = signingConfigs.getByName("release")
-            }
         }
     }
     compileOptions {

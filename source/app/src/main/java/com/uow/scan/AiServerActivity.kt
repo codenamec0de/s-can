@@ -1,7 +1,6 @@
 package com.uow.scan
 
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
@@ -11,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.uow.scan.api.ScanAiClient
@@ -24,6 +24,7 @@ class AiServerActivity : AppCompatActivity() {
     private enum class Status { OK, BAD, WARN, IDLE, CHECKING }
 
     private lateinit var btnBack: FrameLayout
+    private lateinit var swCachedFallback: SwitchCompat
     private lateinit var statusCard: LinearLayout
     private lateinit var statusDot: View
     private lateinit var tvStatusTitle: TextView
@@ -33,13 +34,9 @@ class AiServerActivity : AppCompatActivity() {
     private lateinit var serverUrlField: FrameLayout
     private lateinit var etServerUrl: EditText
     private lateinit var tvUrlError: TextView
-    private lateinit var etServerToken: EditText
-    private lateinit var btnToggleToken: ImageView
 
     private lateinit var btnSave: FrameLayout
     private lateinit var refContainer: LinearLayout
-
-    private var tokenVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,20 +45,19 @@ class AiServerActivity : AppCompatActivity() {
         loadPrefs()
         setupListeners()
         renderStatusReference()
-        // Reflect last-known status on entry; user can refresh.
         setStatus(Status.IDLE)
     }
 
     override fun onResume() {
         super.onResume()
-        // Try a fresh ping when the user lands here.
-        if (etServerUrl.text.isNotBlank() && etServerToken.text.isNotBlank()) {
+        if (etServerUrl.text.isNotBlank() && !swCachedFallback.isChecked) {
             testConnection()
         }
     }
 
     private fun bindViews() {
         btnBack = findViewById(R.id.btnBack)
+        swCachedFallback = findViewById(R.id.swCachedFallback)
         statusCard = findViewById(R.id.statusCard)
         statusDot = findViewById(R.id.statusDot)
         tvStatusTitle = findViewById(R.id.tvStatusTitle)
@@ -70,15 +66,15 @@ class AiServerActivity : AppCompatActivity() {
         serverUrlField = findViewById(R.id.serverUrlField)
         etServerUrl = findViewById(R.id.etServerUrl)
         tvUrlError = findViewById(R.id.tvUrlError)
-        etServerToken = findViewById(R.id.etServerToken)
-        btnToggleToken = findViewById(R.id.btnToggleToken)
         btnSave = findViewById(R.id.btnSave)
         refContainer = findViewById(R.id.refContainer)
     }
 
     private fun loadPrefs() {
+        // getSmsServerUrl returns DEFAULT_SMS_SERVER_URL when nothing is saved,
+        // so the field is pre-populated with the public sidecar by default.
         etServerUrl.setText(PreferencesManager.getSmsServerUrl(this))
-        etServerToken.setText(PreferencesManager.getSmsServerToken(this))
+        swCachedFallback.isChecked = PreferencesManager.isSmsFallbackEnabled(this)
     }
 
     private fun setupListeners() {
@@ -88,27 +84,19 @@ class AiServerActivity : AppCompatActivity() {
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
         btnStatusRefresh.setOnClickListener { testConnection() }
-        btnToggleToken.setOnClickListener { toggleTokenVisibility() }
         btnSave.setOnClickListener { saveAndTest() }
-    }
-
-    private fun toggleTokenVisibility() {
-        tokenVisible = !tokenVisible
-        etServerToken.inputType = if (tokenVisible) {
-            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-        } else {
-            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        swCachedFallback.setOnCheckedChangeListener { _, isChecked ->
+            PreferencesManager.setSmsFallbackEnabled(this, isChecked)
+            if (isChecked) {
+                setStatus(Status.IDLE, getString(R.string.ai_server_status_cached_meta))
+            } else {
+                testConnection()
+            }
         }
-        // Re-applying inputType resets the cursor; place it at the end.
-        etServerToken.setSelection(etServerToken.text.length)
-        btnToggleToken.setImageResource(
-            if (tokenVisible) R.drawable.ic_glyph_eye_off else R.drawable.ic_glyph_eye
-        )
     }
 
     private fun saveAndTest() {
         val url = etServerUrl.text.toString().trim()
-        val token = etServerToken.text.toString().trim()
 
         if (url.isBlank() || !looksLikeUrl(url)) {
             tvUrlError.visibility = View.VISIBLE
@@ -121,17 +109,22 @@ class AiServerActivity : AppCompatActivity() {
         serverUrlField.setBackgroundResource(R.drawable.bg_v4_field_neutral)
 
         PreferencesManager.setSmsServerUrl(this, url)
-        PreferencesManager.setSmsServerToken(this, token)
         ScanAiClient.reset()
         Toast.makeText(this, getString(R.string.ai_server_saved), Toast.LENGTH_SHORT).show()
 
-        testConnection()
+        if (!swCachedFallback.isChecked) {
+            testConnection()
+        }
     }
 
     private fun looksLikeUrl(text: String): Boolean =
         text.startsWith("http://") || text.startsWith("https://")
 
     private fun testConnection() {
+        if (swCachedFallback.isChecked) {
+            setStatus(Status.IDLE, getString(R.string.ai_server_status_cached_meta))
+            return
+        }
         setStatus(Status.CHECKING)
         lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
@@ -141,12 +134,10 @@ class AiServerActivity : AppCompatActivity() {
                 result.fold(
                     onSuccess = { resp ->
                         when {
-                            resp.isSuccessful && resp.body()?.ollama_ok == true ->
+                            resp.isSuccessful && resp.body()?.status == "ok" ->
                                 setStatus(Status.OK)
                             resp.isSuccessful ->
                                 setStatus(Status.WARN)
-                            resp.code() == 401 ->
-                                setStatus(Status.WARN, "Server returned 401")
                             else ->
                                 setStatus(Status.BAD, "Server returned ${resp.code()}")
                         }
@@ -201,7 +192,7 @@ class AiServerActivity : AppCompatActivity() {
                 statusDot.setBackgroundResource(R.drawable.bg_v4_sev_dot_warn)
                 tvStatusTitle.setText(R.string.ai_server_status_idle)
                 tvStatusTitle.setTextColor(ContextCompat.getColor(this, R.color.v4_fg1))
-                tvStatusMeta.text = getString(R.string.ai_server_status_idle_meta)
+                tvStatusMeta.text = customMeta ?: getString(R.string.ai_server_status_idle_meta)
                 tvUrlError.visibility = View.GONE
                 serverUrlField.setBackgroundResource(R.drawable.bg_v4_field_neutral)
             }
@@ -215,7 +206,7 @@ class AiServerActivity : AppCompatActivity() {
             RefRow(R.color.v4_bad, R.drawable.ic_glyph_warn,
                 R.string.ai_server_ref_unreachable_t, R.string.ai_server_ref_unreachable_d),
             RefRow(R.color.v4_warn, R.drawable.ic_glyph_warn,
-                R.string.ai_server_ref_auth_t, R.string.ai_server_ref_auth_d),
+                R.string.ai_server_ref_warn_t, R.string.ai_server_ref_warn_d),
             RefRow(R.color.v4_bad, R.drawable.ic_glyph_warn,
                 R.string.ai_server_ref_tls_t, R.string.ai_server_ref_tls_d),
             RefRow(R.color.v4_ok, R.drawable.ic_glyph_check,

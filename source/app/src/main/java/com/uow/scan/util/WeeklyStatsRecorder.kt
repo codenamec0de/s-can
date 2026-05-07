@@ -16,7 +16,7 @@ import java.util.Calendar
  */
 object WeeklyStatsRecorder {
 
-    /** 1 MB — same threshold the Alerts UI uses to flag an alert as "critical". */
+    /** 1 MB — bytes threshold above which an observed-sensor alert is "critical". */
     private const val CRITICAL_BYTES = 1024L * 1024L
 
     /**
@@ -55,7 +55,13 @@ object WeeklyStatsRecorder {
         weekEnd: Long,
         alerts: List<AlertEntity>
     ): WeeklyStatsEntity {
-        val critical = alerts.count { it.dataUsedBytes >= CRITICAL_BYTES }
+        // "Critical" requires actual sensor access observed during the
+        // background window (non-empty permissions list) AND a meaningful
+        // data volume. Background data alone — even at >1 MB — is not
+        // enough to be Critical.
+        val critical = alerts.count {
+            it.permissions.isNotBlank() && it.dataUsedBytes >= CRITICAL_BYTES
+        }
         // Pattern definition mirrored from AlertsFragment: a (package, primary perm) pair
         // with ≥2 occurrences inside the bucket counts as one pattern.
         val patternCount = alerts

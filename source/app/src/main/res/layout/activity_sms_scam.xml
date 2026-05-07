@@ -74,11 +74,49 @@
         android:lineSpacingMultiplier="1.5"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="14dp"
+        android:paddingBottom="10dp"
         android:text="@string/sms_v4_subtitle"
         android:textColor="@color/v4_fg2"
         android:textFontWeight="500"
         android:textSize="12.5sp" />
+
+    <!-- Connection status pill — tap to re-check -->
+    <LinearLayout
+        android:id="@+id/statusPill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_v4_field_neutral"
+        android:clickable="true"
+        android:contentDescription="@string/sms_v4_conn_cd"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="14dp"
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="6dp">
+
+        <View
+            android:id="@+id/statusPillDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/bg_v4_sev_dot_warn" />
+
+        <TextView
+            android:id="@+id/statusPillLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/montserrat"
+            android:text="@string/sms_v4_conn_checking"
+            android:textColor="@color/v4_fg2"
+            android:textFontWeight="600"
+            android:textSize="11.5sp"
+            tools:text="AI server connected" />
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

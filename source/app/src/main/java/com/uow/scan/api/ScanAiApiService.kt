@@ -5,61 +5,33 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
+/**
+ * Public S'CAN AI sidecar contract — see SCAN_AI_SERVER_COOKBOOK.md.
+ *
+ * Server returns verdict lowercase ("scam" / "safe"); the worker uppercases at the boundary.
+ */
 interface ScanAiApiService {
 
-    @POST("v1/classify")
+    @POST("classify")
     suspend fun classify(@Body request: ClassifyRequest): Response<ClassifyResponse>
 
-    @POST("v1/url-check")
-    suspend fun urlCheck(@Body request: UrlCheckRequest): Response<UrlCheckResponse>
-
-    @GET("v1/health")
+    @GET("health")
     suspend fun health(): Response<HealthResponse>
 
-    @POST("v1/feedback")
-    suspend fun feedback(@Body request: FeedbackRequest): Response<Map<String, String>>
-
     data class ClassifyRequest(
-        val text: String,
-        val sender: String? = null
+        val sms: String
     )
 
     data class ClassifyResponse(
         val verdict: String,
+        val reasoning: String,
         val confidence: Double,
-        val explanation: String,
-        val urls: List<String> = emptyList()
-    )
-
-    data class UrlCheckRequest(
-        val url: String,
-        val deep: Boolean = true
-    )
-
-    data class UrlCheckResponse(
-        val url: String,
-        val verdict: String,
-        val brand_match: String? = null,
-        val brand_confidence: Double = 0.0,
-        val signals: List<UrlSignal> = emptyList(),
-        val risk_score: Double = 0.0
-    )
-
-    data class UrlSignal(
-        val type: String,
-        val value: String,
-        val weight: Double
+        val model: String? = null,
+        val latency_ms: Int? = null
     )
 
     data class HealthResponse(
         val status: String,
-        val model: String,
-        val ollama_ok: Boolean
-    )
-
-    data class FeedbackRequest(
-        val message_text: String,
-        val original_verdict: String,
-        val correct_verdict: String
+        val model: String
     )
 }

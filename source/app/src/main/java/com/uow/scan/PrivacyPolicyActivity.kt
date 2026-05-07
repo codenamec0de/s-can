@@ -120,9 +120,11 @@ class PrivacyPolicyActivity : AppCompatActivity() {
                 "read your messages, contacts, or media unless a feature you opted into requires it " +
                 "(only SMS Scam Detection ever reads SMS, and only forwards to the server you choose)."
             R.string.privacy_v4_section_3 ->
-                "If you enable SMS Scam Detection, message text is sent to the URL you configure, " +
-                "with the bearer token you provide. The connection uses TLS with a pinned cert hash " +
-                "(SCAN_AI_CERT_PIN). We never see, log, or proxy any SMS content."
+                "If you enable SMS Scam Detection, message text is sent over HTTPS (TLS 1.2+, " +
+                "certificate-pinned) to S’CAN’s classifier server (scan-api.scan-ai.xyz), " +
+                "routed via Cloudflare’s edge for TLS termination. The server runs a local LLM " +
+                "and never logs your messages. You can switch to on-device cached classification at " +
+                "any time from Settings → AI Server."
             R.string.privacy_v4_section_4 ->
                 "Scan history defaults to 90-day retention; SMS verdicts to 30 days. Caches auto-purge " +
                 "weekly. You can wipe everything from Settings → Data & Storage. Logout clears all " +

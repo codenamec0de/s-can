@@ -7,7 +7,7 @@
     android:background="@color/v4_bg"
     android:orientation="vertical">
 
-    <!-- TopBar: back + title -->
+    <!-- TopBar: back · title · cached-fallback switch -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,6 +47,17 @@
             android:textColor="@color/v4_fg0"
             android:textFontWeight="600"
             android:textSize="16sp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swCachedFallback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/ai_server_cached_toggle_cd"
+            android:fontFamily="@font/montserrat"
+            android:text="@string/ai_server_cached_toggle"
+            android:textColor="@color/v4_fg2"
+            android:textFontWeight="500"
+            android:textSize="11sp" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -165,7 +176,7 @@
                     android:background="@null"
                     android:fontFamily="monospace"
                     android:hint="@string/ai_server_url_placeholder"
-                    android:imeOptions="actionNext"
+                    android:imeOptions="actionDone"
                     android:inputType="textUri"
                     android:maxLines="1"
                     android:paddingStart="14dp"
@@ -189,59 +200,6 @@
                 android:visibility="gone"
                 tools:text="Connection timed out — is the server running?"
                 tools:visibility="visible" />
-
-            <!-- Bearer token field -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:fontFamily="@font/montserrat"
-                android:letterSpacing="0.1"
-                android:text="@string/ai_server_token_label"
-                android:textAllCaps="true"
-                android:textColor="@color/v4_fg3"
-                android:textFontWeight="600"
-                android:textSize="10.5sp" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
-                android:background="@drawable/bg_v4_field_neutral">
-
-                <EditText
-                    android:id="@+id/etServerToken"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:autofillHints="password"
-                    android:background="@null"
-                    android:fontFamily="monospace"
-                    android:hint="@string/ai_server_token_placeholder"
-                    android:imeOptions="actionDone"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:paddingStart="14dp"
-                    android:paddingTop="11dp"
-                    android:paddingEnd="48dp"
-                    android:paddingBottom="11dp"
-                    android:textColor="@color/v4_fg0"
-                    android:textColorHint="@color/v4_fg3"
-                    android:textSize="13sp" />
-
-                <ImageView
-                    android:id="@+id/btnToggleToken"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_vertical|end"
-                    android:layout_marginEnd="6dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:contentDescription="@string/ai_server_show_token_cd"
-                    android:focusable="true"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_glyph_eye"
-                    app:tint="@color/v4_fg3" />
-            </FrameLayout>
 
             <!-- Save -->
             <FrameLayout

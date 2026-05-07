@@ -5,18 +5,22 @@ import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.uow.scan.adapter.SmsVerdictAdapter
+import com.uow.scan.api.ScanAiClient
 import com.uow.scan.data.ScanDatabase
 import com.uow.scan.model.SmsVerdict
+import com.uow.scan.util.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
 
 class SmsScamActivity : AppCompatActivity() {
 
@@ -24,10 +28,15 @@ class SmsScamActivity : AppCompatActivity() {
         const val EXTRA_VERDICT_ID = "verdict_id"
     }
 
+    private enum class ConnState { CHECKING, OK, WARN, BAD, CACHED }
+
     private lateinit var rvVerdicts: RecyclerView
     private lateinit var emptyState: LinearLayout
     private lateinit var btnBack: FrameLayout
     private lateinit var btnSettings: FrameLayout
+    private lateinit var statusPill: LinearLayout
+    private lateinit var statusPillDot: View
+    private lateinit var statusPillLabel: TextView
     private lateinit var adapter: SmsVerdictAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +47,9 @@ class SmsScamActivity : AppCompatActivity() {
         btnSettings = findViewById(R.id.btnSettings)
         rvVerdicts = findViewById(R.id.rvVerdicts)
         emptyState = findViewById(R.id.emptyState)
+        statusPill = findViewById(R.id.statusPill)
+        statusPillDot = findViewById(R.id.statusPillDot)
+        statusPillLabel = findViewById(R.id.statusPillLabel)
 
         adapter = SmsVerdictAdapter { verdict -> showDetail(verdict) }
         rvVerdicts.layoutManager = LinearLayoutManager(this)
@@ -53,6 +65,7 @@ class SmsScamActivity : AppCompatActivity() {
             @Suppress("DEPRECATION")
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
+        statusPill.setOnClickListener { checkConnection() }
 
         loadVerdicts()
     }
@@ -60,6 +73,50 @@ class SmsScamActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         loadVerdicts()
+        checkConnection()
+    }
+
+    private fun checkConnection() {
+        if (PreferencesManager.isSmsFallbackEnabled(this)) {
+            setConnStatus(ConnState.CACHED, getString(R.string.sms_v4_conn_cached))
+            return
+        }
+        setConnStatus(ConnState.CHECKING, getString(R.string.sms_v4_conn_checking))
+        lifecycleScope.launch {
+            val outcome = withContext(Dispatchers.IO) {
+                runCatching { ScanAiClient.getApi(this@SmsScamActivity).health() }
+            }
+            outcome.fold(
+                onSuccess = { resp ->
+                    when {
+                        resp.isSuccessful && resp.body()?.status == "ok" ->
+                            setConnStatus(ConnState.OK, getString(R.string.sms_v4_conn_ok))
+                        resp.isSuccessful ->
+                            setConnStatus(ConnState.WARN, getString(R.string.sms_v4_conn_warn))
+                        else ->
+                            setConnStatus(
+                                ConnState.BAD,
+                                getString(R.string.sms_v4_conn_bad_code, resp.code())
+                            )
+                    }
+                },
+                onFailure = {
+                    setConnStatus(ConnState.BAD, getString(R.string.sms_v4_conn_bad))
+                }
+            )
+        }
+    }
+
+    private fun setConnStatus(state: ConnState, label: String) {
+        val (dotRes, colorRes) = when (state) {
+            ConnState.OK -> R.drawable.bg_v4_sev_dot_ok to R.color.v4_ok
+            ConnState.WARN, ConnState.CACHED -> R.drawable.bg_v4_sev_dot_warn to R.color.v4_warn
+            ConnState.BAD -> R.drawable.bg_v4_sev_dot_bad to R.color.v4_bad
+            ConnState.CHECKING -> R.drawable.bg_v4_sev_dot_warn to R.color.v4_fg2
+        }
+        statusPillDot.setBackgroundResource(dotRes)
+        statusPillLabel.text = label
+        statusPillLabel.setTextColor(ContextCompat.getColor(this, colorRes))
     }
 
     private fun loadVerdicts() {
@@ -69,8 +126,7 @@ class SmsScamActivity : AppCompatActivity() {
             val verdicts = entities.map { e ->
                 SmsVerdict(
                     e.id, e.sender, e.messageBody, e.verdict,
-                    e.confidence, e.explanation, e.timestamp, e.isRead,
-                    e.urlSignals
+                    e.confidence, e.explanation, e.timestamp, e.isRead
                 )
             }
 
@@ -98,50 +154,14 @@ class SmsScamActivity : AppCompatActivity() {
                 .smsVerdictDao().markAsRead(verdict.id)
         }
 
-        val urlSection = formatUrlSignals(verdict.urlSignals)
-
         AlertDialog.Builder(this)
             .setTitle("${verdict.verdictLabel} (${verdict.confidencePercent})")
             .setMessage(
                 "From: ${verdict.sender}\n\n" +
                 "Message:\n${verdict.messageBody}\n\n" +
-                "AI Analysis:\n${verdict.explanation}" +
-                urlSection
+                "AI Analysis:\n${verdict.explanation}"
             )
             .setPositiveButton("OK", null)
             .show()
-    }
-
-    private fun formatUrlSignals(urlSignals: String?): String {
-        if (urlSignals.isNullOrBlank()) return ""
-        return try {
-            val arr = JSONArray(urlSignals)
-            val sb = StringBuilder("\n\n--- URL Analysis ---")
-            for (i in 0 until arr.length()) {
-                val obj = arr.getJSONObject(i)
-                val url = obj.getString("url")
-                val verdict = obj.getString("verdict").uppercase()
-                val brand = obj.optString("brand_match", "")
-                val riskScore = obj.optDouble("risk_score", 0.0)
-                val riskPct = "${(riskScore * 100).toInt()}%"
-
-                sb.append("\n\nURL: $url")
-                sb.append("\nVerdict: $verdict (risk $riskPct)")
-                if (brand.isNotBlank()) sb.append("\nImpersonating: $brand")
-
-                val signals = obj.optJSONArray("signals")
-                if (signals != null && signals.length() > 0) {
-                    sb.append("\nSignals:")
-                    for (j in 0 until signals.length()) {
-                        val sig = signals.getJSONObject(j)
-                        val weight = sig.optDouble("weight", 0.0)
-                        if (weight > 0) sb.append("\n  - ${sig.getString("value")}")
-                    }
-                }
-            }
-            sb.toString()
-        } catch (e: Exception) {
-            ""
-        }
     }
 }

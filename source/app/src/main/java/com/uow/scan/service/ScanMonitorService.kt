@@ -16,6 +16,7 @@ import com.uow.scan.model.PermissionAlert
 import com.uow.scan.util.AlertStorage
 import com.uow.scan.util.BackgroundUsageMonitor
 import com.uow.scan.util.FileLogger
+import com.uow.scan.util.OpAccessTracker
 import com.uow.scan.util.PreferencesManager
 import com.uow.scan.util.TerminatorEngine
 import com.uow.scan.util.TerminatorManager
@@ -83,6 +84,9 @@ class ScanMonitorService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        // Begin observing real camera/mic access by other apps. Cheap to register;
+        // events are persisted to Room and consumed by BackgroundUsageMonitor.
+        OpAccessTracker.start(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -342,6 +346,7 @@ class ScanMonitorService : Service() {
     override fun onDestroy() {
         FileLogger.w(this, "Service onDestroy() - service is being killed")
         loopRunning = false
+        OpAccessTracker.stop()
         scope.cancel()
         releaseWakeLock()
         super.onDestroy()

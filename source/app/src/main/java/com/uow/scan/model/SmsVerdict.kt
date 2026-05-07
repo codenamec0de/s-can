@@ -8,8 +8,7 @@ data class SmsVerdict(
     val confidence: Double,
     val explanation: String,
     val timestamp: Long,
-    val isRead: Boolean = false,
-    val urlSignals: String? = null
+    val isRead: Boolean = false
 ) {
     val verdictLabel: String
         get() = when (verdict) {

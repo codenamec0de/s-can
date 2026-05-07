@@ -13,10 +13,10 @@ import com.uow.scan.R
 import com.uow.scan.SmsScamActivity
 import com.uow.scan.api.ScanAiApiService
 import com.uow.scan.api.ScanAiClient
+import com.uow.scan.api.ScanAiFallback
 import com.uow.scan.data.ScanDatabase
 import com.uow.scan.data.entity.SmsVerdictEntity
-import org.json.JSONArray
-import org.json.JSONObject
+import com.uow.scan.util.PreferencesManager
 
 class SmsForwardWorker(
     context: Context,
@@ -37,42 +37,41 @@ class SmsForwardWorker(
         val timestamp = inputData.getLong(KEY_TIMESTAMP, System.currentTimeMillis())
 
         return try {
-            val api = ScanAiClient.getApi(applicationContext)
-            val response = api.classify(
-                ScanAiApiService.ClassifyRequest(text = body, sender = sender)
-            )
-
-            if (!response.isSuccessful) {
-                Log.w(TAG, "AI server returned ${response.code()}")
-                return Result.retry()
+            val result = if (PreferencesManager.isSmsFallbackEnabled(applicationContext)) {
+                ScanAiFallback.classify(applicationContext, body)
+            } else {
+                val api = ScanAiClient.getApi(applicationContext)
+                val response = api.classify(ScanAiApiService.ClassifyRequest(sms = body))
+                if (!response.isSuccessful) {
+                    Log.w(TAG, "AI server returned ${response.code()}")
+                    return Result.retry()
+                }
+                response.body() ?: return Result.retry()
             }
 
-            val result = response.body() ?: return Result.retry()
-
-            // Run URL checks for any URLs extracted by the classifier
-            val urlSignalsJson = checkUrls(api, result.urls)
+            // Server returns "scam"/"safe" lowercase; cached fallback returns uppercase already.
+            // Uppercase at the boundary so the rest of the app sees a single shape.
+            val verdict = result.verdict.uppercase()
 
             val entity = SmsVerdictEntity(
                 sender = sender,
                 messageBody = body,
-                verdict = result.verdict,
+                verdict = verdict,
                 confidence = result.confidence,
-                explanation = result.explanation,
+                explanation = result.reasoning,
                 timestamp = timestamp,
-                urlSignals = urlSignalsJson
+                urlSignals = null
             )
             val dao = ScanDatabase.getInstance(applicationContext).smsVerdictDao()
             val id = dao.insert(entity)
 
-            // Trim old entries
             val count = dao.getCount()
             if (count > 100) {
                 dao.deleteOldest(count - 100)
             }
 
-            // Notify for SCAM and SUSPICIOUS verdicts
-            if (result.verdict != "SAFE") {
-                sendNotification(sender, result.verdict, result.explanation, id)
+            if (verdict != "SAFE") {
+                sendNotification(sender, verdict, result.reasoning, id)
             }
 
             Result.success()
@@ -83,45 +82,6 @@ class SmsForwardWorker(
             Log.e(TAG, "Failed to classify SMS", e)
             Result.retry()
         }
-    }
-
-    private suspend fun checkUrls(
-        api: ScanAiApiService,
-        urls: List<String>
-    ): String? {
-        if (urls.isEmpty()) return null
-
-        val results = JSONArray()
-        for (url in urls) {
-            try {
-                val resp = api.urlCheck(
-                    ScanAiApiService.UrlCheckRequest(url = url, deep = true)
-                )
-                if (resp.isSuccessful) {
-                    val body = resp.body() ?: continue
-                    val obj = JSONObject().apply {
-                        put("url", body.url)
-                        put("verdict", body.verdict)
-                        put("brand_match", body.brand_match ?: "")
-                        put("risk_score", body.risk_score)
-                        val signalsArr = JSONArray()
-                        for (s in body.signals) {
-                            signalsArr.put(JSONObject().apply {
-                                put("type", s.type)
-                                put("value", s.value)
-                                put("weight", s.weight)
-                            })
-                        }
-                        put("signals", signalsArr)
-                    }
-                    results.put(obj)
-                }
-            } catch (e: Exception) {
-                Log.w(TAG, "URL check failed for $url: ${e.message}")
-            }
-        }
-
-        return if (results.length() > 0) results.toString() else null
     }
 
     private fun sendNotification(

@@ -21,26 +21,6 @@
 # Gson
 -keep class com.uow.scan.model.** { *; }
 
-# Keep all API service interfaces + their nested request/response data classes
-# (Retrofit + Gson reflection on @SerializedName / property names — must survive R8).
--keep interface com.uow.scan.api.** { *; }
--keep class com.uow.scan.api.** { *; }
--keep class com.uow.scan.api.**$* { *; }
-
-# Kotlin metadata — used by reflective callers (Gson, Retrofit's KotlinDefaultsConverter).
--keep class kotlin.Metadata { *; }
--keepclassmembers class **$Companion { *; }
--keepclasseswithmembers class * {
-    @com.google.gson.annotations.SerializedName <fields>;
-}
-
-# Coroutines — keep continuations + service loader entries.
--keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
--keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
--keepclassmembers class kotlinx.coroutines.** {
-    volatile <fields>;
-}
-
 # Firebase
 -keep class com.google.firebase.** { *; }
 

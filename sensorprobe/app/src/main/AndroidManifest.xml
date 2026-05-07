@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Sensor permissions we'll exercise. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Foreground service so Android allows camera/mic from background. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <!-- Idle/transitional FGS type used when no sensor holder is active yet
+         (e.g. very first promotion in onCreate, or right after STOP_*). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- The test harness simulates a "sensor + exfiltration" pattern by
+         doing periodic small HTTPS GETs while a sensor holder is active.
+         Required so S'CAN's BackgroundUsageMonitor sees non-zero per-UID
+         NetworkStats and exercises the data-transfer alert path too. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-feature android:name="android.hardware.camera"     android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
+    <application
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Material3.DayNight.NoActionBar"
+        android:allowBackup="false"
+        tools:targetApi="34">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- foregroundServiceType is the OR-combination of every sensor we
+             might exercise. The system enforces that the type matches the
+             permission grant when we actually open the resource. -->
+        <service
+            android:name=".BackgroundSensorService"
+            android:exported="false"
+            android:foregroundServiceType="camera|microphone|location|dataSync" />
+    </application>
+</manifest>

@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
 import android.os.Build
+import com.uow.scan.data.ScanDatabase
 import com.uow.scan.model.PermissionAlert
 import java.util.UUID
 
@@ -27,11 +28,22 @@ object BackgroundUsageMonitor {
     /** NetworkStats lookback window - 2 hours, independent of scan interval. */
     private const val DATA_LOOKBACK_MS = 2 * 60 * 60 * 1000L
 
+    private fun friendlyOpName(op: String): String = when (op) {
+        "CAMERA" -> "Camera"
+        "MICROPHONE" -> "Microphone"
+        else -> op.lowercase().replaceFirstChar { it.uppercase() }
+    }
+
     /**
      * Scan for background permission usage in the given time window.
      * Returns a list of new alerts.
+     *
+     * The `permissions` field on each returned alert reflects sensors actually
+     * observed in use during the window via [OpAccessTracker], not the static
+     * set of granted permissions. If no sensor access was observed, the field
+     * is empty and the alert is purely a "background data transfer" alert.
      */
-    fun scan(context: Context, startTime: Long, endTime: Long): List<PermissionAlert> {
+    suspend fun scan(context: Context, startTime: Long, endTime: Long): List<PermissionAlert> {
         val hasPermission = DataUsageHelper.hasUsageStatsPermission(context)
         FileLogger.d(context, "BackgroundUsageMonitor.scan() hasUsageStats=$hasPermission window=${(endTime - startTime) / 1000}s")
         if (!hasPermission) {
@@ -60,13 +72,17 @@ object BackgroundUsageMonitor {
 
         val pm = context.packageManager
         val alerts = mutableListOf<PermissionAlert>()
+        val accessDao = ScanDatabase.getInstance(context).permissionAccessDao()
 
         // --- Pass 1: Apps with Activity transitions (existing detection) ---
         for ((packageName, durationMs) in backgroundApps) {
             if (packageName == context.packageName) continue
 
-            val sensitivePerms = getGrantedSensitivePermissions(pm, packageName)
-            if (sensitivePerms.isEmpty()) continue
+            // We still skip apps that hold no sensitive permissions at all —
+            // there's no privacy story to tell about them, even if they
+            // transferred data in the background.
+            val grantedSensitive = getGrantedSensitivePermissions(pm, packageName)
+            if (grantedSensitive.isEmpty()) continue
 
             val uid = try {
                 pm.getApplicationInfo(packageName, 0).uid
@@ -74,8 +90,15 @@ object BackgroundUsageMonitor {
                 -1
             }
             val dataUsed = if (uid >= 0) uidDataMap[uid]?.totalBytes ?: 0L else 0L
-            FileLogger.d(context, "  Pass1: $packageName bg=${durationMs}ms data=${dataUsed}B perms=$sensitivePerms")
-            if (dataUsed < MIN_DATA_THRESHOLD) continue
+
+            // Trigger an alert if EITHER the app crossed the data threshold
+            // OR a sensor was observed in active use during the window. The
+            // sensor-only path catches apps that hold camera/mic without
+            // exfiltrating immediately (e.g. local recording, batched upload).
+            val observedOps = accessDao.opsInWindow(packageName, startTime, endTime)
+                .map { friendlyOpName(it) }
+            if (dataUsed < MIN_DATA_THRESHOLD && observedOps.isEmpty()) continue
+            FileLogger.d(context, "  Pass1: $packageName bg=${durationMs}ms data=${dataUsed}B observed=$observedOps")
 
             val appName = try {
                 val ai = pm.getApplicationInfo(packageName, 0)
@@ -89,7 +112,7 @@ object BackgroundUsageMonitor {
                     id = UUID.randomUUID().toString(),
                     packageName = packageName,
                     appName = appName,
-                    permissions = sensitivePerms,
+                    permissions = observedOps,
                     dataUsedBytes = dataUsed,
                     backgroundDurationMs = durationMs,
                     timestamp = endTime
@@ -130,17 +153,19 @@ object BackgroundUsageMonitor {
 
             pass2Checked++
 
-            val sensitivePerms = getGrantedSensitivePermissions(pm, packageName)
-            if (sensitivePerms.isEmpty()) continue
+            val grantedSensitive = getGrantedSensitivePermissions(pm, packageName)
+            if (grantedSensitive.isEmpty()) continue
 
             pass2WithPerms++
 
             val dataUsed = uidDataMap[appInfo.uid]?.totalBytes ?: 0L
-            if (dataUsed > 0) {
-                pass2WithData++
-                FileLogger.d(context, "  Pass2: $packageName data=${dataUsed}B perms=$sensitivePerms")
-            }
-            if (dataUsed < MIN_DATA_THRESHOLD) continue
+            if (dataUsed > 0) pass2WithData++
+
+            // Same dual-trigger as Pass 1: data OR observed sensor access.
+            val observedOps = accessDao.opsInWindow(packageName, startTime, endTime)
+                .map { friendlyOpName(it) }
+            if (dataUsed < MIN_DATA_THRESHOLD && observedOps.isEmpty()) continue
+            FileLogger.d(context, "  Pass2: $packageName data=${dataUsed}B observed=$observedOps")
 
             val appName = try {
                 pm.getApplicationLabel(appInfo).toString()
@@ -153,7 +178,7 @@ object BackgroundUsageMonitor {
                     id = UUID.randomUUID().toString(),
                     packageName = packageName,
                     appName = appName,
-                    permissions = sensitivePerms,
+                    permissions = observedOps,
                     dataUsedBytes = dataUsed,
                     backgroundDurationMs = 0L, // Unknown - no Activity events observed
                     timestamp = endTime
@@ -230,7 +255,7 @@ object BackgroundUsageMonitor {
     /**
      * Returns the human-readable names of granted dangerous sensitive permissions for [packageName].
      */
-    private fun getGrantedSensitivePermissions(
+    fun getGrantedSensitivePermissions(
         pm: PackageManager,
         packageName: String
     ): List<String> {

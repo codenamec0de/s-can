@@ -178,6 +178,20 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <!-- Privacy notification listener — captures system "Camera/Mic in use by X"
+             notifications as a second, OS-signed source for OpAccessTracker.
+             User must grant Notification Access in Settings; see
+             NotificationListenerHelper. -->
+        <service
+            android:name=".service.PrivacyNotificationListener"
+            android:exported="true"
+            android:label="@string/notif_listener_service_label"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
         <!-- Restart monitoring after device reboot -->
         <receiver
             android:name=".receiver.BootReceiver"

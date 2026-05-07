@@ -9,6 +9,7 @@ import com.uow.scan.data.dao.AppSettingsDao
 import com.uow.scan.data.dao.BreachResultDao
 import com.uow.scan.data.dao.DeviceCheckDao
 import com.uow.scan.data.dao.MonitoredAppDao
+import com.uow.scan.data.dao.PermissionAccessDao
 import com.uow.scan.data.dao.ScanResultDao
 import com.uow.scan.data.dao.SmsVerdictDao
 import com.uow.scan.data.dao.WeeklyStatsDao
@@ -17,6 +18,7 @@ import com.uow.scan.data.entity.AppSettingsEntity
 import com.uow.scan.data.entity.BreachResultEntity
 import com.uow.scan.data.entity.DeviceCheckEntity
 import com.uow.scan.data.entity.MonitoredAppEntity
+import com.uow.scan.data.entity.PermissionAccessEntity
 import com.uow.scan.data.entity.ScanResultEntity
 import com.uow.scan.data.entity.SmsVerdictEntity
 import com.uow.scan.data.entity.WeeklyStatsEntity
@@ -30,9 +32,10 @@ import com.uow.scan.data.entity.WeeklyStatsEntity
         BreachResultEntity::class,
         AppSettingsEntity::class,
         SmsVerdictEntity::class,
-        WeeklyStatsEntity::class
+        WeeklyStatsEntity::class,
+        PermissionAccessEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class ScanDatabase : RoomDatabase() {
@@ -45,6 +48,7 @@ abstract class ScanDatabase : RoomDatabase() {
     abstract fun appSettingsDao(): AppSettingsDao
     abstract fun smsVerdictDao(): SmsVerdictDao
     abstract fun weeklyStatsDao(): WeeklyStatsDao
+    abstract fun permissionAccessDao(): PermissionAccessDao
 
     companion object {
         @Volatile

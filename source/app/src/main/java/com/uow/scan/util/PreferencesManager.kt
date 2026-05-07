@@ -19,8 +19,11 @@ object PreferencesManager {
     private const val KEY_LAST_SCAN_TIME = "last_scan_time"
     private const val KEY_SMS_DETECTION_ENABLED = "sms_detection_enabled"
     private const val KEY_SMS_SERVER_URL = "sms_server_url"
-    private const val KEY_SMS_SERVER_TOKEN = "sms_server_token"
+    private const val KEY_SMS_FALLBACK_ENABLED = "sms_fallback_enabled"
     private const val KEY_SMS_DISCLOSURE_ACCEPTED = "sms_disclosure_accepted"
+
+    /** Public AI sidecar — Cloudflare Tunnel → FastAPI shim. Used when the user's saved URL is blank. */
+    const val DEFAULT_SMS_SERVER_URL = "https://scan-api.scan-ai.xyz/"
     private const val KEY_TOOL_WIFI_ENABLED = "tool_wifi_enabled"
     private const val KEY_TOOL_TERMINATOR_ENABLED = "tool_terminator_enabled"
     private const val KEY_TOOL_VERDICT_ENABLED = "tool_verdict_enabled"
@@ -79,20 +82,28 @@ object PreferencesManager {
         getPrefs(context).edit().putBoolean(KEY_SMS_DETECTION_ENABLED, enabled).apply()
     }
 
+    /**
+     * Returns the saved server URL, or [DEFAULT_SMS_SERVER_URL] if the user hasn't set one.
+     * Means the SMS pipeline works out-of-the-box without anyone touching the AI Server screen.
+     */
     fun getSmsServerUrl(context: Context): String {
-        return getPrefs(context).getString(KEY_SMS_SERVER_URL, "") ?: ""
+        val saved = getPrefs(context).getString(KEY_SMS_SERVER_URL, "").orEmpty()
+        return if (saved.isBlank()) DEFAULT_SMS_SERVER_URL else saved
     }
 
     fun setSmsServerUrl(context: Context, url: String) {
         getPrefs(context).edit().putString(KEY_SMS_SERVER_URL, url).apply()
     }
 
-    fun getSmsServerToken(context: Context): String {
-        return getPrefs(context).getString(KEY_SMS_SERVER_TOKEN, "") ?: ""
-    }
+    /**
+     * Cached on-device fallback. When true, [com.uow.scan.worker.SmsForwardWorker] bypasses
+     * the network entirely and classifies via [com.uow.scan.api.ScanAiFallback].
+     */
+    fun isSmsFallbackEnabled(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_SMS_FALLBACK_ENABLED, false)
 
-    fun setSmsServerToken(context: Context, token: String) {
-        getPrefs(context).edit().putString(KEY_SMS_SERVER_TOKEN, token).apply()
+    fun setSmsFallbackEnabled(context: Context, enabled: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_SMS_FALLBACK_ENABLED, enabled).apply()
     }
 
     /**

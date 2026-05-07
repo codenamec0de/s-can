@@ -47,15 +47,25 @@ class AlertAdapter(
             // Title: app name
             tvAlertTitle.text = alert.appName
 
-            // Build descriptive message
+            // Build descriptive message. The `permissions` list reflects sensors
+            // actually observed in use (camera/mic) during the scan window —
+            // not the static set of granted permissions. When empty, the alert
+            // is purely about background data transfer with no sensor access
+            // detected.
             val permList = alert.permissions.joinToString(", ")
-            tvAlertMessage.text = if (alert.isSilentBackground) {
-                "${alert.appName} used ${alert.formattedDataUsed} of data silently in the background " +
-                        "(likely push notifications or background sync) while holding $permList access."
-            } else {
-                "${alert.appName} accessed $permList " +
-                        "while running in the background for ${alert.formattedDuration}. " +
-                        "During this time, the app used ${alert.formattedDataUsed} of data."
+            tvAlertMessage.text = when {
+                alert.isSilentBackground && alert.permissions.isEmpty() ->
+                    "${alert.appName} transferred ${alert.formattedDataUsed} of data silently in the background " +
+                            "(likely push notifications or background sync). No sensor access was detected during this window."
+                alert.isSilentBackground ->
+                    "${alert.appName} transferred ${alert.formattedDataUsed} of data in the background and " +
+                            "was observed using $permList during the same window."
+                alert.permissions.isEmpty() ->
+                    "${alert.appName} ran in the background for ${alert.formattedDuration} and used " +
+                            "${alert.formattedDataUsed} of data. No sensor access was detected during this window."
+                else ->
+                    "${alert.appName} was observed using $permList while running in the background for " +
+                            "${alert.formattedDuration}. During this time it used ${alert.formattedDataUsed} of data."
             }
 
             // Relative timestamp

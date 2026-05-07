@@ -18,6 +18,9 @@ import com.uow.scan.AppDetailActivity
 import com.uow.scan.R
 import com.uow.scan.model.PermissionAlert
 import com.uow.scan.util.AlertStorage
+import com.uow.scan.util.BackgroundUsageMonitor
+import com.uow.scan.util.BehaviorScorer
+import com.uow.scan.util.NotificationListenerHelper
 import com.uow.scan.util.WeeklyStatsRecorder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,6 +38,7 @@ class AlertsFragment : Fragment() {
     private lateinit var groupsContainer: LinearLayout
     private lateinit var tvEndOfTimeline: TextView
     private lateinit var btnAlertsSettings: FrameLayout
+    private lateinit var notifAccessBanner: LinearLayout
 
     private lateinit var tvMetricToday: TextView
     private lateinit var tvMetricCritical: TextView
@@ -52,6 +56,8 @@ class AlertsFragment : Fragment() {
 
     private var filter: Filter = Filter.ALL
     private var allAlerts: List<PermissionAlert> = emptyList()
+    /** Behavior-scored verdicts keyed by alert.id. Filled async after [loadAlerts]. */
+    private var scoresById: Map<String, BehaviorScorer.Score> = emptyMap()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,6 +74,7 @@ class AlertsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        refreshNotifAccessBanner()
         loadAlerts()
     }
 
@@ -78,6 +85,7 @@ class AlertsFragment : Fragment() {
         groupsContainer = view.findViewById(R.id.groupsContainer)
         tvEndOfTimeline = view.findViewById(R.id.tvEndOfTimeline)
         btnAlertsSettings = view.findViewById(R.id.btnAlertsSettings)
+        notifAccessBanner = view.findViewById(R.id.notifAccessBanner)
 
         tvMetricToday = view.findViewById(R.id.tvMetricToday)
         tvMetricCritical = view.findViewById(R.id.tvMetricCritical)
@@ -99,6 +107,12 @@ class AlertsFragment : Fragment() {
         filterCritical.setOnClickListener { setFilter(Filter.CRITICAL) }
         filterPatterns.setOnClickListener { setFilter(Filter.PATTERNS) }
         btnAlertsSettings.setOnClickListener { confirmClearAlerts() }
+        notifAccessBanner.setOnClickListener { NotificationListenerHelper.openSettings(requireContext()) }
+    }
+
+    private fun refreshNotifAccessBanner() {
+        notifAccessBanner.visibility =
+            if (NotificationListenerHelper.isGranted(requireContext())) View.GONE else View.VISIBLE
     }
 
     private fun setFilter(f: Filter) {
@@ -131,8 +145,22 @@ class AlertsFragment : Fragment() {
         filterRow.visibility = View.VISIBLE
         groupsContainer.visibility = View.VISIBLE
         emptyState.visibility = View.GONE
+
+        // First pass renders with whatever verdicts we cached on the previous
+        // load (could be empty). Then we score asynchronously and re-render
+        // when the new verdicts arrive — perceptible delay is ~50 ms tops on
+        // a real device.
         renderMetrics()
         renderGroups()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val newScores = withContext(Dispatchers.IO) {
+                BehaviorScorer.scoreAll(requireContext(), allAlerts)
+            }
+            if (!isAdded) return@launch
+            scoresById = newScores
+            renderMetrics()
+            renderGroups()
+        }
     }
 
     private fun renderMetrics() {
@@ -392,21 +420,41 @@ class AlertsFragment : Fragment() {
     private enum class Sev { BAD, WARN, OK }
 
     private fun PermissionAlert.severity(): Sev {
-        // Primary signal: data volume in background.
-        // 1+ MB of background data with sensitive permissions is "bad", otherwise warn.
-        // Silent-background (no transition recorded) but with data is at least warn.
-        val bytes = dataUsedBytes
+        // Prefer the behaviour-baseline verdict when we have one — it sees
+        // history and night-hour context, not just bytes. Falls back to a
+        // simple sensor-observed heuristic for alerts the scorer hasn't
+        // touched yet (first paint before the async score lands).
+        scoresById[id]?.let {
+            return when (it.verdict) {
+                BehaviorScorer.Verdict.SUSPICIOUS -> Sev.BAD
+                BehaviorScorer.Verdict.UNUSUAL -> Sev.WARN
+                BehaviorScorer.Verdict.NORMAL -> Sev.OK
+            }
+        }
+        val sensorObserved = permissions.isNotEmpty()
         return when {
-            bytes >= 1024L * 1024L -> Sev.BAD
-            bytes > 0 -> Sev.WARN
-            else -> Sev.WARN
+            sensorObserved && dataUsedBytes >= 1024L * 1024L -> Sev.BAD
+            sensorObserved -> Sev.WARN
+            dataUsedBytes > 0 -> Sev.WARN
+            else -> Sev.OK
         }
     }
 
     private fun primaryPermDescriptor(alert: PermissionAlert): Pair<String, Int> {
-        // Pick the first permission and map to a readable label + V4 glyph.
+        // The pill labels the *verdict* once we've scored the alert, so the
+        // user reads "NORMAL / UNUSUAL / SUSPICIOUS" — a judgement they can
+        // act on, not the underlying op name. Falls back to the legacy
+        // sensor-name pill before scoring lands.
+        scoresById[alert.id]?.let {
+            return when (it.verdict) {
+                BehaviorScorer.Verdict.NORMAL -> "Normal" to R.drawable.ic_glyph_shield
+                BehaviorScorer.Verdict.UNUSUAL -> "Unusual" to R.drawable.ic_glyph_warn
+                BehaviorScorer.Verdict.SUSPICIOUS -> "Suspicious" to R.drawable.ic_glyph_warn
+            }
+        }
         val first = alert.permissions.firstOrNull().orEmpty().uppercase()
         return when {
+            first.isEmpty() -> "Background data" to R.drawable.ic_glyph_shield
             first.contains("CAMERA") -> "Camera" to R.drawable.ic_v4_glyph_camera
             first.contains("RECORD_AUDIO") || first.contains("MICROPHONE") -> "Microphone" to R.drawable.ic_v4_glyph_mic
             first.contains("LOCATION") -> "Location" to R.drawable.ic_v4_glyph_pin
@@ -421,19 +469,85 @@ class AlertsFragment : Fragment() {
     }
 
     private fun buildAlertTitle(alert: PermissionAlert): String {
+        // When the scorer has assessed this alert, lead with its plain-language
+        // headline — that's the line the user actually reads. The legacy
+        // descriptive title is the pre-scoring fallback only.
+        scoresById[alert.id]?.let { return it.headline }
+        if (alert.permissions.isEmpty()) {
+            return if (alert.isSilentBackground)
+                "${alert.appName} sent data silently in the background"
+            else
+                "${alert.appName} sent data in the background for ${alert.formattedDuration}"
+        }
         val perm = primaryPermDescriptor(alert).first.lowercase()
         return if (alert.isSilentBackground)
-            "Silent background activity touched $perm"
+            "${alert.appName} used $perm with silent background activity"
         else
-            "Background $perm read for ${alert.formattedDuration}"
+            "${alert.appName} used $perm while backgrounded for ${alert.formattedDuration}"
     }
 
     private fun buildAlertDetail(alert: PermissionAlert): String? {
+        // Scored: headline already carries the action — the supporting line
+        // adds the why ("3× the usual amount", "matches typical behaviour").
+        // We only append the "could access" capability list when the verdict
+        // is Suspicious AND the sensor wasn't actually observed — otherwise
+        // it's noise.
+        scoresById[alert.id]?.let { score ->
+            val parts = mutableListOf(score.supporting)
+            if (score.verdict == BehaviorScorer.Verdict.SUSPICIOUS &&
+                alert.permissions.isEmpty()) {
+                val held = grantedSummaryFor(alert.packageName)
+                if (held.isNotBlank()) parts += "could also access $held"
+            }
+            return parts.joinToString(" · ")
+        }
         val parts = mutableListOf<String>()
         if (alert.dataUsedBytes > 0) parts += "${alert.formattedDataUsed} of data"
-        if (alert.permissions.size > 1) parts += "${alert.permissions.size} sensitive perms held"
+        if (alert.permissions.size > 1) parts += "${alert.permissions.size} sensors observed"
+        if (alert.permissions.isEmpty()) {
+            val held = grantedSummaryFor(alert.packageName)
+            if (held.isNotBlank()) parts += "could access $held"
+        }
         if (alert.isSilentBackground) parts += "no Activity transitions"
         return if (parts.isEmpty()) null else parts.joinToString(" · ")
+    }
+
+    /**
+     * Compact comma-joined list of the dangerous permissions [packageName]
+     * currently has granted, used as the "holds X access" context line on
+     * alerts that didn't observe any sensor use during the window.
+     * Cached per-package within the lifetime of one bind to keep listScroll
+     * cheap.
+     */
+    private val grantedCache = mutableMapOf<String, String>()
+    private fun grantedSummaryFor(packageName: String): String {
+        grantedCache[packageName]?.let { return it }
+        val ctx = context ?: return ""
+        val labels = try {
+            BackgroundUsageMonitor.getGrantedSensitivePermissions(ctx.packageManager, packageName)
+        } catch (_: Exception) {
+            emptyList()
+        }
+        // Deduplicate and trim — multiple Android perms often map to the
+        // same friendly name (e.g. fine/coarse/background location → "Location").
+        val deduped = labels
+            .map { collapseLabel(it) }
+            .distinct()
+            .take(4)
+        val summary = deduped.joinToString(", ").ifBlank { "" }
+        grantedCache[packageName] = summary
+        return summary
+    }
+
+    private fun collapseLabel(label: String): String = when {
+        label.contains("Location", ignoreCase = true) -> "Location"
+        label.contains("Contacts", ignoreCase = true) -> "Contacts"
+        label.contains("SMS", ignoreCase = true) -> "SMS"
+        label.contains("Call", ignoreCase = true) || label.equals("Phone State", ignoreCase = true) -> "Phone"
+        label.contains("Calendar", ignoreCase = true) -> "Calendar"
+        label.contains("Media", ignoreCase = true) || label.contains("Photos", ignoreCase = true) ||
+            label.contains("Videos", ignoreCase = true) || label.contains("Storage", ignoreCase = true) -> "Photos"
+        else -> label
     }
 
     private fun formatRelativeClockTime(timestamp: Long): String {

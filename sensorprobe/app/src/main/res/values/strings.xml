@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SensorProbe</string>
+    <string name="subtitle">Test harness — toggles a sensor on and holds it open from a foreground service so we can confirm S\'CAN catches it.</string>
+</resources>

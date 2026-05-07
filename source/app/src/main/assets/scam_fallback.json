@@ -1,0 +1,106 @@
+{
+  "_comment": "Cached on-device classifier used when the AI sidecar is unreachable or the demo-mode toggle is on. Algorithm: lowercase SMS body, then (1) substring-match against examples, (2) sweep scam_keywords, (3) sweep safe_keywords, (4) fall back to default_unverifiable.",
+  "examples": [
+    {
+      "match": "tebrikler",
+      "verdict": "SCAM",
+      "reasoning": "Turkish 'congratulations' opener — unsolicited prize-win pattern.",
+      "confidence": 0.94
+    },
+    {
+      "match": "you won",
+      "verdict": "SCAM",
+      "reasoning": "Unsolicited prize-win claim is a classic scam pattern.",
+      "confidence": 0.95
+    },
+    {
+      "match": "hi mum",
+      "verdict": "SCAM",
+      "reasoning": "Family-impersonation 'Hi Mum' scam from an unknown number requesting urgent money.",
+      "confidence": 0.93
+    },
+    {
+      "match": "hi mom",
+      "verdict": "SCAM",
+      "reasoning": "Family-impersonation 'Hi Mom' scam from an unknown number requesting urgent money.",
+      "confidence": 0.93
+    },
+    {
+      "match": "fraud team",
+      "verdict": "SCAM",
+      "reasoning": "Phone-back fraud impersonating a bank's fraud team.",
+      "confidence": 0.91
+    },
+    {
+      "match": "linkt-",
+      "verdict": "SCAM",
+      "reasoning": "Suspicious typosquat of the Linkt brand.",
+      "confidence": 0.92
+    },
+    {
+      "match": "auspost-",
+      "verdict": "SCAM",
+      "reasoning": "Suspicious typosquat of the Australia Post brand.",
+      "confidence": 0.92
+    },
+    {
+      "match": "ato refund",
+      "verdict": "SCAM",
+      "reasoning": "ATO-impersonation refund phishing — the ATO never sends refunds via SMS link.",
+      "confidence": 0.93
+    },
+    {
+      "match": "click http://",
+      "verdict": "SCAM",
+      "reasoning": "Cleartext HTTP link in an SMS is a phishing red flag.",
+      "confidence": 0.88
+    },
+    {
+      "match": "your otp code is",
+      "verdict": "SAFE",
+      "reasoning": "Standard OTP message with no link or call to action.",
+      "confidence": 0.92
+    }
+  ],
+  "scam_keywords": [
+    "kazandiniz",
+    "iphone kazand",
+    "won prize",
+    "click here to claim",
+    "claim now",
+    "limited offer",
+    "urgent transfer",
+    "wire transfer",
+    "bsb 062",
+    "suspended account",
+    "verify your account",
+    "verify identity",
+    "bitcoin",
+    "nft mint",
+    "myki recharge",
+    "mygov refund",
+    "netflix expired",
+    "netflux",
+    "bank-verify",
+    "shady.link",
+    "bit.ly/odul"
+  ],
+  "safe_keywords": [
+    "otp code",
+    "verification code",
+    "do not share",
+    "two-factor",
+    "two factor",
+    "delivery scheduled",
+    "appointment confirmed",
+    "your booking",
+    "thank you for your purchase",
+    "kargo paketiniz",
+    "aras kargo"
+  ],
+  "default_unverifiable": {
+    "verdict": "SUSPICIOUS",
+    "reasoning": "Cached classifier could not match this message offline. Treat as unknown until the AI sidecar is reachable.",
+    "confidence": 0.5
+  }
+}
