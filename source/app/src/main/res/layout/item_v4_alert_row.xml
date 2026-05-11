@@ -151,6 +151,50 @@
                 tools:text="Coarse + fine accuracy · app was not in foreground"
                 tools:visibility="visible" />
 
+            <!-- Granular permissions: what was observed in use vs. what could be accessed -->
+            <TextView
+                android:id="@+id/tvAlertPermsObserved"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingMultiplier="1.4"
+                android:textColor="@color/v4_fg1"
+                android:textFontWeight="600"
+                android:textSize="11sp"
+                android:visibility="gone"
+                tools:text="Used Camera · Microphone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tvAlertPermsHeld"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingMultiplier="1.4"
+                android:textColor="@color/v4_fg2"
+                android:textFontWeight="500"
+                android:textSize="11sp"
+                android:visibility="gone"
+                tools:text="Could access Precise Location · Background Location · Read Contacts · Read SMS"
+                tools:visibility="visible" />
+
+            <!-- Why active in background: foreground service types, sync, push, boot, jobs -->
+            <TextView
+                android:id="@+id/tvAlertReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingMultiplier="1.4"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="500"
+                android:textSize="10.5sp"
+                android:visibility="gone"
+                tools:text="Why active: Foreground service: dataSync, location · Receives push (FCM) · Auto-starts on boot"
+                tools:visibility="visible" />
+
             <!-- Pattern card -->
             <LinearLayout
                 android:id="@+id/patternCard"

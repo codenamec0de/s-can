@@ -43,6 +43,24 @@ interface PermissionAccessDao {
     """)
     suspend fun backgroundOpsInWindow(pkg: String, windowStart: Long, windowEnd: Long): List<String>
 
+    /**
+     * Returns full event rows that overlap [windowStart, windowEnd], ordered by
+     * start time. Use this when the caller needs the *timeline* (timestamps and
+     * durations of each access) — `opsInWindow` only returns distinct op names.
+     */
+    @Query("""
+        SELECT * FROM permission_access_events
+        WHERE packageName = :pkg
+        AND startedAt <= :windowEnd
+        AND (endedAt IS NULL OR endedAt >= :windowStart)
+        ORDER BY startedAt ASC
+    """)
+    suspend fun accessesInWindow(
+        pkg: String,
+        windowStart: Long,
+        windowEnd: Long
+    ): List<PermissionAccessEntity>
+
     @Query("DELETE FROM permission_access_events WHERE startedAt < :before")
     suspend fun pruneOlderThan(before: Long)
 }

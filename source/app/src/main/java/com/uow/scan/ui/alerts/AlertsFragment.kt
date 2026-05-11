@@ -18,6 +18,8 @@ import com.uow.scan.AppDetailActivity
 import com.uow.scan.R
 import com.uow.scan.model.PermissionAlert
 import com.uow.scan.util.AlertStorage
+import com.uow.scan.util.AttributionEngine
+import com.uow.scan.util.BackgroundReasonInspector
 import com.uow.scan.util.BackgroundUsageMonitor
 import com.uow.scan.util.BehaviorScorer
 import com.uow.scan.util.NotificationListenerHelper
@@ -58,6 +60,9 @@ class AlertsFragment : Fragment() {
     private var allAlerts: List<PermissionAlert> = emptyList()
     /** Behavior-scored verdicts keyed by alert.id. Filled async after [loadAlerts]. */
     private var scoresById: Map<String, BehaviorScorer.Score> = emptyMap()
+    /** Per-alert attribution (state-bucketed bytes + sensor timeline + reasons),
+     *  filled async after [loadAlerts]. */
+    private var attributionsById: Map<String, AttributionEngine.Attribution> = emptyMap()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -159,6 +164,21 @@ class AlertsFragment : Fragment() {
             if (!isAdded) return@launch
             scoresById = newScores
             renderMetrics()
+            renderGroups()
+        }
+        // Attribution runs in parallel with scoring — both feed the same row
+        // render. NetworkStats.queryDetails + DAO read can take ~50–200 ms per
+        // alert on a real device, so we keep the work on Dispatchers.IO and
+        // only re-render once the full map is built.
+        viewLifecycleOwner.lifecycleScope.launch {
+            val ctx = requireContext()
+            val map = withContext(Dispatchers.IO) {
+                allAlerts.associate { alert ->
+                    alert.id to AttributionEngine.attribute(ctx, alert)
+                }
+            }
+            if (!isAdded) return@launch
+            attributionsById = map
             renderGroups()
         }
     }
@@ -265,6 +285,9 @@ class AlertsFragment : Fragment() {
         val tvTime = view.findViewById<TextView>(R.id.tvAlertTime)
         val tvTitle = view.findViewById<TextView>(R.id.tvAlertTitle)
         val tvDetail = view.findViewById<TextView>(R.id.tvAlertDetail)
+        val tvPermsObserved = view.findViewById<TextView>(R.id.tvAlertPermsObserved)
+        val tvPermsHeld = view.findViewById<TextView>(R.id.tvAlertPermsHeld)
+        val tvReason = view.findViewById<TextView>(R.id.tvAlertReason)
         val divider = view.findViewById<View>(R.id.alertRowDivider)
 
         // Avatar
@@ -288,6 +311,34 @@ class AlertsFragment : Fragment() {
         } else {
             tvDetail.visibility = View.VISIBLE
             tvDetail.text = detail
+        }
+
+        // Granular permission breakdown: what was actively observed vs. what
+        // the app could have silently used (location/contacts/SMS — all the
+        // ops Android won't let third-party apps observe at runtime).
+        val (observedText, heldText) = buildPermissionsBreakdown(alert)
+        if (observedText.isNullOrBlank()) {
+            tvPermsObserved.visibility = View.GONE
+        } else {
+            tvPermsObserved.visibility = View.VISIBLE
+            tvPermsObserved.text = observedText
+        }
+        if (heldText.isNullOrBlank()) {
+            tvPermsHeld.visibility = View.GONE
+        } else {
+            tvPermsHeld.visibility = View.VISIBLE
+            tvPermsHeld.text = heldText
+        }
+
+        // Why active in background: derived from the app's manifest (foreground
+        // service types, sync adapters, FCM push, JobScheduler, boot-completed).
+        // Tells the user *why* this app sent data even though it wasn't on screen.
+        val reasonText = buildBackgroundReason(alert)
+        if (reasonText.isNullOrBlank()) {
+            tvReason.visibility = View.GONE
+        } else {
+            tvReason.visibility = View.VISIBLE
+            tvReason.text = reasonText
         }
 
         // Permission pill
@@ -489,65 +540,98 @@ class AlertsFragment : Fragment() {
     private fun buildAlertDetail(alert: PermissionAlert): String? {
         // Scored: headline already carries the action — the supporting line
         // adds the why ("3× the usual amount", "matches typical behaviour").
-        // We only append the "could access" capability list when the verdict
-        // is Suspicious AND the sensor wasn't actually observed — otherwise
-        // it's noise.
+        // The granular "Used / Could access" breakdown is rendered separately
+        // by buildPermissionsBreakdown(), so we no longer mix it in here.
         scoresById[alert.id]?.let { score ->
-            val parts = mutableListOf(score.supporting)
-            if (score.verdict == BehaviorScorer.Verdict.SUSPICIOUS &&
-                alert.permissions.isEmpty()) {
-                val held = grantedSummaryFor(alert.packageName)
-                if (held.isNotBlank()) parts += "could also access $held"
-            }
-            return parts.joinToString(" · ")
+            return score.supporting
         }
         val parts = mutableListOf<String>()
         if (alert.dataUsedBytes > 0) parts += "${alert.formattedDataUsed} of data"
         if (alert.permissions.size > 1) parts += "${alert.permissions.size} sensors observed"
-        if (alert.permissions.isEmpty()) {
-            val held = grantedSummaryFor(alert.packageName)
-            if (held.isNotBlank()) parts += "could access $held"
-        }
         if (alert.isSilentBackground) parts += "no Activity transitions"
         return if (parts.isEmpty()) null else parts.joinToString(" · ")
     }
 
     /**
-     * Compact comma-joined list of the dangerous permissions [packageName]
-     * currently has granted, used as the "holds X access" context line on
-     * alerts that didn't observe any sensor use during the window.
-     * Cached per-package within the lifetime of one bind to keep listScroll
-     * cheap.
+     * Builds the two granular detail lines for an alert:
+     *  - first: ops actively observed during the window (Camera / Microphone — the only
+     *    ones Android lets a non-privileged app watch via public callbacks).
+     *  - second: every sensitive permission the app currently holds, with full
+     *    granular labels ("Precise Location", "Background Location", "Approximate
+     *    Location" — not collapsed to just "Location"), so the user can see exactly
+     *    what data this app could have reached while it was sending traffic.
+     *
+     * Anything in `observed` is filtered out of `held` so we don't repeat
+     * "Camera" on both lines when the app actually used it.
      */
-    private val grantedCache = mutableMapOf<String, String>()
-    private fun grantedSummaryFor(packageName: String): String {
+    private fun buildPermissionsBreakdown(alert: PermissionAlert): Pair<String?, String?> {
+        val observed = alert.permissions.filter { it.isNotBlank() }.distinct()
+        val heldRaw = grantedSensitivePermsFor(alert.packageName)
+        val held = heldRaw.filter { label ->
+            observed.none { it.equals(label, ignoreCase = true) }
+        }
+
+        val observedLine = if (observed.isEmpty()) null
+            else "Used " + observed.joinToString(" · ")
+
+        val heldLine = if (held.isEmpty()) null
+            else (if (observed.isEmpty()) "Could access " else "Could also access ") +
+                held.joinToString(" · ")
+
+        return observedLine to heldLine
+    }
+
+    /**
+     * Full granular list of dangerous permissions [packageName] currently holds.
+     * Unlike the previous `grantedSummaryFor`, labels are NOT collapsed —
+     * "Precise Location" stays distinct from "Background Location" so the user
+     * can see exactly what each app can reach. Cached per-package for the
+     * lifetime of one bind pass to keep list scroll cheap.
+     */
+    private val grantedCache = mutableMapOf<String, List<String>>()
+    private fun grantedSensitivePermsFor(packageName: String): List<String> {
         grantedCache[packageName]?.let { return it }
-        val ctx = context ?: return ""
+        val ctx = context ?: return emptyList()
         val labels = try {
             BackgroundUsageMonitor.getGrantedSensitivePermissions(ctx.packageManager, packageName)
         } catch (_: Exception) {
             emptyList()
         }
-        // Deduplicate and trim — multiple Android perms often map to the
-        // same friendly name (e.g. fine/coarse/background location → "Location").
-        val deduped = labels
-            .map { collapseLabel(it) }
-            .distinct()
-            .take(4)
-        val summary = deduped.joinToString(", ").ifBlank { "" }
-        grantedCache[packageName] = summary
-        return summary
+        val deduped = labels.distinct()
+        grantedCache[packageName] = deduped
+        return deduped
     }
 
-    private fun collapseLabel(label: String): String = when {
-        label.contains("Location", ignoreCase = true) -> "Location"
-        label.contains("Contacts", ignoreCase = true) -> "Contacts"
-        label.contains("SMS", ignoreCase = true) -> "SMS"
-        label.contains("Call", ignoreCase = true) || label.equals("Phone State", ignoreCase = true) -> "Phone"
-        label.contains("Calendar", ignoreCase = true) -> "Calendar"
-        label.contains("Media", ignoreCase = true) || label.contains("Photos", ignoreCase = true) ||
-            label.contains("Videos", ignoreCase = true) || label.contains("Storage", ignoreCase = true) -> "Photos"
-        else -> label
+    /**
+     * Builds the "Why active in background" line.
+     *
+     * If [AttributionEngine] has finished computing for this alert, we surface
+     * the rich evidence-backed explanation: concrete sensor-access timestamps,
+     * background-vs-foreground byte split (true OS attribution via
+     * `NetworkStats.Bucket.state`), mobile-vs-Wi-Fi split, and the most-likely
+     * declared mechanism. This is the most accurate explanation possible
+     * without `WATCH_APPOPS` (signature-only, unavailable to third-party apps).
+     *
+     * Before attribution lands, we fall back to the manifest-only summary —
+     * still useful, just less specific.
+     */
+    private fun buildBackgroundReason(alert: PermissionAlert): String? {
+        val ctx = context ?: return null
+
+        attributionsById[alert.id]?.let { attr ->
+            val rich = AttributionEngine.explain(attr)
+            if (rich.isNotBlank()) return "Why active: $rich"
+            // Attribution computed but had nothing useful — fall through to
+            // the manifest-only summary so we still show the capability list.
+        }
+
+        val reasons = try {
+            BackgroundReasonInspector.inspect(ctx, alert.packageName)
+        } catch (_: Exception) {
+            return null
+        }
+        val summary = BackgroundReasonInspector.summary(reasons) ?: return null
+        return "Why active: $summary"
     }
 
     private fun formatRelativeClockTime(timestamp: Long): String {
