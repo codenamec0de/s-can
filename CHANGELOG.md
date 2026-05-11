@@ -7,6 +7,83 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.4] — 2026-05-11
+
+The Activity → Alerts page now explains *which* permissions an app could
+use and *why* it was running in the background, instead of just naming
+the app and the byte count. Every alert row gains a granular permission
+breakdown (precise / approximate / background location stay distinct
+instead of collapsing to "Location") and a "Why active" line that cites
+real evidence: OS-confirmed sensor accesses with timestamps, the
+foreground/background split of the bytes themselves, and the most-
+likely declared mechanism.
+
+### Added
+- **`util/AttributionEngine.kt`** — combines three independent OS-
+  attributed signals into a per-alert explanation: state-bucketed
+  network bytes (`NetworkStatsManager.queryDetails` with
+  `Bucket.STATE_FOREGROUND` vs `STATE_DEFAULT`), the Camera / Mic /
+  Location access timeline from `PermissionAccessEntity`, and the
+  manifest signals from the new inspector below. The
+  `mostLikelyMechanism()` inference cross-references all three: when
+  an observed sensor matches a declared foreground service type the
+  cause is named with high confidence ("microphone foreground
+  service"); otherwise declared mechanisms are ranked by how
+  plausibly each drives unsolicited background bytes.
+- **`util/BackgroundReasonInspector.kt`** — manifest-level
+  introspection that surfaces *how* a third-party app is allowed to
+  run in the background. Reads `ServiceInfo.foregroundServiceType` for
+  every declared service (decodes the bitmask into named types:
+  dataSync, location, mediaPlayback, phoneCall, mediaProjection,
+  camera, microphone, connectedDevice, plus the API-34 additions),
+  detects FCM registration, sync adapters, JobScheduler use,
+  background-location grant, and boot-completed wake-up. All cached
+  per-package.
+- **`DataUsageHelper.getAppDataUsageBuckets()`** — per-UID,
+  state-bucketed bytes via `queryDetails` (not `queryDetailsForUid`,
+  which is privacy-locked on Samsung OneUI 5+ for non-self UIDs).
+  Returns `null` on devices that block per-UID detail queries so the
+  engine can fall back gracefully without dropping the rest of the
+  explanation.
+- **`PermissionAccessDao.accessesInWindow()`** — full event rows with
+  timestamps and foreground state for any sensor access overlapping
+  an alert window; complements the existing distinct-op queries used
+  by the scorer.
+
+### Changed
+- **Alert row layout** (`item_v4_alert_row.xml`) — three new TextViews
+  under the existing detail line: `tvAlertPermsObserved` (bold; lists
+  ops actively observed during the window), `tvAlertPermsHeld` (lists
+  every dangerous permission the app currently holds, with full
+  granular labels), and `tvAlertReason` (the "Why active" evidence
+  line populated by the attribution engine).
+- **`AlertsFragment`** — granted-permission labels are no longer
+  collapsed; "Precise Location", "Approximate Location" and
+  "Background Location" stay distinct. The "could access" list is
+  shown for every alert (previously gated on Suspicious + no-observed-
+  sensor verdict). New `attributionsById` map fills async in parallel
+  with `BehaviorScorer.scoreAll` and triggers a re-render once the
+  rich explanation is ready.
+- **`buildBackgroundReason()`** prefers the attribution engine's
+  evidence-backed explanation when ready; falls back to the
+  manifest-only capability summary while it loads.
+
+### Notes
+- Camera / Mic / Location are the only ops a non-privileged app can
+  *observe* in real time. SMS, Contacts, Calendar etc. continue to
+  fall back to capability-only ("could access") labels because the
+  underlying `WATCH_APPOPS` permission is `signature|privileged|appop`
+  in AOSP and cannot be granted to a third-party app on a stock
+  retail device (`pm grant` rejects signature-class permissions; the
+  Shizuku route requires ADB-on-every-boot or root).
+- State-bucketed bytes are unavailable for non-self UIDs on Samsung
+  OneUI 5+; on those devices the engine drops the bg/fg byte split
+  and renders the rest of the explanation.
+- No database schema change. The DAO addition is a new query against
+  the existing `permission_access_events` table.
+
+---
+
 ## [1.4.3] — 2026-05-07
 
 Background-sensor detection re-grounded on real, observed signals.

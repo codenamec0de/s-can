@@ -226,6 +226,81 @@ object DataUsageHelper {
         return result
     }
 
+    /**
+     * Per-UID data usage with **process-state attribution** for the window
+     * [startTime, endTime]. Returns null if the OEM/device blocks per-UID
+     * detail queries (notably some OneUI builds where queryDetails returns
+     * empty for non-self UIDs even with PACKAGE_USAGE_STATS).
+     *
+     * Uses [NetworkStatsManager.queryDetails] (NOT `queryDetailsForUid`,
+     * which is privacy-locked on Samsung). Each bucket carries
+     * [NetworkStats.Bucket.getState] — STATE_FOREGROUND vs. STATE_DEFAULT
+     * (background). This is the only OS-side signal that lets a non-
+     * privileged app distinguish "X bytes sent while offscreen" from
+     * "X bytes sent while user-visible" without WATCH_APPOPS.
+     */
+    data class StateBytes(
+        val foregroundBytes: Long,
+        val backgroundBytes: Long,
+        val mobileBytes: Long,
+        val wifiBytes: Long,
+        val totalBytes: Long,
+    )
+
+    fun getAppDataUsageBuckets(
+        context: Context,
+        uid: Int,
+        startTime: Long,
+        endTime: Long,
+    ): StateBytes? {
+        if (!hasUsageStatsPermission(context)) return null
+        val nsm = context.getSystemService(Context.NETWORK_STATS_SERVICE)
+            as? NetworkStatsManager ?: return null
+
+        var fg = 0L
+        var bg = 0L
+        var mobile = 0L
+        var wifi = 0L
+        var anyBucketForUid = false
+
+        fun consume(networkType: Int, subscriberId: String?, isWifi: Boolean) {
+            try {
+                val stats = nsm.queryDetails(networkType, subscriberId, startTime, endTime)
+                val bucket = NetworkStats.Bucket()
+                while (stats.hasNextBucket()) {
+                    stats.getNextBucket(bucket)
+                    if (bucket.uid != uid) continue
+                    anyBucketForUid = true
+                    val b = bucket.rxBytes + bucket.txBytes
+                    if (isWifi) wifi += b else mobile += b
+                    when (bucket.state) {
+                        NetworkStats.Bucket.STATE_FOREGROUND -> fg += b
+                        NetworkStats.Bucket.STATE_DEFAULT -> bg += b
+                        // STATE_ALL = -1: bucket already aggregated; can't attribute
+                        // to a specific state. Skip the state attribution but the
+                        // total still counted toward mobile/wifi above.
+                    }
+                }
+                stats.close()
+            } catch (_: Exception) {
+                // SecurityException on Samsung OneUI 5+ for cross-UID queries —
+                // fall back to total-only via the caller's existing path.
+            }
+        }
+
+        consume(ConnectivityManager.TYPE_MOBILE, getSubscriberId(context), isWifi = false)
+        consume(ConnectivityManager.TYPE_WIFI, "", isWifi = true)
+
+        if (!anyBucketForUid) return null
+        return StateBytes(
+            foregroundBytes = fg,
+            backgroundBytes = bg,
+            mobileBytes = mobile,
+            wifiBytes = wifi,
+            totalBytes = mobile + wifi,
+        )
+    }
+
     private fun getSubscriberId(context: Context): String? {
         return try {
             val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
