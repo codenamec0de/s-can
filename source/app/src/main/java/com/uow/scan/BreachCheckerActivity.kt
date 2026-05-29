@@ -574,14 +574,13 @@ class BreachCheckerActivity : AppCompatActivity() {
         return PreferencesManager.getBreachAddresses(this).firstOrNull()
     }
 
-    // Bundled HIBP API key for demo / tester builds — paid by the developer,
-    // intentionally embedded so testers don't need to provision their own key.
-    private val embeddedHibpApiKey = "781dcc5259a6477995aa3ebf9f7f3aa2"
-
-    private fun getApiKey(): String? = embeddedHibpApiKey
+    // Bundled HIBP API key for demo / tester builds. The value is injected at build time from
+    // the gitignored local.properties (HIBP_API_KEY) via BuildConfig, so it is NOT committed to
+    // source control. Blank when unconfigured — the screen then prompts to add a key.
+    private fun getApiKey(): String? = BuildConfig.HIBP_API_KEY.ifBlank { null }
 
     @Suppress("unused")
-    private fun saveApiKey(key: String) { /* no-op: key is bundled */ }
+    private fun saveApiKey(key: String) { /* no-op: key is provided at build time */ }
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 

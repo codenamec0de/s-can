@@ -56,6 +56,11 @@ and crash-resistant.
 - Screen background work is `viewLifecycleOwner`-scoped (cancelled the moment you
   leave a screen); findings and the sensor timeline use bounded DB queries.
 
+### Security
+- The bundled HIBP API key is **no longer hardcoded in source** — it's injected at
+  build time from a gitignored `local.properties` (`HIBP_API_KEY`) via `BuildConfig`,
+  so it never lives in version control.
+
 ### Fixed
 - Fragment detach crashes on fast tab switches (Audit / Home).
 - Onboarding: batched permission requests no longer interrupt each other, the

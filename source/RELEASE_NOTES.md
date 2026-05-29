@@ -68,6 +68,11 @@ the UI is consistent end-to-end, and the app is more responsive and crash-resist
   screen (view-lifecycle scoped), avoiding leaked coroutines and redundant CPU.
 - Findings and the sensor-access timeline use **bounded database queries**.
 
+### 🔐 Security
+- The bundled HIBP API key is **no longer hardcoded in source** — it's injected at build time
+  from a gitignored `local.properties` (`HIBP_API_KEY`) via `BuildConfig`, so it never lives in
+  version control.
+
 ### 🐛 Other fixes
 - Fixed Home "Needs attention" rows opening a blank screen (wrong navigation key).
 - The device-security score is now actually computed, so the exported PDF report contains real
