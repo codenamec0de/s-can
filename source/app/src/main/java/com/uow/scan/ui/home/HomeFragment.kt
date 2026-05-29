@@ -22,10 +22,12 @@ import com.uow.scan.SmsOnboardingActivity
 import com.uow.scan.SmsScamActivity
 import com.uow.scan.WifiSecurityActivity
 import com.uow.scan.data.ScanDatabase
-import com.uow.scan.model.PermissionAlert
 import com.uow.scan.util.AlertStorage
+import com.uow.scan.util.DemoDataSeeder
+import com.uow.scan.util.DeviceSecurityChecker
 import com.uow.scan.util.PreferencesManager
 import com.uow.scan.util.ScanRunner
+import com.uow.scan.util.SensorAccessFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -70,6 +72,7 @@ class HomeFragment : Fragment() {
         renderGreetingAndStatus()
         renderTools()
         renderAttention()
+        recordDeviceSecurity()
     }
 
     override fun onResume() {
@@ -111,6 +114,25 @@ class HomeFragment : Fragment() {
         tvSeeAllAttention.setOnClickListener {
             (activity as? MainActivity)?.navigateToActivity()
         }
+        // Hidden presenter aid: long-press the greeting to load realistic demo data so no
+        // headline screen is empty on a clean device. Invisible to an audience.
+        tvGreetingHead.setOnLongClickListener {
+            seedDemoData()
+            true
+        }
+    }
+
+    private fun seedDemoData() {
+        val ctx = context ?: return
+        viewLifecycleOwner.lifecycleScope.launch {
+            runCatching { DemoDataSeeder.seed(ctx) }
+            if (!isAdded || view == null) return@launch
+            android.widget.Toast.makeText(
+                ctx, getString(R.string.demo_data_loaded), android.widget.Toast.LENGTH_SHORT
+            ).show()
+            renderGreetingAndStatus()
+            renderAttention()
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────
@@ -140,15 +162,16 @@ class HomeFragment : Fragment() {
         )
 
         // Status numbers
-        lifecycleScope.launch {
-            val findings = withContext(Dispatchers.IO) {
-                AlertStorage.getAlerts(ctx)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val findingCount = withContext(Dispatchers.IO) {
+                AlertStorage.getAlerts(ctx).size
             }
-            val findingCount = findings.size
             val appsCount = withContext(Dispatchers.IO) {
                 ScanDatabase.getInstance(ctx).scanResultDao().getAll().size
             }
             val lastScan = PreferencesManager.getLastScanTime(ctx)
+
+            if (!isAdded || view == null) return@launch
 
             // Greeting sub
             tvGreetingSub.text = when (findingCount) {
@@ -197,15 +220,30 @@ class HomeFragment : Fragment() {
         btnScan.setText(R.string.home_cta_scanning)
         btnScan.icon = null
         btnScan.isEnabled = false
-        lifecycleScope.launch {
-            ScanRunner.runFullScan(ctx)
-            PreferencesManager.setLastScanTime(ctx, System.currentTimeMillis())
-            scanning = false
-            btnScan.setText(R.string.home_cta_scan)
-            btnScan.setIconResource(R.drawable.ic_glyph_refresh)
-            btnScan.isEnabled = true
-            renderGreetingAndStatus()
-            renderAttention()
+        var ok = false
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                // ScanRunner manages its own dispatchers; setLastScanTime is set inside it.
+                ScanRunner.runFullScan(ctx)
+                ok = true
+            } catch (e: Exception) {
+                android.util.Log.e("HomeFragment", "Scan failed", e)
+                if (isAdded) android.widget.Toast.makeText(
+                    ctx, getString(R.string.home_scan_failed), android.widget.Toast.LENGTH_SHORT
+                ).show()
+            } finally {
+                scanning = false
+                // Always restore the button to a usable state, even on failure or if the
+                // view is being torn down — otherwise the Scan CTA gets stuck on "Scanning…".
+                if (isAdded && view != null) {
+                    btnScan.setText(R.string.home_cta_scan)
+                    btnScan.setIconResource(R.drawable.ic_glyph_refresh)
+                    btnScan.isEnabled = true
+                    renderGreetingAndStatus()
+                    renderAttention()
+                    if (ok) celebrate()
+                }
+            }
         }
     }
 
@@ -366,60 +404,88 @@ class HomeFragment : Fragment() {
 
     private fun renderAttention() {
         val ctx = context ?: return
-        lifecycleScope.launch {
-            val alerts = withContext(Dispatchers.IO) {
-                AlertStorage.getAlerts(ctx)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val now = System.currentTimeMillis()
+            val weekAgo = now - 7L * 24 * 60 * 60 * 1000
+            val rows = withContext(Dispatchers.IO) {
+                val db = ScanDatabase.getInstance(ctx)
+                val pm = ctx.packageManager
+                // Only genuine concerns: real sensor accesses (camera/mic/location) that
+                // happened while the app was in the BACKGROUND. We deliberately do NOT surface
+                // ordinary background network data here — virtually every app uses it (push,
+                // sync), so flagging it just alarms users over something harmless.
+                db.permissionAccessDao().recentAccesses(weekAgo, 40)
+                    .filter { !it.foregroundAtStart }
+                    .map { acc ->
+                        val label = appLabel(pm, acc.packageName)
+                        AttnRow(
+                            timestamp = acc.startedAt,
+                            severity = Severity.BAD,
+                            packageName = acc.packageName,
+                            title = "$label — ${SensorAccessFormat.title(acc).replaceFirstChar { it.lowercase() }}",
+                            detail = SensorAccessFormat.detail(acc, now)
+                        )
+                    }
                     .sortedByDescending { it.timestamp }
                     .take(3)
             }
 
+            if (!isAdded || view == null) return@launch
+
             attentionContainer.removeAllViews()
             attentionContainer.addView(tvAttentionEmpty)
 
-            if (alerts.isEmpty()) {
+            if (rows.isEmpty()) {
                 tvAttentionEmpty.visibility = View.VISIBLE
                 return@launch
             }
             tvAttentionEmpty.visibility = View.GONE
 
             val inflater = LayoutInflater.from(ctx)
-            alerts.forEachIndexed { i, alert ->
-                val row = inflater.inflate(
+            rows.forEachIndexed { i, item ->
+                val rowView = inflater.inflate(
                     R.layout.item_home_finding_row, attentionContainer, false
                 )
-                bindFindingRow(row, alert, isLast = i == alerts.size - 1)
-                attentionContainer.addView(row)
+                bindAttnRow(rowView, item)
+                attentionContainer.addView(rowView)
+                if (i < rows.size - 1) {
+                    val divider = View(ctx).apply {
+                        setBackgroundColor(ContextCompat.getColor(ctx, R.color.v4_hairline))
+                    }
+                    attentionContainer.addView(divider, ViewGroup.LayoutParams.MATCH_PARENT, 1)
+                }
             }
         }
     }
 
-    private fun bindFindingRow(row: View, alert: PermissionAlert, isLast: Boolean) {
-        val severity = severityFor(alert)
+    private data class AttnRow(
+        val timestamp: Long,
+        val severity: Severity,
+        val packageName: String,
+        val title: String,
+        val detail: String,
+    )
+
+    private fun appLabel(pm: android.content.pm.PackageManager, pkg: String): String = try {
+        pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString()
+    } catch (e: Exception) {
+        pkg
+    }
+
+    private fun bindAttnRow(row: View, item: AttnRow) {
         row.findViewById<View>(R.id.findingDot).setBackgroundResource(
-            when (severity) {
+            when (item.severity) {
                 Severity.BAD -> R.drawable.bg_v4_sev_dot_bad
                 Severity.WARN -> R.drawable.bg_v4_sev_dot_warn
                 Severity.OK -> R.drawable.bg_v4_sev_dot_ok
             }
         )
-
-        val title = row.findViewById<TextView>(R.id.findingText)
-        val detail = row.findViewById<TextView>(R.id.findingDetail)
-        title.text = naturalTitle(alert)
-        detail.text = naturalDetail(alert)
-
-        if (!isLast) {
-            // Add a 1dp hairline divider after this row
-            val divider = View(row.context).apply {
-                setBackgroundColor(ContextCompat.getColor(context, R.color.v4_hairline))
-            }
-            attentionContainer.addView(divider, ViewGroup.LayoutParams.MATCH_PARENT, 1)
-        }
+        row.findViewById<TextView>(R.id.findingText).text = item.title
+        row.findViewById<TextView>(R.id.findingDetail).text = item.detail
 
         row.setOnClickListener {
             val intent = Intent(row.context, AppDetailActivity::class.java).apply {
-                putExtra("packageName", alert.packageName)
-                putExtra("appName", alert.appName)
+                putExtra(AppDetailActivity.EXTRA_PACKAGE_NAME, item.packageName)
             }
             startActivity(intent)
         }
@@ -427,60 +493,31 @@ class HomeFragment : Fragment() {
 
     private enum class Severity { BAD, WARN, OK }
 
-    private fun severityFor(alert: PermissionAlert): Severity {
-        // Heuristic: silent-background camera/mic/location → bad; large bg duration → warn.
-        val perm = alert.permissions.firstOrNull().orEmpty()
-        return when {
-            alert.isSilentBackground &&
-                (perm.contains("CAMERA") || perm.contains("MICROPHONE") ||
-                    perm.contains("RECORD_AUDIO") || perm.contains("LOCATION")) -> Severity.BAD
-            alert.backgroundDurationMs > 60 * 60 * 1000L -> Severity.BAD
-            else -> Severity.WARN
-        }
-    }
+    // ──────────────────────────────────────────────────────────────────────
+    // Device security (background)
+    // ──────────────────────────────────────────────────────────────────────
 
     /**
-     * "Instagram — camera accessed in background", "WhatsApp — silent contacts read".
-     * Reads as a natural finding, not a debug log line.
+     * Records the device-security score in the background (no UI) so the PDF report and
+     * other surfaces have real data to read. Best-effort; failures are logged and ignored.
      */
-    private fun naturalTitle(alert: PermissionAlert): String {
-        val verb = permissionVerb(alert.permissions.firstOrNull())
-        val prefix = if (alert.isSilentBackground) "silently " else ""
-        return "${alert.appName} — $prefix$verb"
-    }
-
-    private fun permissionVerb(p: String?): String {
-        if (p.isNullOrEmpty()) return "ran in the background"
-        val tail = p.substringAfterLast('.')
-        return when (tail) {
-            "ACCESS_FINE_LOCATION", "ACCESS_BACKGROUND_LOCATION", "ACCESS_COARSE_LOCATION" ->
-                "read your location"
-            "CAMERA" -> "accessed the camera"
-            "RECORD_AUDIO" -> "opened the microphone"
-            "READ_CONTACTS" -> "read your contacts"
-            "READ_SMS", "RECEIVE_SMS" -> "read your SMS"
-            "READ_CALL_LOG", "READ_PHONE_STATE" -> "touched call data"
-            "READ_CALENDAR" -> "read your calendar"
-            "READ_EXTERNAL_STORAGE", "READ_MEDIA_IMAGES",
-            "READ_MEDIA_VIDEO", "READ_MEDIA_AUDIO" -> "read your media"
-            else -> "used \"${tail.lowercase().replace('_', ' ')}\""
+    private fun recordDeviceSecurity() {
+        val ctx = context ?: return
+        viewLifecycleOwner.lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                runCatching { DeviceSecurityChecker.checkAndSave(ctx) }
+                    .onFailure { android.util.Log.e("HomeFragment", "Security check failed", it) }
+            }
         }
     }
 
-    /**
-     * Relative timestamp + the strongest piece of evidence we have. The exact format
-     * we pick depends on how recently the alert fired and whether it left a data
-     * footprint — silent-background events read as "silent · just now" rather than
-     * the misleading "0 min · 0 B".
-     */
-    private fun naturalDetail(alert: PermissionAlert): String {
-        val whenStr = relativeTime(alert.timestamp)
-        return when {
-            alert.isSilentBackground -> "silent · $whenStr"
-            alert.dataUsedBytes > 0 ->
-                "${alert.formattedDuration} in background · ${alert.formattedDataUsed} · $whenStr"
-            else -> "${alert.formattedDuration} in background · $whenStr"
-        }
+    /** A small confirmation haptic on scan completion — feels finished, can't crash. */
+    private fun celebrate() {
+        val haptic = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R)
+            android.view.HapticFeedbackConstants.CONFIRM
+        else
+            android.view.HapticFeedbackConstants.LONG_PRESS
+        runCatching { btnScan.performHapticFeedback(haptic) }
     }
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()

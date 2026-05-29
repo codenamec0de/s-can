@@ -140,31 +140,74 @@ object AppScanner {
         return permissions.count { it in AppInfo.SENSITIVE_PERMISSIONS }
     }
     
+    /**
+     * Spyware-hallmark capabilities — rarely legitimate, and the things that genuinely make an
+     * app dangerous: reading your texts, reading your call history, or tracking your location
+     * in the background. The presence of these (especially in combination) defines HIGH risk.
+     */
+    private val CRITICAL_PERMISSIONS = setOf(
+        "android.permission.READ_SMS",
+        "android.permission.RECEIVE_SMS",
+        "android.permission.SEND_SMS",
+        "android.permission.READ_CALL_LOG",
+        "android.permission.WRITE_CALL_LOG",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+    )
+
+    /**
+     * Notable, but commonly-legitimate, sensitive access. Storage/media and phone-state are
+     * deliberately excluded — they're near-universal and low-signal, and counting them is what
+     * pushed almost every ordinary app to HIGH under the old rule.
+     */
+    private val RISK_SENSITIVE_PERMISSIONS = setOf(
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS",
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR",
+        "android.permission.BODY_SENSORS",
+    )
+
+    /**
+     * Risk reflects how invasive an app's GRANTED permissions are — recalibrated so HIGH means
+     * a genuine surveillance profile, not merely "holds a few permissions" (the old rule branded
+     * ordinary camera/social apps HIGH, which didn't line up with having no actual findings).
+     *
+     *   HIGH   = a comms/covert-tracking capability AND other sensitive access, or two such
+     *            capabilities (e.g. an app that can read your texts and your contacts).
+     *   MEDIUM = some meaningful sensitive access, but not a surveillance profile.
+     *   LOW    = no meaningful sensitive access.
+     */
     private fun calculateRiskLevel(permissions: List<String>): RiskLevel {
-        val sensitivePermissions = permissions.filter { it in AppInfo.SENSITIVE_PERMISSIONS }
-        val hasInternet = permissions.contains("android.permission.INTERNET")
-        
-        // High risk: 3+ sensitive permissions + internet access
-        // or has access to SMS/Calls/Location in background
-        val highRiskPermissions = listOf(
-            "android.permission.READ_SMS",
-            "android.permission.SEND_SMS",
-            "android.permission.READ_CALL_LOG",
-            "android.permission.ACCESS_BACKGROUND_LOCATION",
-            "android.permission.RECORD_AUDIO",
-            "android.permission.CAMERA"
-        )
-        
-        val hasHighRiskPermission = permissions.any { it in highRiskPermissions }
-        
+        val critical = permissions.count { it in CRITICAL_PERMISSIONS }
+        val sensitive = permissions.count { it in RISK_SENSITIVE_PERMISSIONS }
         return when {
-            sensitivePermissions.size >= 3 && hasInternet && hasHighRiskPermission -> RiskLevel.HIGH
-            sensitivePermissions.size >= 2 && hasInternet -> RiskLevel.MEDIUM
-            sensitivePermissions.isNotEmpty() -> RiskLevel.MEDIUM
+            critical >= 2 || (critical >= 1 && sensitive >= 2) -> RiskLevel.HIGH
+            critical >= 1 || sensitive >= 1 -> RiskLevel.MEDIUM
             else -> RiskLevel.LOW
         }
     }
     
+    /**
+     * The risk we actually SHOW, combining permission exposure with observed evidence.
+     *
+     * [calculateRiskLevel] gives the permission *capability* (how invasive the app COULD be).
+     * But a capability with nothing observed behind it shouldn't scream HIGH — that's what made
+     * ordinary apps look dangerous. So:
+     *   • If we have a real finding (an observed background sensor access, or a critical app-
+     *     integrity issue), the app is HIGH.
+     *   • Otherwise a capability-HIGH app is shown as MEDIUM ("elevated exposure, nothing
+     *     detected"); MEDIUM/LOW pass through unchanged.
+     */
+    fun effectiveRisk(capability: RiskLevel, hasFinding: Boolean): RiskLevel = when {
+        hasFinding -> RiskLevel.HIGH
+        capability == RiskLevel.HIGH -> RiskLevel.MEDIUM
+        else -> capability
+    }
+
     fun getAppsByRiskLevel(apps: List<AppInfo>, riskLevel: RiskLevel): List<AppInfo> {
         return apps.filter { it.riskLevel == riskLevel }
     }

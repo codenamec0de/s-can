@@ -9,7 +9,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.uow.scan.util.GoogleProfilePhotoFetcher
 import com.uow.scan.util.PreferencesManager
+import com.uow.scan.util.ScanDialog
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -102,21 +102,19 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun wire2faSwitch() {
-        // 2FA state isn't stored anywhere; reflect Firebase user metadata as a proxy.
+        // 2FA enrolment isn't implemented yet, so the switch starts OFF and is presented as a
+        // roadmap item rather than a working toggle (avoids implying protection that isn't there).
         val sw = findViewById<SwitchCompat>(R.id.switch2fa)
-        sw.isChecked = FirebaseAuth.getInstance().currentUser?.providerData?.any {
-            it.providerId == "phone" || it.providerId == "google.com"
-        } == true
-        sw.setOnCheckedChangeListener { _, checked ->
-            // Placeholder: real 2FA enrolment flow ships with Firebase Auth Multi-Factor.
-            AlertDialog.Builder(this)
-                .setTitle(R.string.profile_v4_row_2fa)
-                .setMessage(
-                    if (checked) "We'll send you a verification email shortly. (Stub — real enrolment ships in v1.5.)"
-                    else "Two-factor auth disabled."
+        sw.isChecked = false
+        sw.setOnCheckedChangeListener { btn, checked ->
+            if (checked) {
+                ScanDialog.notice(
+                    context = this,
+                    title = getString(R.string.profile_v4_row_2fa),
+                    message = "Two-factor authentication is coming soon — it'll build on Firebase Auth multi-factor.",
                 )
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
+                btn.isChecked = false // not enabled yet; revert so the UI stays honest
+            }
         }
     }
 
@@ -148,46 +146,42 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun showEditDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.profile_v4_btn_edit)
-            .setMessage(
-                "Profile editing ships with v1.5. For now, manage your name and avatar through " +
-                "your Google account."
-            )
-            .setPositiveButton(android.R.string.ok, null)
-            .show()
+        ScanDialog.notice(
+            context = this,
+            title = getString(R.string.profile_v4_btn_edit),
+            message = "In-app profile editing is coming soon. For now, manage your name and avatar " +
+                "through your Google account.",
+        )
     }
 
     private fun showChangePasswordDialog() {
         val email = FirebaseAuth.getInstance().currentUser?.email
         if (email.isNullOrBlank()) {
-            AlertDialog.Builder(this)
-                .setTitle(R.string.profile_v4_row_password)
-                .setMessage("No email on file — sign in with email to enable password reset.")
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
+            ScanDialog.notice(
+                context = this,
+                title = getString(R.string.profile_v4_row_password),
+                message = "No email on file — sign in with email to enable password reset.",
+            )
             return
         }
-        AlertDialog.Builder(this)
-            .setTitle(R.string.profile_v4_row_password)
-            .setMessage("Send a password reset link to $email?")
-            .setPositiveButton("Send") { _, _ ->
-                FirebaseAuth.getInstance().sendPasswordResetEmail(email)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        ScanDialog.confirm(
+            context = this,
+            title = getString(R.string.profile_v4_row_password),
+            message = "Send a password reset link to $email?",
+            confirmText = "Send",
+        ) {
+            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+        }
     }
 
     private fun confirmDeleteAccount() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.profile_v4_btn_delete)
-            .setMessage(
-                "This permanently removes your S'CAN account and clears every preference, scan, " +
-                "and verdict on this device. This can't be undone."
-            )
-            .setPositiveButton("Delete") { _, _ -> performDelete() }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        ScanDialog.confirm(
+            context = this,
+            title = getString(R.string.profile_v4_btn_delete),
+            message = "This permanently removes your S'CAN account and clears every preference, scan, " +
+                "and verdict on this device. This can't be undone.",
+            confirmText = "Delete",
+        ) { performDelete() }
     }
 
     private fun performDelete() {

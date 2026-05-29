@@ -4,7 +4,6 @@ import android.content.Context
 import com.uow.scan.data.ScanDatabase
 import com.uow.scan.data.entity.PermissionAccessEntity
 import com.uow.scan.model.PermissionAlert
-import java.util.Calendar
 
 /**
  * Produces the most accurate per-alert "why did this app send data in the
@@ -166,34 +165,11 @@ object AttributionEngine {
     }
 
     private fun formatAccesses(accesses: List<PermissionAccessEntity>): String {
-        // Group by op so multiple Camera reads collapse to "Camera 3× (10:01, 10:04, 10:09)".
-        val byOp = accesses.groupBy { it.op.uppercase() }
-        return byOp.entries.joinToString(" · ") { (op, list) ->
-            val opName = friendlyOp(op)
-            when {
-                list.size == 1 -> "$opName accessed at ${formatHms(list[0].startedAt)}"
-                list.size in 2..3 -> "$opName accessed at " +
-                    list.joinToString(", ") { formatHms(it.startedAt) }
-                else -> "$opName accessed ${list.size}× (first ${formatHms(list.first().startedAt)})"
-            }
-        }
-    }
-
-    private fun friendlyOp(op: String): String = when (op) {
-        "CAMERA" -> "Camera"
-        "MICROPHONE", "MIC" -> "Microphone"
-        "LOCATION" -> "Location"
-        else -> op.lowercase().replaceFirstChar { it.uppercase() }
-    }
-
-    private fun formatHms(ts: Long): String {
-        val cal = Calendar.getInstance().apply { timeInMillis = ts }
-        return String.format(
-            "%02d:%02d:%02d",
-            cal.get(Calendar.HOUR_OF_DAY),
-            cal.get(Calendar.MINUTE),
-            cal.get(Calendar.SECOND)
-        )
+        // Each access reads consistently with App Info / Home via the shared formatter:
+        // "Camera in background 2m14s at 10:01". Cap at 3 so the line stays scannable.
+        val sorted = accesses.sortedBy { it.startedAt }
+        val shown = sorted.take(3).joinToString(" · ") { SensorAccessFormat.inlineLabel(it) }
+        return if (sorted.size > 3) "$shown · +${sorted.size - 3} more" else shown
     }
 
     /**

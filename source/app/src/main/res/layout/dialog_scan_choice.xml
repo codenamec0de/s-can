@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- V4-styled single-select list dialog. Rows are added programmatically by ScanDialog.choice. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_v4_surface"
+    android:orientation="vertical"
+    android:paddingHorizontal="18dp"
+    android:paddingTop="22dp"
+    android:paddingBottom="12dp">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="4dp"
+        android:fontFamily="@font/montserrat"
+        android:letterSpacing="-0.015"
+        android:textColor="@color/v4_fg0"
+        android:textFontWeight="600"
+        android:textSize="19sp"
+        tools:text="Keep history for" />
+
+    <LinearLayout
+        android:id="@+id/dialogChoiceContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical" />
+</LinearLayout>

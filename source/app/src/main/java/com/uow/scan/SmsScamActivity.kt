@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -14,9 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.uow.scan.adapter.SmsVerdictAdapter
 import com.uow.scan.api.ScanAiClient
+import com.uow.scan.api.ScanAiFallback
 import com.uow.scan.data.ScanDatabase
+import com.uow.scan.data.entity.SmsVerdictEntity
 import com.uow.scan.model.SmsVerdict
 import com.uow.scan.util.PreferencesManager
+import com.uow.scan.util.ScanDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,6 +39,7 @@ class SmsScamActivity : AppCompatActivity() {
     private lateinit var statusPill: LinearLayout
     private lateinit var statusPillDot: View
     private lateinit var statusPillLabel: TextView
+    private lateinit var btnTrySample: LinearLayout
     private lateinit var adapter: SmsVerdictAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +53,7 @@ class SmsScamActivity : AppCompatActivity() {
         statusPill = findViewById(R.id.statusPill)
         statusPillDot = findViewById(R.id.statusPillDot)
         statusPillLabel = findViewById(R.id.statusPillLabel)
+        btnTrySample = findViewById(R.id.btnTrySample)
 
         adapter = SmsVerdictAdapter { verdict -> showDetail(verdict) }
         rvVerdicts.layoutManager = LinearLayoutManager(this)
@@ -66,8 +70,38 @@ class SmsScamActivity : AppCompatActivity() {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
         statusPill.setOnClickListener { checkConnection() }
+        btnTrySample.setOnClickListener { insertSampleScam() }
 
         loadVerdicts()
+    }
+
+    /**
+     * Classifies a bundled sample scam message entirely on-device (no SMS or server needed)
+     * and stores the verdict, so a real SCAM card can be demonstrated on cue.
+     */
+    private fun insertSampleScam() {
+        btnTrySample.isEnabled = false
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                val body = "AusPost: your parcel is held pending a \$1.99 release fee. " +
+                    "Pay now to avoid return: auspost-au.info/track"
+                val sender = "+61 400 555 113"
+                val result = ScanAiFallback.classify(this@SmsScamActivity, body)
+                ScanDatabase.getInstance(this@SmsScamActivity).smsVerdictDao().insert(
+                    SmsVerdictEntity(
+                        sender = sender,
+                        messageBody = body,
+                        verdict = result.verdict.uppercase(),
+                        confidence = result.confidence,
+                        explanation = result.reasoning,
+                        timestamp = System.currentTimeMillis(),
+                        urlSignals = null
+                    )
+                )
+            }
+            btnTrySample.isEnabled = true
+            loadVerdicts()
+        }
     }
 
     override fun onResume() {
@@ -109,8 +143,9 @@ class SmsScamActivity : AppCompatActivity() {
 
     private fun setConnStatus(state: ConnState, label: String) {
         val (dotRes, colorRes) = when (state) {
-            ConnState.OK -> R.drawable.bg_v4_sev_dot_ok to R.color.v4_ok
-            ConnState.WARN, ConnState.CACHED -> R.drawable.bg_v4_sev_dot_warn to R.color.v4_warn
+            // CACHED = on-device classifier active: a healthy/green state, not a warning.
+            ConnState.OK, ConnState.CACHED -> R.drawable.bg_v4_sev_dot_ok to R.color.v4_ok
+            ConnState.WARN -> R.drawable.bg_v4_sev_dot_warn to R.color.v4_warn
             ConnState.BAD -> R.drawable.bg_v4_sev_dot_bad to R.color.v4_bad
             ConnState.CHECKING -> R.drawable.bg_v4_sev_dot_warn to R.color.v4_fg2
         }
@@ -154,14 +189,13 @@ class SmsScamActivity : AppCompatActivity() {
                 .smsVerdictDao().markAsRead(verdict.id)
         }
 
-        AlertDialog.Builder(this)
-            .setTitle("${verdict.verdictLabel} (${verdict.confidencePercent})")
-            .setMessage(
-                "From: ${verdict.sender}\n\n" +
+        ScanDialog.notice(
+            context = this,
+            title = "${verdict.verdictLabel} (${verdict.confidencePercent})",
+            message = "From: ${verdict.sender}\n\n" +
                 "Message:\n${verdict.messageBody}\n\n" +
-                "AI Analysis:\n${verdict.explanation}"
-            )
-            .setPositiveButton("OK", null)
-            .show()
+                "AI Analysis:\n${verdict.explanation}",
+            buttonText = "OK",
+        )
     }
 }

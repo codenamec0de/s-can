@@ -52,12 +52,29 @@ object DataUsageHelper {
     }
 
     /**
-     * Open Usage Access settings screen
+     * Open the Usage Access settings screen. Returns true if a settings screen was launched.
+     *
+     * The dedicated Usage-Access screen does not exist on some AOSP / Android Go / emulator
+     * images and throws ActivityNotFoundException — which, unguarded, crashes the onboarding
+     * flow. Guard it and fall back to the top-level Settings screen.
      */
-    fun requestUsageStatsPermission(context: Context) {
-        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        context.startActivity(intent)
+    fun requestUsageStatsPermission(context: Context): Boolean {
+        return try {
+            context.startActivity(
+                Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+            true
+        } catch (e: Exception) {
+            try {
+                context.startActivity(
+                    Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            } catch (_: Exception) {
+                // No settings activity at all — nothing more we can do.
+            }
+            false
+        }
     }
 
     /**

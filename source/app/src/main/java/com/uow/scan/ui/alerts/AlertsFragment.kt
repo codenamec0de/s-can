@@ -10,7 +10,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -20,9 +19,9 @@ import com.uow.scan.model.PermissionAlert
 import com.uow.scan.util.AlertStorage
 import com.uow.scan.util.AttributionEngine
 import com.uow.scan.util.BackgroundReasonInspector
-import com.uow.scan.util.BackgroundUsageMonitor
 import com.uow.scan.util.BehaviorScorer
 import com.uow.scan.util.NotificationListenerHelper
+import com.uow.scan.util.ScanDialog
 import com.uow.scan.util.WeeklyStatsRecorder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -223,6 +222,28 @@ class AlertsFragment : Fragment() {
             Filter.PATTERNS -> allAlerts.filter { patterns.containsKey(patternKey(it)) }
         }
 
+        // There ARE alerts (the full-screen empty-state handles zero), but this particular
+        // chip matched none. Show an inline message instead of a blank region under the chips.
+        if (filtered.isEmpty()) {
+            val pad = (24 * resources.displayMetrics.density).toInt()
+            val msg = android.widget.TextView(ctx).apply {
+                text = getString(
+                    when (filter) {
+                        Filter.CRITICAL -> R.string.alerts_v4_filter_empty_critical
+                        Filter.PATTERNS -> R.string.alerts_v4_filter_empty_patterns
+                        Filter.ALL -> R.string.alerts_v4_filter_empty_all
+                    }
+                )
+                gravity = android.view.Gravity.CENTER
+                setPadding(pad, pad, pad, pad)
+                setTextColor(ContextCompat.getColor(ctx, R.color.v4_fg3))
+                textSize = 13f
+            }
+            groupsContainer.addView(msg)
+            tvEndOfTimeline.visibility = View.GONE
+            return
+        }
+
         val today = filtered.filter { dayOffset(it.timestamp) == 0 }
         val yesterday = filtered.filter { dayOffset(it.timestamp) == 1 }
         val earlier = filtered.filter {
@@ -313,22 +334,17 @@ class AlertsFragment : Fragment() {
             tvDetail.text = detail
         }
 
-        // Granular permission breakdown: what was actively observed vs. what
-        // the app could have silently used (location/contacts/SMS — all the
-        // ops Android won't let third-party apps observe at runtime).
-        val (observedText, heldText) = buildPermissionsBreakdown(alert)
+        // Show only what was actually observed in use ("Used Camera · Microphone"). The
+        // "Could access" held-permission line was removed — it cluttered the row and listed
+        // capabilities, not real activity.
+        val observedText = buildObservedPermissions(alert)
         if (observedText.isNullOrBlank()) {
             tvPermsObserved.visibility = View.GONE
         } else {
             tvPermsObserved.visibility = View.VISIBLE
             tvPermsObserved.text = observedText
         }
-        if (heldText.isNullOrBlank()) {
-            tvPermsHeld.visibility = View.GONE
-        } else {
-            tvPermsHeld.visibility = View.VISIBLE
-            tvPermsHeld.text = heldText
-        }
+        tvPermsHeld.visibility = View.GONE
 
         // Why active in background: derived from the app's manifest (foreground
         // service types, sync adapters, FCM push, JobScheduler, boot-completed).
@@ -540,8 +556,8 @@ class AlertsFragment : Fragment() {
     private fun buildAlertDetail(alert: PermissionAlert): String? {
         // Scored: headline already carries the action — the supporting line
         // adds the why ("3× the usual amount", "matches typical behaviour").
-        // The granular "Used / Could access" breakdown is rendered separately
-        // by buildPermissionsBreakdown(), so we no longer mix it in here.
+        // The "Used …" observed-ops line is rendered separately by
+        // buildObservedPermissions(), so we no longer mix it in here.
         scoresById[alert.id]?.let { score ->
             return score.supporting
         }
@@ -553,53 +569,14 @@ class AlertsFragment : Fragment() {
     }
 
     /**
-     * Builds the two granular detail lines for an alert:
-     *  - first: ops actively observed during the window (Camera / Microphone — the only
-     *    ones Android lets a non-privileged app watch via public callbacks).
-     *  - second: every sensitive permission the app currently holds, with full
-     *    granular labels ("Precise Location", "Background Location", "Approximate
-     *    Location" — not collapsed to just "Location"), so the user can see exactly
-     *    what data this app could have reached while it was sending traffic.
-     *
-     * Anything in `observed` is filtered out of `held` so we don't repeat
-     * "Camera" on both lines when the app actually used it.
+     * The "Used …" line: ops actually observed in use during the window (Camera / Microphone /
+     * Location — the only ones a non-privileged app can confirm). Capabilities the app merely
+     * *holds* are intentionally not listed here — that's a permission audit, not real activity,
+     * and the old "Could access" line cluttered the row.
      */
-    private fun buildPermissionsBreakdown(alert: PermissionAlert): Pair<String?, String?> {
+    private fun buildObservedPermissions(alert: PermissionAlert): String? {
         val observed = alert.permissions.filter { it.isNotBlank() }.distinct()
-        val heldRaw = grantedSensitivePermsFor(alert.packageName)
-        val held = heldRaw.filter { label ->
-            observed.none { it.equals(label, ignoreCase = true) }
-        }
-
-        val observedLine = if (observed.isEmpty()) null
-            else "Used " + observed.joinToString(" · ")
-
-        val heldLine = if (held.isEmpty()) null
-            else (if (observed.isEmpty()) "Could access " else "Could also access ") +
-                held.joinToString(" · ")
-
-        return observedLine to heldLine
-    }
-
-    /**
-     * Full granular list of dangerous permissions [packageName] currently holds.
-     * Unlike the previous `grantedSummaryFor`, labels are NOT collapsed —
-     * "Precise Location" stays distinct from "Background Location" so the user
-     * can see exactly what each app can reach. Cached per-package for the
-     * lifetime of one bind pass to keep list scroll cheap.
-     */
-    private val grantedCache = mutableMapOf<String, List<String>>()
-    private fun grantedSensitivePermsFor(packageName: String): List<String> {
-        grantedCache[packageName]?.let { return it }
-        val ctx = context ?: return emptyList()
-        val labels = try {
-            BackgroundUsageMonitor.getGrantedSensitivePermissions(ctx.packageManager, packageName)
-        } catch (_: Exception) {
-            emptyList()
-        }
-        val deduped = labels.distinct()
-        grantedCache[packageName] = deduped
-        return deduped
+        return if (observed.isEmpty()) null else "Used " + observed.joinToString(" · ")
     }
 
     /**
@@ -764,14 +741,14 @@ class AlertsFragment : Fragment() {
     // ------------------------------------------------------------------
 
     private fun confirmClearAlerts() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Clear all alerts?")
-            .setMessage("This will remove all background usage alerts.")
-            .setPositiveButton("Clear") { _, _ ->
-                AlertStorage.clearAlerts(requireContext())
-                loadAlerts()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        ScanDialog.confirm(
+            context = requireContext(),
+            title = "Clear all alerts?",
+            message = "This will remove all background usage alerts.",
+            confirmText = "Clear",
+        ) {
+            AlertStorage.clearAlerts(requireContext())
+            loadAlerts()
+        }
     }
 }

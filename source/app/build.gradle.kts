@@ -1,8 +1,19 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
+}
+
+// HIBP API key is injected from the gitignored local.properties (or a HIBP_API_KEY env var) so
+// it never lives in source control. Blank when unconfigured.
+val hibpApiKey: String = run {
+    val props = Properties()
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { props.load(it) }
+    props.getProperty("HIBP_API_KEY") ?: System.getenv("HIBP_API_KEY") ?: ""
 }
 
 android {
@@ -13,10 +24,12 @@ android {
         applicationId = "com.uow.scan"
         minSdk = 26
         targetSdk = 34
-        versionCode = 6
-        versionName = "1.4.4"
+        versionCode = 7
+        versionName = "1.4.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "HIBP_API_KEY", "\"$hibpApiKey\"")
     }
 
     buildTypes {

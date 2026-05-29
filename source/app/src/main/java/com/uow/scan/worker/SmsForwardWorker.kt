@@ -37,17 +37,7 @@ class SmsForwardWorker(
         val timestamp = inputData.getLong(KEY_TIMESTAMP, System.currentTimeMillis())
 
         return try {
-            val result = if (PreferencesManager.isSmsFallbackEnabled(applicationContext)) {
-                ScanAiFallback.classify(applicationContext, body)
-            } else {
-                val api = ScanAiClient.getApi(applicationContext)
-                val response = api.classify(ScanAiApiService.ClassifyRequest(sms = body))
-                if (!response.isSuccessful) {
-                    Log.w(TAG, "AI server returned ${response.code()}")
-                    return Result.retry()
-                }
-                response.body() ?: return Result.retry()
-            }
+            val result = classifyWithFailover(body)
 
             // Server returns "scam"/"safe" lowercase; cached fallback returns uppercase already.
             // Uppercase at the boundary so the rest of the app sees a single shape.
@@ -75,12 +65,38 @@ class SmsForwardWorker(
             }
 
             Result.success()
-        } catch (e: IllegalStateException) {
-            Log.w(TAG, "SMS server not configured: ${e.message}")
-            Result.failure()
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to classify SMS", e)
-            Result.retry()
+            // classifyWithFailover() already swallows network/server errors and returns an
+            // on-device verdict, so reaching here means something unexpected (e.g. DB write).
+            // Fail terminally rather than retrying forever — a stuck retry loop is worse than
+            // a single missed verdict, and never blocks the demo.
+            Log.e(TAG, "Failed to classify/store SMS", e)
+            Result.failure()
+        }
+    }
+
+    /**
+     * Classify [body] and ALWAYS return a verdict. Uses the on-device fallback when it is
+     * enabled (the default) or whenever the remote sidecar is unconfigured, errors, or times
+     * out. This guarantees SMS scam detection never silently dies because a server is down.
+     */
+    private suspend fun classifyWithFailover(body: String): ScanAiApiService.ClassifyResponse {
+        if (PreferencesManager.isSmsFallbackEnabled(applicationContext)) {
+            return ScanAiFallback.classify(applicationContext, body)
+        }
+        return try {
+            val api = ScanAiClient.getApi(applicationContext)
+            val response = api.classify(ScanAiApiService.ClassifyRequest(sms = body))
+            val parsed = if (response.isSuccessful) response.body() else null
+            if (parsed != null) {
+                parsed
+            } else {
+                Log.w(TAG, "AI server unavailable (code=${response.code()}); using on-device classifier")
+                ScanAiFallback.classify(applicationContext, body)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "AI server call failed (${e.message}); using on-device classifier")
+            ScanAiFallback.classify(applicationContext, body)
         }
     }
 

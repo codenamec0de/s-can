@@ -9,11 +9,11 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.uow.scan.util.ScanDialog
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -127,19 +127,19 @@ class ReportHistoryActivity : AppCompatActivity() {
     }
 
     private fun deleteReport(file: File) {
-        AlertDialog.Builder(this)
-            .setTitle("Delete report?")
-            .setMessage("${file.name} will be permanently removed from this device.")
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Delete") { _, _ ->
-                if (file.delete()) {
-                    Toast.makeText(this, "Report deleted", Toast.LENGTH_SHORT).show()
-                    loadReports()
-                } else {
-                    Toast.makeText(this, "Could not delete file", Toast.LENGTH_SHORT).show()
-                }
+        ScanDialog.confirm(
+            context = this,
+            title = "Delete report?",
+            message = "${file.name} will be permanently removed from this device.",
+            confirmText = "Delete",
+        ) {
+            if (file.delete()) {
+                Toast.makeText(this, "Report deleted", Toast.LENGTH_SHORT).show()
+                loadReports()
+            } else {
+                Toast.makeText(this, "Could not delete file", Toast.LENGTH_SHORT).show()
             }
-            .show()
+        }
     }
 
     // -------------------------------------------------------------------------

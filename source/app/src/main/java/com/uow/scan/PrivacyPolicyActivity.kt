@@ -8,9 +8,9 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.uow.scan.util.ScanDialog
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -141,22 +141,20 @@ class PrivacyPolicyActivity : AppCompatActivity() {
                 "questions: privacy@scan.app."
             else -> ""
         }
-        AlertDialog.Builder(this)
-            .setTitle(titleRes)
-            .setMessage(body)
-            .setPositiveButton(android.R.string.ok, null)
-            .show()
+        ScanDialog.notice(
+            context = this,
+            title = getString(titleRes),
+            message = body,
+        )
     }
 
     private fun showFullPolicyDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.privacy_v4_btn_full)
-            .setMessage(
-                "The full privacy policy lives at https://scan.app/privacy. The summary above " +
-                "and the per-section detail pages reflect the same commitments."
-            )
-            .setPositiveButton(android.R.string.ok, null)
-            .show()
+        ScanDialog.notice(
+            context = this,
+            title = getString(R.string.privacy_v4_btn_full),
+            message = "The full privacy policy lives at https://scan.app/privacy. The summary above " +
+                "and the per-section detail pages reflect the same commitments.",
+        )
     }
 
     @Deprecated("Deprecated in Java")

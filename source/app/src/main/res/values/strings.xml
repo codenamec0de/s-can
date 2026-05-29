@@ -115,7 +115,7 @@
     <string name="home_tool_wifi_title">Wi-Fi Security</string>
     <string name="home_tool_wifi_desc">Audits networks for MITM risk, captive portals, weak crypto.</string>
     <string name="home_tool_terminator_title">Terminator</string>
-    <string name="home_tool_terminator_desc">Auto-revokes camera, mic, and location when apps go to background.</string>
+    <string name="home_tool_terminator_desc">One-tap revocation of camera, mic, and location for apps caught running in the background. Coming soon.</string>
     <string name="home_tool_sms_title">SMS Scam Detection</string>
     <string name="home_tool_sms_desc">Analyzes incoming SMS via S\'CAN\'s AI sidecar over TLS.</string>
     <string name="home_tool_verdict_title">SMS Verdicts</string>
@@ -138,9 +138,10 @@
     <string name="apps_filter_clean">Clean</string>
     <string name="apps_sev_flag">Flag</string>
     <string name="apps_sev_review">Review</string>
-    <string name="apps_evidence_clean">No critical permissions granted</string>
+    <string name="apps_evidence_clean">No background activity flagged</string>
     <string name="apps_evidence_warn">Critical permissions granted - no background usage</string>
     <string name="apps_evidence_bad_format">Background %1$s · %2$d× this week</string>
+    <string name="apps_evidence_bad_generic">Flagged — open for details</string>
     <string name="apps_empty">No apps match this filter.</string>
     <string name="apps_loading">Loading…</string>
     <string name="remember_me">Remember me</string>
@@ -337,7 +338,7 @@
     <string name="sms_v4_conn_warn">Server reached, model not ready</string>
     <string name="sms_v4_conn_bad">AI server unreachable</string>
     <string name="sms_v4_conn_bad_code">AI server unreachable · HTTP %1$d</string>
-    <string name="sms_v4_conn_cached">Cached on-device mode (network bypassed)</string>
+    <string name="sms_v4_conn_cached">On-device classifier active · private</string>
 
     <!-- SMS Onboarding V4 -->
     <string name="sms_onboarding_title">SMS Scam Detection</string>
@@ -417,7 +418,7 @@
 
     <!-- Settings V4 -->
     <string name="settings_v4_title">Settings</string>
-    <string name="settings_v4_profile_meta">Account · 2FA enabled</string>
+    <string name="settings_v4_profile_meta">Account · Signed in</string>
     <string name="settings_v4_section_tools">Tools</string>
     <string name="settings_v4_section_account">Account</string>
     <string name="settings_v4_section_general">General</string>
@@ -727,4 +728,12 @@
     <string name="notif_listener_banner_title">Turn on verified observations</string>
     <string name="notif_listener_banner_body">Let S\'CAN read system privacy notifications so we can confirm exactly which app used your camera, mic, or location. One tap, no surveillance.</string>
     <string name="notif_listener_banner_cta">Enable</string>
+
+    <!-- v1.4.5 demo-readiness additions -->
+    <string name="home_scan_failed">Scan ran into a problem. Please try again.</string>
+    <string name="demo_data_loaded">Demo data loaded</string>
+    <string name="alerts_v4_filter_empty_critical">No critical alerts this week.</string>
+    <string name="alerts_v4_filter_empty_patterns">No repeating patterns detected yet.</string>
+    <string name="alerts_v4_filter_empty_all">No background activity recorded yet.</string>
+    <string name="sms_v4_try_sample">Try a sample scam</string>
 </resources>

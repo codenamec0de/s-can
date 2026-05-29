@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -27,6 +26,7 @@ import com.uow.scan.ProfileActivity
 import com.uow.scan.R
 import com.uow.scan.ScanScheduleActivity
 import com.uow.scan.util.PreferencesManager
+import com.uow.scan.util.ScanDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -234,12 +234,12 @@ class SettingsFragment : Fragment() {
     }
 
     private fun confirmLogout() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Log out?")
-            .setMessage("You'll need to sign in again to access your audit data.")
-            .setPositiveButton("Log out") { _, _ -> logout() }
-            .setNegativeButton("Cancel", null)
-            .show()
+        ScanDialog.confirm(
+            context = requireContext(),
+            title = "Log out?",
+            message = "You'll need to sign in again to access your audit data.",
+            confirmText = "Log out",
+        ) { logout() }
     }
 
     private fun logout() {
