@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -18,6 +17,7 @@ import com.uow.scan.ui.audit.AuditFragment
 import com.uow.scan.ui.home.HomeFragment
 import com.uow.scan.ui.settings.SettingsFragment
 import com.uow.scan.util.BatteryOptimizationHelper
+import com.uow.scan.util.ScanDialog
 import com.uow.scan.worker.PermissionMonitorWorker
 import java.util.concurrent.TimeUnit
 
@@ -163,17 +163,17 @@ class MainActivity : AppCompatActivity() {
         if (prompted) return
         prefs.edit().putBoolean("battery_opt_prompted", true).apply()
 
-        AlertDialog.Builder(this)
-            .setTitle("Keep S'CAN Running")
-            .setMessage(
+        ScanDialog.confirm(
+            context = this,
+            title = "Keep S'CAN Running",
+            message =
                 "For continuous protection, S'CAN needs to be exempt from battery optimization. " +
                 "This ensures background monitoring keeps running even when the app is closed.\n\n" +
-                "Tap \"Allow\" on the next screen."
-            )
-            .setPositiveButton("Enable") { _, _ ->
-                BatteryOptimizationHelper.requestExemption(this)
-            }
-            .setNegativeButton("Later", null)
-            .show()
+                "Tap \"Allow\" on the next screen.",
+            confirmText = "Enable",
+            cancelText = "Later",
+        ) {
+            BatteryOptimizationHelper.requestExemption(this)
+        }
     }
 }

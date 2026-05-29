@@ -69,6 +69,13 @@ class AppInstallReceiver : BroadcastReceiver() {
         // 2. Run integrity checks
         val integrity = AppIntegrityChecker.check(context, packageName)
 
+        // A freshly (re)installed app has no observed background sensor access yet, so the only
+        // "real finding" that can escalate it to HIGH right now is a critical integrity issue.
+        val effectiveRisk = AppScanner.effectiveRisk(
+            appInfo.riskLevel,
+            integrity.overallStatus == AppIntegrityChecker.Status.CRITICAL
+        )
+
         // 3. Auto-add to monitored apps table
         val db = ScanDatabase.getInstance(context)
         val existing = db.monitoredAppDao().getByPackage(packageName)
@@ -77,7 +84,7 @@ class AppInstallReceiver : BroadcastReceiver() {
                 MonitoredAppEntity(
                     packageName = packageName,
                     appName = appInfo.appName,
-                    riskLevel = appInfo.riskLevel.name,
+                    riskLevel = effectiveRisk.name,
                     isMonitored = appInfo.riskLevel.name != "LOW"
                 )
             )
@@ -110,8 +117,13 @@ class AppInstallReceiver : BroadcastReceiver() {
         val title = "${appInfo.appName} $actionWord"
 
         val issues = mutableListOf<String>()
-        // Risk level
-        when (appInfo.riskLevel.name) {
+        // Risk level (effective: a critical integrity issue escalates to HIGH, otherwise an
+        // app's capability is capped at MEDIUM until a real finding surfaces).
+        val effectiveRiskName = AppScanner.effectiveRisk(
+            appInfo.riskLevel,
+            integrity.overallStatus == AppIntegrityChecker.Status.CRITICAL
+        ).name
+        when (effectiveRiskName) {
             "HIGH" -> issues.add("HIGH risk")
             "MEDIUM" -> issues.add("Medium risk")
         }

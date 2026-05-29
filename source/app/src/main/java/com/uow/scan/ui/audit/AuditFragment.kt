@@ -122,13 +122,17 @@ class AuditFragment : Fragment() {
     private fun loadApps() {
         val ctx = context ?: return
         loading.visibility = View.VISIBLE
-        lifecycleScope.launch {
+        // viewLifecycleOwner scope so the Main continuation is cancelled when the view is
+        // destroyed — otherwise a quick tab switch resumes onto stale views / a detached
+        // fragment and requireContext() crashes.
+        viewLifecycleOwner.lifecycleScope.launch {
             val rows = withContext(Dispatchers.IO) {
                 val db = ScanDatabase.getInstance(ctx)
                 val scans = db.scanResultDao().getAll()
                 val alerts = AlertStorage.getAlerts(ctx)
-                buildRows(scans, alerts)
+                buildRows(ctx, scans, alerts)
             }
+            if (!isAdded || view == null) return@launch
             allRows = rows
             tvAppsCount.text = getString(R.string.apps_count_format, rows.size)
             renderSegments()
@@ -138,32 +142,30 @@ class AuditFragment : Fragment() {
     }
 
     private fun buildRows(
+        ctx: android.content.Context,
         scans: List<ScanResultEntity>,
         alerts: List<PermissionAlert>
     ): List<AppRow> {
         val alertsByPkg: Map<String, List<PermissionAlert>> = alerts.groupBy { it.packageName }
         return scans.map { entity ->
-            val perms = entity.permissions.split(',').map { it.trim() }.filter { it.isNotEmpty() }
             val pkgAlerts = alertsByPkg[entity.packageName].orEmpty()
-            val sev: Sev = when {
-                pkgAlerts.isNotEmpty() -> Sev.BAD
-                hasCriticalPermission(perms) -> Sev.WARN
-                else -> Sev.OK
-            }
-            val evidence = when (sev) {
-                Sev.BAD -> {
+            // Flag status mirrors the stored EFFECTIVE risk: HIGH means a real observed finding
+            // (background sensor access or a critical integrity issue), not merely holding a
+            // permission. So "Flagged" only shows genuine concerns — and it updates on re-scan,
+            // because re-scanning recomputes and rewrites each app's effective risk.
+            val sev: Sev = if (entity.riskLevel == "HIGH") Sev.BAD else Sev.OK
+            val evidence = when {
+                sev == Sev.BAD && pkgAlerts.isNotEmpty() -> {
                     val mostCommon = pkgAlerts
                         .flatMap { it.permissions }
                         .groupingBy { it }
                         .eachCount()
                         .maxByOrNull { it.value }
                         ?.key
-                    val count = pkgAlerts.size
-                    val tag = humanizePermission(mostCommon)
-                    getString(R.string.apps_evidence_bad_format, tag, count)
+                    ctx.getString(R.string.apps_evidence_bad_format, humanizePermission(mostCommon), pkgAlerts.size)
                 }
-                Sev.WARN -> getString(R.string.apps_evidence_warn)
-                Sev.OK -> getString(R.string.apps_evidence_clean)
+                sev == Sev.BAD -> ctx.getString(R.string.apps_evidence_bad_generic)
+                else -> ctx.getString(R.string.apps_evidence_clean)
             }
             AppRow(
                 packageName = entity.packageName,
@@ -174,13 +176,6 @@ class AuditFragment : Fragment() {
         }.sortedWith(
             compareBy<AppRow> { it.sev.ordinal }.thenBy { it.appName.lowercase() }
         )
-    }
-
-    private fun hasCriticalPermission(perms: List<String>): Boolean {
-        return perms.any { p ->
-            val tail = p.substringAfterLast('.')
-            tail in CRITICAL_PERMS
-        }
     }
 
     private fun humanizePermission(p: String?): String {
@@ -214,7 +209,7 @@ class AuditFragment : Fragment() {
     }
 
     private fun renderSegments() {
-        val ctx = context ?: return
+        if (!isAdded || view == null) return
         val flaggedCount = allRows.count { it.sev != Sev.OK }
         val cleanCount = allRows.count { it.sev == Sev.OK }
 
@@ -233,8 +228,10 @@ class AuditFragment : Fragment() {
         seg.setBackgroundResource(
             if (active) R.drawable.bg_v4_apps_segment_active else 0
         )
+        // seg.context (the host activity) is always valid, unlike requireContext() which
+        // throws once the fragment is detached.
         val color = ContextCompat.getColor(
-            requireContext(),
+            seg.context,
             if (active) R.color.v4_fg0 else R.color.v4_fg2
         )
         label.setTextColor(color)
@@ -339,18 +336,5 @@ class AuditFragment : Fragment() {
                 startActivity(intent)
             }
         }
-    }
-
-    companion object {
-        private val CRITICAL_PERMS = setOf(
-            "ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_BACKGROUND_LOCATION",
-            "CAMERA", "RECORD_AUDIO",
-            "READ_CONTACTS", "WRITE_CONTACTS",
-            "READ_SMS", "RECEIVE_SMS", "SEND_SMS",
-            "READ_CALL_LOG", "WRITE_CALL_LOG", "READ_PHONE_STATE",
-            "READ_CALENDAR", "WRITE_CALENDAR",
-            "BODY_SENSORS", "ACTIVITY_RECOGNITION",
-            "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE",
-        )
     }
 }

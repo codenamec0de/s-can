@@ -176,7 +176,13 @@ class PermissionsActivity : AppCompatActivity() {
                 pendingSettingsKey = key
                 states[key] = State.Settings
                 renderRow(row)
-                DataUsageHelper.requestUsageStatsPermission(this)
+                val opened = DataUsageHelper.requestUsageStatsPermission(this)
+                if (!opened) {
+                    // No Usage-Access screen on this device — don't strand the row in "Open".
+                    pendingSettingsKey = null
+                    states[key] = State.Idle
+                    renderRow(row)
+                }
             }
             "alerts" -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -213,12 +219,16 @@ class PermissionsActivity : AppCompatActivity() {
     }
 
     private fun grantAllRequired() {
-        // Fire each idle/denied required permission in sequence with brief stagger
-        val pending = requiredKeys.filter {
-            states[it] == State.Idle || states[it] == State.Denied
-        }.filter { it != "appAccess" }
-        pending.forEachIndexed { i, key ->
-            btnPrimary.postDelayed({ requestRow(key) }, (i * 250L))
+        // Only batch the RUNTIME-dialog permissions. Settings-based grants (usage, battery)
+        // launch an external Settings activity, which — if fired mid-batch — abruptly steals
+        // focus from the runtime dialogs and can leave a required row ungranted. Those rows
+        // are handled by their own per-row "Allow" tap instead.
+        val pending = requiredKeys
+            .mapNotNull { key -> rows.firstOrNull { it.key == key } }
+            .filter { it.key != "appAccess" && !it.opensSettings }
+            .filter { states[it.key] == State.Idle || states[it.key] == State.Denied }
+        pending.forEachIndexed { i, row ->
+            btnPrimary.postDelayed({ requestRow(row.key) }, i * 250L)
         }
     }
 
@@ -349,8 +359,12 @@ class PermissionsActivity : AppCompatActivity() {
     }
 
     private fun renderProgress() {
-        val granted = states.count { it.value == State.Granted || it.value == State.Auto }
-        val total = states.size
+        // Track REQUIRED grants only, so the bar reads 100% once onboarding is actually
+        // complete. Optional rows (alerts, battery) shouldn't hold the bar back.
+        val granted = requiredKeys.count {
+            states[it] == State.Granted || states[it] == State.Auto
+        }
+        val total = requiredKeys.size
         tvProgressCount.text = buildString {
             append(granted)
             append(" / ")

@@ -7,6 +7,71 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.5] — 2026-05-30
+
+A reliability and accuracy release: the headline features now behave correctly
+and honestly, the UI is consistent end-to-end, and the app is more responsive
+and crash-resistant.
+
+### Added
+- **`util/ScanApp.kt`** — Application class that pins the dark theme and installs
+  a global uncaught-exception handler which relaunches the app gracefully (with a
+  loop-guard) instead of the system "app keeps stopping" dialog.
+- **`util/ScanDialog.kt`** + `layout/dialog_scan.xml` / `dialog_scan_choice.xml` —
+  a shared, V4-styled dialog (input / confirm / notice / single-select list) that
+  replaces every stock Android `AlertDialog` across the app for one consistent
+  dark look.
+- **`util/SensorAccessFormat.kt`** — one source of truth for phrasing observed
+  camera / mic / location accesses, so App Info, Home "Needs attention" and the
+  Alerts timeline read identically (sensor, real active duration, when, and
+  background vs while-in-use).
+- **`util/DemoDataSeeder.kt`** — hidden presenter aid (long-press the Home
+  greeting) that seeds realistic sample data on a clean device.
+- "Try a sample scam" action on the SMS screen;
+  `PermissionAccessDao.recentAccesses` / `packagesWithBackgroundAccess` and
+  `AlertDao.getAlertsForPackage` queries.
+
+### Changed
+- **Behaviour-gated risk.** `AppScanner` separates permission *exposure*
+  (recalibrated — storage/media no longer inflate it) from *effective risk*: an
+  app is HIGH only when a real finding exists (an observed **background** sensor
+  access, or a **critical integrity** issue), otherwise it is capped at MEDIUM.
+  Applied consistently to the App Info badge, scan pipeline, monitor seeding,
+  charts, reports and new-install alerts via `AppScanner.effectiveRisk`.
+- **Audit → Flagged** now mirrors effective risk and updates on every re-scan,
+  instead of flagging any app that merely *holds* a sensitive permission.
+- **SMS scam detection** defaults to the on-device classifier and **auto-fails-
+  over** to it when the optional remote server errors, so detection never dies
+  silently.
+- App Info "Findings" and the Alerts timeline now show real observed evidence and
+  no longer flag ordinary background network data; the Alerts row drops the noisy
+  "Could access" capability list.
+- The app pins its dark theme (fixing invisible light text on some screens) and
+  reframes "coming soon" copy honestly.
+
+### Performance
+- Instant on-device SMS verdicts (no network round-trip); remote request timeouts
+  cut from 60s to ~12s so a stalled server fails over fast instead of hanging.
+- Lighter Alerts list — removed the per-row PackageManager permission lookups.
+- Screen background work is `viewLifecycleOwner`-scoped (cancelled the moment you
+  leave a screen); findings and the sensor timeline use bounded DB queries.
+
+### Fixed
+- Fragment detach crashes on fast tab switches (Audit / Home).
+- Onboarding: batched permission requests no longer interrupt each other, the
+  Usage-Access shortcut is guarded on devices that lack it, and the progress
+  counter reads required grants.
+- The scan flow can no longer get stuck on "Scanning…".
+- Home "Needs attention" rows no longer open a blank screen (wrong navigation key).
+- The device-security score is now computed, so the exported PDF report has real
+  data.
+- The first background-monitoring cycle no longer floods the alert list.
+
+### Version
+- `versionName` 1.4.5, `versionCode` 7.
+
+---
+
 ## [1.4.4] — 2026-05-11
 
 The Activity → Alerts page now explains *which* permissions an app could

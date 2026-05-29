@@ -188,14 +188,16 @@
 
                         <TextView
                             android:id="@+id/tvVersion"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="6dp"
+                            android:ellipsize="end"
                             android:fontFamily="monospace"
                             android:letterSpacing="-0.02"
+                            android:maxLines="2"
                             android:textColor="@color/v4_fg0"
                             android:textFontWeight="600"
-                            android:textSize="22sp"
+                            android:textSize="14sp"
                             tools:text="452.0" />
                     </LinearLayout>
 

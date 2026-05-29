@@ -14,7 +14,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,10 +21,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.uow.scan.adapter.PermissionAdapter
 import com.uow.scan.adapter.TrackerAdapter
 import com.uow.scan.data.ScanDatabase
+import com.uow.scan.data.entity.PermissionAccessEntity
 import com.uow.scan.model.RiskLevel
 import com.uow.scan.util.AppIntegrityChecker
 import com.uow.scan.util.AppScanner
 import com.uow.scan.util.PermissionHelper
+import com.uow.scan.util.ScanDialog
+import com.uow.scan.util.SensorAccessFormat
 import com.uow.scan.util.TrackerRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,8 +77,14 @@ class AppDetailActivity : AppCompatActivity() {
 
     private var targetPackageName: String = ""
     private var isStandardAccessExpanded = false
-    private var alertCount: Int = 0
+    private var sensorAccesses: List<PermissionAccessEntity> = emptyList()
     private var trackerCount: Int = 0
+
+    // Inputs to the effective risk badge (HIGH only when a real finding exists). Each is filled
+    // by a different async loader; refreshRiskBadge() recomputes the badge as they arrive.
+    private var exposureRisk: RiskLevel? = null
+    private var hasBgSensorFinding: Boolean = false
+    private var integrityCritical: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -180,11 +188,12 @@ class AppDetailActivity : AppCompatActivity() {
             |Apps holding many of these can track movements, access private conversations, or collect personal information. Review carefully and revoke anything you don't need.
         """.trimMargin()
 
-        AlertDialog.Builder(this)
-            .setTitle("What are sensitive permissions?")
-            .setMessage(message)
-            .setPositiveButton("Got it", null)
-            .show()
+        ScanDialog.notice(
+            context = this,
+            title = "What are sensitive permissions?",
+            message = message,
+            buttonText = "Got it",
+        )
     }
 
     private fun toggleStandardAccess() {
@@ -249,7 +258,10 @@ class AppDetailActivity : AppCompatActivity() {
                     AppScanner.scanInstalledApps(this@AppDetailActivity)
                 }
                 val app = apps.find { it.packageName == targetPackageName }
-                app?.let { setRiskBadge(it.riskLevel) }
+                app?.let {
+                    exposureRisk = it.riskLevel
+                    refreshRiskBadge()
+                }
             }
         } catch (e: PackageManager.NameNotFoundException) {
             Toast.makeText(this, "App not found", Toast.LENGTH_SHORT).show()
@@ -274,6 +286,18 @@ class AppDetailActivity : AppCompatActivity() {
                 false
             }
         }.distinct()
+    }
+
+    /**
+     * Recomputes the risk badge from the latest known signals. The badge is HIGH only when a
+     * real finding exists (an observed background sensor access, or a critical integrity issue);
+     * otherwise an app's permission capability is capped at MEDIUM. Called as each async signal
+     * lands, so the badge settles to its final value once everything has loaded.
+     */
+    private fun refreshRiskBadge() {
+        val exposure = exposureRisk ?: return
+        val hasFinding = hasBgSensorFinding || integrityCritical
+        setRiskBadge(AppScanner.effectiveRisk(exposure, hasFinding))
     }
 
     private fun setRiskBadge(riskLevel: RiskLevel) {
@@ -341,6 +365,9 @@ class AppDetailActivity : AppCompatActivity() {
                 integrityChecklist.addView(itemView)
             }
 
+            // A critical integrity issue is a real finding that escalates the risk badge to HIGH.
+            integrityCritical = result.overallStatus == AppIntegrityChecker.Status.CRITICAL
+            refreshRiskBadge()
             refreshFindings()
         }
     }
@@ -432,34 +459,52 @@ class AppDetailActivity : AppCompatActivity() {
 
     private fun loadAlertStats() {
         lifecycleScope.launch {
-            val count = withContext(Dispatchers.IO) {
+            val now = System.currentTimeMillis()
+            val weekAgo = now - 7L * 24 * 60 * 60 * 1000
+            val accesses = withContext(Dispatchers.IO) {
+                // Real observed camera/mic/location access events (with true start/end times
+                // and a foreground/background flag), captured live by OpAccessTracker and the
+                // privacy NotificationListener.
                 ScanDatabase.getInstance(this@AppDetailActivity)
-                    .alertDao()
-                    .getAlertCountForPackage(targetPackageName)
+                    .permissionAccessDao()
+                    .accessesInWindow(targetPackageName, weekAgo, now)
             }
-            alertCount = count
+            sensorAccesses = accesses
+            hasBgSensorFinding = accesses.any { !it.foregroundAtStart }
+            refreshRiskBadge()
             refreshFindings()
         }
     }
 
     /**
-     * Aggregates background-alert and tracker counts into the Findings card.
-     * Hidden when nothing surfaces; design only shows this when there is something to show.
+     * Builds the Findings card from REAL observed evidence:
+     *  • Camera/microphone/location access events captured live by OpAccessTracker and the
+     *    privacy NotificationListener — each shows the real active duration, when it happened,
+     *    and whether it was a background access (a concern, red) or while you had the app open
+     *    (transparency, neutral).
+     *  • Detected trackers.
+     * We deliberately do NOT flag ordinary background network data — virtually every app uses
+     * it (push, sync) so surfacing it as a "finding" is a false alarm, not a real concern.
+     * Hidden entirely when nothing real has been observed (no fabricated rows).
      */
     private fun refreshFindings() {
         findingsContainer.removeAllViews()
         val rows = mutableListOf<FindingRow>()
 
-        if (alertCount > 0) {
+        // Real sensor-access events, most recent first. Background accesses sort ahead of
+        // foreground ones so concerns lead.
+        val recentAccesses = sensorAccesses
+            .sortedWith(compareBy<PermissionAccessEntity> { it.foregroundAtStart }
+                .thenByDescending { it.startedAt })
+            .take(3)
+        for (acc in recentAccesses) {
             rows += FindingRow(
-                severityColor = R.color.v4_bad,
-                title = getString(R.string.app_detail_finding_bg_alerts_one),
-                detail = if (alertCount == 1)
-                    getString(R.string.app_detail_finding_bg_alerts_detail_one)
-                else
-                    getString(R.string.app_detail_finding_bg_alerts_detail_n, alertCount)
+                severityColor = if (acc.foregroundAtStart) R.color.v4_fg3 else R.color.v4_bad,
+                title = SensorAccessFormat.title(acc),
+                detail = SensorAccessFormat.detail(acc)
             )
         }
+
         if (trackerCount > 0) {
             rows += FindingRow(
                 severityColor = R.color.v4_warn,

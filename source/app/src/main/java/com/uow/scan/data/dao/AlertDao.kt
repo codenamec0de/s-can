@@ -36,6 +36,9 @@ interface AlertDao {
     @Query("SELECT COUNT(*) FROM alerts WHERE packageName = :packageName")
     suspend fun getAlertCountForPackage(packageName: String): Int
 
+    @Query("SELECT * FROM alerts WHERE packageName = :packageName ORDER BY timestamp DESC LIMIT :limit")
+    suspend fun getAlertsForPackage(packageName: String, limit: Int = 5): List<AlertEntity>
+
     @Query("SELECT COUNT(*) FROM alerts WHERE packageName = :packageName AND timestamp > :since")
     suspend fun getRecentAlertCount(packageName: String, since: Long): Int
 

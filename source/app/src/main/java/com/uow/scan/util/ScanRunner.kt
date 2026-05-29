@@ -94,6 +94,12 @@ object ScanRunner {
 
             ScanSnapshotManager.snapshotCurrentScan(context)
 
+            // "Real finding" signal: which apps were observed accessing a sensor in the
+            // background. Only these escalate to HIGH; capability alone caps at MEDIUM.
+            val flagged = db.permissionAccessDao()
+                .packagesWithBackgroundAccess(now - FINDING_WINDOW_MS)
+                .toSet()
+
             val entities = sorted.map { app ->
                 ScanResultEntity(
                     packageName = app.packageName,
@@ -101,7 +107,7 @@ object ScanRunner {
                     versionName = app.versionName,
                     versionCode = app.versionCode,
                     permissions = app.permissions.joinToString(","),
-                    riskLevel = app.riskLevel.name,
+                    riskLevel = AppScanner.effectiveRisk(app.riskLevel, app.packageName in flagged).name,
                     isSystemApp = app.isSystemApp,
                     installedDate = app.installedDate,
                     lastUpdated = app.lastUpdated,
@@ -118,7 +124,9 @@ object ScanRunner {
                         MonitoredAppEntity(
                             packageName = app.packageName,
                             appName = app.appName,
-                            riskLevel = app.riskLevel.name,
+                            riskLevel = AppScanner.effectiveRisk(app.riskLevel, app.packageName in flagged).name,
+                            // Monitoring tracks anything with sensitive access (exposure-based),
+                            // independent of whether a finding has surfaced yet.
                             isMonitored = app.riskLevel != RiskLevel.LOW
                         )
                     )
@@ -133,4 +141,7 @@ object ScanRunner {
     }
 
     private const val BATCH_SIZE = 8
+
+    /** Lookback for the "observed background sensor access" finding that escalates risk to HIGH. */
+    private const val FINDING_WINDOW_MS = 7L * 24 * 60 * 60 * 1000
 }

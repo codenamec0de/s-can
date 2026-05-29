@@ -98,9 +98,14 @@ object PreferencesManager {
     /**
      * Cached on-device fallback. When true, [com.uow.scan.worker.SmsForwardWorker] bypasses
      * the network entirely and classifies via [com.uow.scan.api.ScanAiFallback].
+     *
+     * Defaults to TRUE: the on-device classifier is fast, private (no SMS body leaves the
+     * device), and always available. Users can opt into the remote sidecar from the AI
+     * Server screen; even then the worker fails over to this classifier if the server is
+     * unreachable, so SMS detection always produces a verdict.
      */
     fun isSmsFallbackEnabled(context: Context): Boolean =
-        getPrefs(context).getBoolean(KEY_SMS_FALLBACK_ENABLED, false)
+        getPrefs(context).getBoolean(KEY_SMS_FALLBACK_ENABLED, true)
 
     fun setSmsFallbackEnabled(context: Context, enabled: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_SMS_FALLBACK_ENABLED, enabled).apply()

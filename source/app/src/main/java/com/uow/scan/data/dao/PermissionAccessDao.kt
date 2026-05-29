@@ -61,6 +61,25 @@ interface PermissionAccessDao {
         windowEnd: Long
     ): List<PermissionAccessEntity>
 
+    /** Most recent access events across ALL packages — drives the Home "Needs attention" feed. */
+    @Query("""
+        SELECT * FROM permission_access_events
+        WHERE startedAt >= :since
+        ORDER BY startedAt DESC
+        LIMIT :limit
+    """)
+    suspend fun recentAccesses(since: Long, limit: Int = 20): List<PermissionAccessEntity>
+
+    /**
+     * Packages observed accessing a sensor while in the BACKGROUND since [since]. This is the
+     * "real finding" signal that escalates an app's risk to HIGH (see AppScanner.effectiveRisk).
+     */
+    @Query("""
+        SELECT DISTINCT packageName FROM permission_access_events
+        WHERE foregroundAtStart = 0 AND startedAt >= :since
+    """)
+    suspend fun packagesWithBackgroundAccess(since: Long): List<String>
+
     @Query("DELETE FROM permission_access_events WHERE startedAt < :before")
     suspend fun pruneOlderThan(before: Long)
 }

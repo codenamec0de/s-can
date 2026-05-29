@@ -8,8 +8,8 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.uow.scan.util.ScanDialog
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -56,24 +56,22 @@ class AboutActivity : AppCompatActivity() {
             "Exodus tracker DB (AGPL 3.0)",
         ).joinToString("\n• ", prefix = "• ")
 
-        AlertDialog.Builder(this)
-            .setTitle(R.string.about_v4_row_licenses)
-            .setMessage(licenses)
-            .setPositiveButton(android.R.string.ok, null)
-            .show()
+        ScanDialog.notice(
+            context = this,
+            title = getString(R.string.about_v4_row_licenses),
+            message = licenses,
+        )
     }
 
     private fun showAcknowledgementsDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.about_v4_row_acks)
-            .setMessage(
-                "Built as a graduation project at the University of Wollongong.\n\n" +
+        ScanDialog.notice(
+            context = this,
+            title = getString(R.string.about_v4_row_acks),
+            message = "Built as a graduation project at the University of Wollongong.\n\n" +
                 "Special thanks to the Exodus Privacy team for the open tracker database, " +
                 "the Have I Been Pwned project for the breach API, and the OWASP Mobile " +
-                "Security Testing Guide for the audit baselines this app is benchmarked against."
-            )
-            .setPositiveButton(android.R.string.ok, null)
-            .show()
+                "Security Testing Guide for the audit baselines this app is benchmarked against.",
+        )
     }
 
     private fun sendFeedback() {

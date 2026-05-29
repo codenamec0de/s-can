@@ -1,6 +1,5 @@
 package com.uow.scan
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -10,8 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -24,6 +21,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.uow.scan.util.BreachChecker
 import com.uow.scan.util.PreferencesManager
+import com.uow.scan.util.ScanDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -273,53 +271,43 @@ class BreachCheckerActivity : AppCompatActivity() {
             return
         }
 
-        val input = EditText(this).apply {
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-            setHint(R.string.breach_v4_email_hint)
-        }
-        val pad = dp(20)
-        val wrap = FrameLayout(this).apply {
-            setPadding(pad, dp(8), pad, 0)
-            addView(input)
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle(R.string.breach_v4_dialog_add_title)
-            .setView(wrap)
-            .setPositiveButton(R.string.breach_v4_dialog_add_save) { _, _ ->
-                val email = input.text?.toString()?.trim().orEmpty()
-                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(this, R.string.breach_v4_err_email_invalid, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                val ok = PreferencesManager.addBreachAddress(this, email)
-                if (!ok) {
-                    Toast.makeText(this, R.string.breach_v4_err_address_duplicate, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                PreferencesManager.setSelectedBreachAddress(this, email)
-                rerenderAll()
-                getApiKey()?.let { runCheck(email, it) }
+        ScanDialog.input(
+            context = this,
+            title = getString(R.string.breach_v4_dialog_add_title),
+            hint = getString(R.string.breach_v4_email_hint),
+            confirmText = getString(R.string.breach_v4_dialog_add_save),
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+        ) { email ->
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(this, R.string.breach_v4_err_email_invalid, Toast.LENGTH_SHORT).show()
+                return@input
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+            val ok = PreferencesManager.addBreachAddress(this, email)
+            if (!ok) {
+                Toast.makeText(this, R.string.breach_v4_err_address_duplicate, Toast.LENGTH_SHORT).show()
+                return@input
+            }
+            PreferencesManager.setSelectedBreachAddress(this, email)
+            rerenderAll()
+            getApiKey()?.let { runCheck(email, it) }
+        }
     }
 
     private fun confirmRemoveAddress(email: String) {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.breach_v4_dialog_remove_title))
-            .setMessage(getString(R.string.breach_v4_dialog_remove_body, email))
-            .setPositiveButton(R.string.breach_v4_dialog_remove_confirm) { _, _ ->
-                PreferencesManager.removeBreachAddress(this, email)
-                resultsByEmail.remove(email)
-                lifecycleScope.launch(Dispatchers.IO) {
-                    com.uow.scan.data.ScanDatabase.getInstance(this@BreachCheckerActivity)
-                        .breachResultDao().deleteByEmail(email)
-                }
-                rerenderAll()
+        ScanDialog.confirm(
+            context = this,
+            title = getString(R.string.breach_v4_dialog_remove_title),
+            message = getString(R.string.breach_v4_dialog_remove_body, email),
+            confirmText = getString(R.string.breach_v4_dialog_remove_confirm),
+        ) {
+            PreferencesManager.removeBreachAddress(this, email)
+            resultsByEmail.remove(email)
+            lifecycleScope.launch(Dispatchers.IO) {
+                com.uow.scan.data.ScanDatabase.getInstance(this@BreachCheckerActivity)
+                    .breachResultDao().deleteByEmail(email)
             }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+            rerenderAll()
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────

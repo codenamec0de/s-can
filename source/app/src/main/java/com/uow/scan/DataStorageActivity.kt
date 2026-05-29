@@ -9,12 +9,12 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.uow.scan.data.ScanDatabase
 import com.uow.scan.util.PreferencesManager
+import com.uow.scan.util.ScanDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -177,82 +177,69 @@ class DataStorageActivity : AppCompatActivity() {
     private fun pickHistoryDays() {
         val options = arrayOf("7 days", "30 days", "90 days", "1 year")
         val values = intArrayOf(7, 30, 90, 365)
-        AlertDialog.Builder(this)
-            .setTitle(R.string.storage_v4_keep_history)
-            .setItems(options) { _, which ->
-                PreferencesManager.setKeepHistoryDays(this, values[which])
-                renderRetentionRows()
-            }
-            .show()
+        ScanDialog.choice(this, getString(R.string.storage_v4_keep_history), options.toList()) { which ->
+            PreferencesManager.setKeepHistoryDays(this, values[which])
+            renderRetentionRows()
+        }
     }
 
     private fun pickVerdictsDays() {
         val options = arrayOf("7 days", "30 days", "90 days", "Forever")
         val values = intArrayOf(7, 30, 90, Int.MAX_VALUE)
-        AlertDialog.Builder(this)
-            .setTitle(R.string.storage_v4_keep_verdicts)
-            .setItems(options) { _, which ->
-                PreferencesManager.setKeepVerdictsDays(this, values[which])
-                renderRetentionRows()
-            }
-            .show()
+        ScanDialog.choice(this, getString(R.string.storage_v4_keep_verdicts), options.toList()) { which ->
+            PreferencesManager.setKeepVerdictsDays(this, values[which])
+            renderRetentionRows()
+        }
     }
 
     private fun pickAutoPurge() {
         val options = arrayOf("Daily", "Weekly", "Monthly", "Never")
-        AlertDialog.Builder(this)
-            .setTitle(R.string.storage_v4_auto_purge)
-            .setItems(options) { _, which ->
-                PreferencesManager.setAutoPurgeCache(this, options[which])
-                renderRetentionRows()
-            }
-            .show()
+        ScanDialog.choice(this, getString(R.string.storage_v4_auto_purge), options.toList()) { which ->
+            PreferencesManager.setAutoPurgeCache(this, options[which])
+            renderRetentionRows()
+        }
     }
 
     private fun showStubDialog(titleRes: Int) {
-        AlertDialog.Builder(this)
-            .setTitle(titleRes)
-            .setMessage("Backup tooling ships with v1.5.")
-            .setPositiveButton(android.R.string.ok, null)
-            .show()
+        ScanDialog.notice(this, getString(titleRes), "Backup tooling is coming soon.")
     }
 
     private fun confirmClearCache() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.storage_v4_btn_clear_cache.let { "Clear cache?" })
-            .setMessage("Removes the findings cache. Scan history and SMS verdicts are kept.")
-            .setPositiveButton("Clear") { _, _ ->
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        ScanDatabase.getInstance(applicationContext).alertDao().clearAll()
-                    }
-                    Toast.makeText(this@DataStorageActivity, "Cache cleared", Toast.LENGTH_SHORT).show()
-                    refreshStorage()
+        ScanDialog.confirm(
+            this,
+            "Clear cache?",
+            "Removes the findings cache. Scan history and SMS verdicts are kept.",
+            confirmText = "Clear",
+        ) {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    ScanDatabase.getInstance(applicationContext).alertDao().clearAll()
                 }
+                Toast.makeText(this@DataStorageActivity, "Cache cleared", Toast.LENGTH_SHORT).show()
+                refreshStorage()
             }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        }
     }
 
     private fun confirmWipe() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.storage_v4_btn_wipe)
-            .setMessage(getString(R.string.storage_v4_wipe_helper))
-            .setPositiveButton("Wipe") { _, _ ->
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        val db = ScanDatabase.getInstance(applicationContext)
-                        runCatching { db.scanResultDao().clearAll() }
-                        runCatching { db.smsVerdictDao().clearAll() }
-                        runCatching { db.alertDao().clearAll() }
-                        runCatching { db.breachResultDao().clearAll() }
-                    }
-                    Toast.makeText(this@DataStorageActivity, "All S'CAN data wiped", Toast.LENGTH_SHORT).show()
-                    refreshStorage()
+        ScanDialog.confirm(
+            this,
+            getString(R.string.storage_v4_btn_wipe),
+            getString(R.string.storage_v4_wipe_helper),
+            confirmText = "Wipe",
+        ) {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    val db = ScanDatabase.getInstance(applicationContext)
+                    runCatching { db.scanResultDao().clearAll() }
+                    runCatching { db.smsVerdictDao().clearAll() }
+                    runCatching { db.alertDao().clearAll() }
+                    runCatching { db.breachResultDao().clearAll() }
                 }
+                Toast.makeText(this@DataStorageActivity, "All S'CAN data wiped", Toast.LENGTH_SHORT).show()
+                refreshStorage()
             }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        }
     }
 
     @Deprecated("Deprecated in Java")

@@ -6,11 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.uow.scan.R
 import com.uow.scan.model.TrackerInfo
 import com.uow.scan.util.LocalTrackerScanner
+import com.uow.scan.util.ScanDialog
 
 class TrackerAdapter(
     private val trackers: List<TrackerInfo>
@@ -68,20 +68,22 @@ class TrackerAdapter(
             val message = parts.joinToString("\n\n")
                 .ifBlank { ctx.getString(R.string.tracker_detail_no_description) }
 
-            val builder = AlertDialog.Builder(ctx)
-                .setTitle(tracker.name)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok, null)
-
             val website = tracker.website?.takeIf { it.startsWith("http") }
             if (!website.isNullOrBlank()) {
-                builder.setNeutralButton(R.string.tracker_detail_open_website) { _, _ ->
+                ScanDialog.confirm(
+                    context = ctx,
+                    title = tracker.name,
+                    message = message,
+                    confirmText = ctx.getString(R.string.tracker_detail_open_website),
+                    cancelText = "Close",
+                ) {
                     runCatching {
                         ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(website)))
                     }
                 }
+            } else {
+                ScanDialog.notice(ctx, tracker.name, message)
             }
-            builder.show()
         }
     }
 }

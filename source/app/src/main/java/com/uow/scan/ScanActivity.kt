@@ -94,6 +94,7 @@ class ScanActivity : AppCompatActivity() {
      */
     private fun startRealScan() {
         lifecycleScope.launch {
+            try {
             // ---- Step 1: Discover apps ----
             tvScanStatus.text = "Discovering installed apps..."
             animateProgressTo(5)
@@ -104,9 +105,8 @@ class ScanActivity : AppCompatActivity() {
 
             val totalApps = packages.size
             if (totalApps == 0) {
-                tvScanStatus.text = "No apps found"
                 animateProgressTo(100)
-                scanComplete()
+                scanComplete("No apps found")
                 return@launch
             }
 
@@ -154,9 +154,17 @@ class ScanActivity : AppCompatActivity() {
                 }.thenByDescending { it.riskLevel.ordinal }
             )
 
-            val riskCounts = AppScanner.countByRiskLevel(scannedApps)
-            val highCount = riskCounts[RiskLevel.HIGH] ?: 0
-            val medCount = riskCounts[RiskLevel.MEDIUM] ?: 0
+            // "Real finding" signal — apps observed accessing a sensor in the background.
+            // Only these escalate to HIGH; permission capability alone caps at MEDIUM.
+            val flagged = withContext(Dispatchers.IO) {
+                ScanDatabase.getInstance(this@ScanActivity).permissionAccessDao()
+                    .packagesWithBackgroundAccess(System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000)
+                    .toSet()
+            }
+            fun effRisk(app: AppInfo) = AppScanner.effectiveRisk(app.riskLevel, app.packageName in flagged)
+
+            val highCount = scannedApps.count { effRisk(it) == RiskLevel.HIGH }
+            val medCount = scannedApps.count { effRisk(it) == RiskLevel.MEDIUM }
 
             // Show app names during analysis for realism
             for (i in 0 until minOf(scannedApps.size, 12)) {
@@ -190,7 +198,7 @@ class ScanActivity : AppCompatActivity() {
                         versionName = app.versionName,
                         versionCode = app.versionCode,
                         permissions = app.permissions.joinToString(","),
-                        riskLevel = app.riskLevel.name,
+                        riskLevel = effRisk(app).name,
                         isSystemApp = app.isSystemApp,
                         installedDate = app.installedDate,
                         lastUpdated = app.lastUpdated,
@@ -209,7 +217,7 @@ class ScanActivity : AppCompatActivity() {
                             MonitoredAppEntity(
                                 packageName = app.packageName,
                                 appName = app.appName,
-                                riskLevel = app.riskLevel.name,
+                                riskLevel = effRisk(app).name,
                                 isMonitored = app.riskLevel != RiskLevel.LOW
                             )
                         )
@@ -227,7 +235,14 @@ class ScanActivity : AppCompatActivity() {
             animateProgressTo(100)
 
             delay(300)
-            scanComplete()
+            scanComplete("Scan complete — ${scannedApps.size} apps audited")
+            } catch (e: Exception) {
+                // Never leave the user stranded mid-animation: log, finish the ring, and still
+                // reveal "View Results" so they can proceed to whatever was cached.
+                android.util.Log.e("ScanActivity", "Scan failed", e)
+                animateProgressTo(100)
+                scanComplete("Scan interrupted — tap to view results")
+            }
         }
     }
 
@@ -269,9 +284,16 @@ class ScanActivity : AppCompatActivity() {
         }
     }
 
-    private fun scanComplete() {
-        tvScanStatus.text = getString(R.string.status_completed)
+    private fun scanComplete(message: String) {
+        tvScanStatus.text = message
         tvScanStatus.setTextColor(ContextCompat.getColor(this, R.color.risk_low))
+        // Celebratory beat: settle the big percentage to green + a confirmation haptic.
+        tvPercentage.setTextColor(ContextCompat.getColor(this, R.color.risk_low))
+        val haptic = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R)
+            android.view.HapticFeedbackConstants.CONFIRM
+        else
+            android.view.HapticFeedbackConstants.LONG_PRESS
+        runCatching { btnViewResults.performHapticFeedback(haptic) }
 
         btnViewResults.visibility = View.VISIBLE
         btnViewResults.alpha = 0f

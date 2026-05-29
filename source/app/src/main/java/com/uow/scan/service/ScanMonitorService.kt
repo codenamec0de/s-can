@@ -151,7 +151,7 @@ class ScanMonitorService : Service() {
         FileLogger.d(this, "Monitored apps: ${monitoredPackages.size}")
 
         if (monitoredPackages.isEmpty()) {
-            FileLogger.w(this, "No apps are monitored - scan will report all")
+            FileLogger.w(this, "No apps are monitored yet - suppressing alerts this cycle")
         }
 
         // Run the scan
@@ -162,11 +162,13 @@ class ScanMonitorService : Service() {
             FileLogger.d(this, "  raw: ${alert.appName} data=${alert.dataUsedBytes}B perms=${alert.permissions}")
         }
 
-        // Filter to only monitored apps
+        // Filter to only monitored apps. When nothing is monitored yet (no scan has run, which
+        // is what seeds the monitor table), emit NO alerts rather than alerting on every app —
+        // otherwise the first cycle floods the alert list with noise.
         val monitorFiltered = if (monitoredPackages.isNotEmpty()) {
             allAlerts.filter { it.packageName in monitoredPackages }
         } else {
-            allAlerts
+            emptyList()
         }
         FileLogger.d(this, "After monitor filter: ${monitorFiltered.size}")
 

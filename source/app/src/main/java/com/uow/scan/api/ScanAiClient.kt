@@ -43,9 +43,9 @@ object ScanAiClient {
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
             .certificatePinner(pinner)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(12, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
             .build()
 
         return Retrofit.Builder()
