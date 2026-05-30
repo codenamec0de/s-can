@@ -40,3 +40,9 @@
 
 # Keep BuildConfig
 -keep class com.uow.scan.BuildConfig { *; }
+
+# Parcelable models passed across Activity boundaries (Wi-Fi nearby networks)
+-keep class com.uow.scan.util.WifiNetwork { *; }
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}

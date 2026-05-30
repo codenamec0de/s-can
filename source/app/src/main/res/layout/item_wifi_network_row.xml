@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rowRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="9dp"
+    android:background="@drawable/bg_v4_surface"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="12dp">
+
+    <com.uow.scan.ui.home.widget.SignalBarsView
+        android:id="@+id/signalBars"
+        android:layout_width="22dp"
+        android:layout_height="18dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="13dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvRowSsid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="-0.014"
+                android:maxLines="1"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="13.5sp"
+                tools:text="Charlie's Glorious NBN_5G" />
+
+            <TextView
+                android:id="@+id/tvRowDuplicate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:background="@drawable/bg_v4_perm_pill_bad"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.06"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:text="@string/wifi_v4_duplicate_tag"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_bad"
+                android:textFontWeight="700"
+                android:textSize="8.5sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvRowSecChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_v4_perm_pill_idle"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.05"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:textAllCaps="true"
+                android:textFontWeight="700"
+                android:textSize="9.5sp"
+                tools:text="WPA2"
+                tools:textColor="@color/v4_warn" />
+
+            <TextView
+                android:id="@+id/tvRowMeta"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.02"
+                android:maxLines="1"
+                android:textColor="@color/v4_fg3"
+                android:textSize="10.5sp"
+                tools:text="5 GHz · ch 36 · −45 dBm" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvRowScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_v4_perm_pill_warn"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:letterSpacing="-0.04"
+        android:minWidth="30dp"
+        android:paddingHorizontal="7dp"
+        android:paddingVertical="4dp"
+        android:textFontWeight="700"
+        android:textSize="14sp"
+        tools:text="52"
+        tools:textColor="@color/v4_warn" />
+
+    <ImageView
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginStart="8dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_glyph_chevron"
+        app:tint="@color/v4_fg3" />
+</LinearLayout>

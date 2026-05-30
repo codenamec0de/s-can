@@ -49,6 +49,25 @@
             android:textSize="26sp" />
 
         <FrameLayout
+            android:id="@+id/btnResetVerdicts"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_v4_top_bar_button"
+            android:clickable="true"
+            android:contentDescription="@string/sms_v4_reset_cd"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_glyph_trash"
+                app:tint="@color/v4_fg1" />
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/btnSettings"
             android:layout_width="32dp"
             android:layout_height="32dp"

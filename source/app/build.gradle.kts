@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.parcelize")
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
 }
@@ -24,8 +25,8 @@ android {
         applicationId = "com.uow.scan"
         minSdk = 26
         targetSdk = 34
-        versionCode = 7
-        versionName = "1.4.5"
+        versionCode = 8
+        versionName = "1.4.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

@@ -28,8 +28,11 @@ object PreferencesManager {
     private const val KEY_TOOL_TERMINATOR_ENABLED = "tool_terminator_enabled"
     private const val KEY_TOOL_VERDICT_ENABLED = "tool_verdict_enabled"
     private const val KEY_TOOL_BREACH_ENABLED = "tool_breach_enabled"
+    private const val KEY_TOOL_DNS_ENABLED = "tool_dns_enabled"
+    private const val KEY_DNS_DEMO_MODE = "dns_demo_mode"
     private const val KEY_BREACH_ADDRESSES = "breach_monitored_addresses"
     private const val KEY_BREACH_SELECTED = "breach_selected_address"
+    private const val KEY_WIFI_TRUSTED_BSSIDS = "wifi_trusted_bssids"
     const val BREACH_ADDRESS_LIMIT = 5
 
     private fun getPrefs(context: Context): SharedPreferences {
@@ -151,6 +154,46 @@ object PreferencesManager {
 
     fun setBreachToolEnabled(context: Context, enabled: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_TOOL_BREACH_ENABLED, enabled).apply()
+    }
+
+    fun isDnsToolEnabled(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_TOOL_DNS_ENABLED, true)
+
+    fun setDnsToolEnabled(context: Context, enabled: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_TOOL_DNS_ENABLED, enabled).apply()
+    }
+
+    /**
+     * DNS Leak Detection demo override. AUTO = live on-device detection; EXPOSED /
+     * PROTECTED force the design's fixed scenarios so a live demo is deterministic.
+     * Cycled from the DNS screen by long-pressing the title.
+     */
+    fun getDnsDemoMode(context: Context): DnsLeakAnalyzer.DemoMode {
+        val name = getPrefs(context).getString(KEY_DNS_DEMO_MODE, null)
+        return runCatching { DnsLeakAnalyzer.DemoMode.valueOf(name ?: "") }
+            .getOrDefault(DnsLeakAnalyzer.DemoMode.AUTO)
+    }
+
+    fun setDnsDemoMode(context: Context, mode: DnsLeakAnalyzer.DemoMode) {
+        getPrefs(context).edit().putString(KEY_DNS_DEMO_MODE, mode.name).apply()
+    }
+
+    // Wi-Fi Security: BSSIDs the user has explicitly marked as trusted. A trusted
+    // BSSID is never flagged as an evil twin even when another AP copies its SSID.
+    fun getTrustedWifiBssids(context: Context): Set<String> =
+        getPrefs(context).getStringSet(KEY_WIFI_TRUSTED_BSSIDS, emptySet())?.toSet() ?: emptySet()
+
+    fun isWifiBssidTrusted(context: Context, bssid: String?): Boolean {
+        if (bssid.isNullOrBlank()) return false
+        return getTrustedWifiBssids(context).contains(bssid.lowercase())
+    }
+
+    fun setWifiBssidTrusted(context: Context, bssid: String, trusted: Boolean) {
+        if (bssid.isBlank()) return
+        // getStringSet returns a shared instance that must not be mutated; copy first.
+        val updated = getTrustedWifiBssids(context).toMutableSet()
+        if (trusted) updated.add(bssid.lowercase()) else updated.remove(bssid.lowercase())
+        getPrefs(context).edit().putStringSet(KEY_WIFI_TRUSTED_BSSIDS, updated).apply()
     }
 
     fun getBreachAddresses(context: Context): List<String> {

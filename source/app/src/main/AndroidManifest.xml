@@ -146,9 +146,21 @@
             android:exported="false"
             android:theme="@style/Theme.Scan" />
 
-        <!-- V1.4 Wi-Fi Security Activity -->
+        <!-- V1.4 Wi-Fi Security Activity (nearby networks overview) -->
         <activity
             android:name=".WifiSecurityActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- V1.4 Wi-Fi per-network detail (connected or nearby, incl. evil twin) -->
+        <activity
+            android:name=".WifiNetworkDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- V1.4.5 DNS Leak Detection (Beta) -->
+        <activity
+            android:name=".DnsLeakActivity"
             android:exported="false"
             android:theme="@style/Theme.Scan" />
 

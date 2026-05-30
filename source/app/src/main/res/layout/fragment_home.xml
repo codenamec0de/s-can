@@ -270,7 +270,7 @@
 
                 <include
                     android:id="@+id/toolDnsLeak"
-                    layout="@layout/item_home_tool_card_coming_soon" />
+                    layout="@layout/item_home_tool_card_beta" />
             </LinearLayout>
 
             <!-- Needs attention section -->

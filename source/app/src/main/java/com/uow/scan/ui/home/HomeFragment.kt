@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.uow.scan.AppDetailActivity
 import com.uow.scan.BreachCheckerActivity
+import com.uow.scan.DnsLeakActivity
 import com.uow.scan.MainActivity
 import com.uow.scan.R
 import com.uow.scan.SmsOnboardingActivity
@@ -318,11 +319,22 @@ class HomeFragment : Fragment() {
             titleRes = R.string.home_tool_netmon_title,
             descRes = R.string.home_tool_netmon_desc,
         )
-        bindComingSoonCard(
+        bindToolCard(
             view = toolDnsLeak,
-            icon = R.drawable.ic_glyph_shield,
+            icon = R.drawable.ic_glyph_globe,
             titleRes = R.string.home_tool_dns_title,
             descRes = R.string.home_tool_dns_desc,
+            isActive = PreferencesManager.isDnsToolEnabled(ctx),
+            onToggle = {
+                val flipped = !PreferencesManager.isDnsToolEnabled(ctx)
+                PreferencesManager.setDnsToolEnabled(ctx, flipped)
+                renderTools()
+            },
+            onCardClick = {
+                if (PreferencesManager.isDnsToolEnabled(ctx)) {
+                    DnsLeakActivity.start(ctx)
+                }
+            }
         )
     }
 

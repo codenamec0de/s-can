@@ -7,6 +7,49 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.6] — 2026-05-30
+
+A capability release: two new network-privacy tools, a much deeper Wi-Fi
+Security area, and demo-ready SMS detection — on the existing known-good build
+toolchain.
+
+### Added
+- **DNS Leak Detection (Beta)** — `util/DnsLeakAnalyzer.kt` + `DnsLeakActivity.kt`.
+  A new on-device tool answering "is my browsing private right now?": inspects the
+  current network's active DNS resolver, **Private DNS (DoT)** and VPN state and
+  grades it **PRIVATE / PARTIAL / EXPOSED**, with plain-language findings,
+  per-resolver detail tiles and a one-tap shortcut toward the Private DNS setting.
+  Runs entirely on-device — no DNS queries are sent off the phone. Launchable from a
+  new cyan **Beta** card on the Home screen.
+- **Wi-Fi Security — nearby networks & evil-twin detection.** Wi-Fi Security now
+  lists **every network in range** (sortable by signal or risk), each with its own
+  security grade, plus a new per-network detail screen (`WifiNetworkDetailActivity`,
+  `adapter/WifiNetworkAdapter.kt`) breaking down encryption, signal, vendor and
+  posture. Evil-twin detection flags a rogue AP that copies a nearby network's name
+  to lure a connection — the one nearby case that genuinely warrants a warning.
+- **Offline manufacturer (OUI) lookup** — `util/OuiLookup.kt` + a bundled IEEE OUI
+  database asset (`oui_vendors.tsv`); networks show their hardware (router/AP) vendor,
+  resolved entirely offline.
+- **Trusted networks** — mark an access point you recognise so it is never flagged
+  as an evil twin again.
+- New Wi-Fi/Home widgets `ui/home/widget/RadarPulseView.kt` and `SignalBarsView.kt`.
+- SMS: a new **Clear verdicts** action; "Try a sample scam" now cycles **seven**
+  varied, realistic AU examples (parcel, road toll, tax refund, bank, myGov,
+  family-impersonation, streaming) instead of one; two new on-device fallback
+  patterns (myGov account-suspension, streaming-billing phishing).
+
+### Changed
+- **Quieter by design:** a nearby open/weak network is *its* posture, not a threat
+  to you while you are not connected to it, so it no longer raises an alarm — only an
+  evil twin does.
+- Nearby networks **refresh automatically** as Android scans — passive and
+  read-only (no `startScan()`); the app never changes your Wi-Fi.
+
+### Version
+- `versionName` 1.4.6, `versionCode` 8.
+
+---
+
 ## [1.4.5] — 2026-05-30
 
 A reliability and accuracy release: the headline features now behave correctly

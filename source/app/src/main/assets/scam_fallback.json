@@ -50,6 +50,18 @@
       "confidence": 0.93
     },
     {
+      "match": "my-gov.",
+      "verdict": "SCAM",
+      "reasoning": "myGov-impersonation phishing — 'my-gov.au-secure.com' is not a gov.au domain, and myGov never asks you to reactivate your account through an SMS link.",
+      "confidence": 0.93
+    },
+    {
+      "match": "netflix-billing",
+      "verdict": "SCAM",
+      "reasoning": "Subscription-billing phishing impersonating Netflix; the lookalike domain harvests card details rather than netflix.com.",
+      "confidence": 0.92
+    },
+    {
       "match": "click http://",
       "verdict": "SCAM",
       "reasoning": "Cleartext HTTP link in an SMS is a phishing red flag.",

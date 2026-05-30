@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -36,11 +37,61 @@ class SmsScamActivity : AppCompatActivity() {
     private lateinit var emptyState: LinearLayout
     private lateinit var btnBack: FrameLayout
     private lateinit var btnSettings: FrameLayout
+    private lateinit var btnResetVerdicts: FrameLayout
     private lateinit var statusPill: LinearLayout
     private lateinit var statusPillDot: View
     private lateinit var statusPillLabel: TextView
     private lateinit var btnTrySample: LinearLayout
     private lateinit var adapter: SmsVerdictAdapter
+
+    /** A bundled, realistic scam SMS the "Try a sample scam" button can classify on cue. */
+    private data class SampleScam(val sender: String, val body: String)
+
+    /**
+     * Varied, convincing sample scams (AU context) cycled through on each tap of "Try a sample
+     * scam". Each body contains a substring that the on-device classifier ([ScanAiFallback] /
+     * assets/scam_fallback.json) matches to a bespoke SCAM explanation, so every demo card reads
+     * as a tailored verdict rather than a generic keyword hit.
+     */
+    private val sampleScams = listOf(
+        SampleScam(
+            "+61 400 555 113",
+            "AusPost: your parcel is held pending a \$1.99 release fee. " +
+                "Pay now to avoid return: auspost-au.info/track"
+        ),
+        SampleScam(
+            "+61 400 818 224",
+            "LINKT: you have an unpaid toll of \$4.83. Late fees apply if not settled " +
+                "within 48 hours: linkt-au.com/pay"
+        ),
+        SampleScam(
+            "ATO",
+            "ATO Refund: our records show you are owed a \$1,284.50 tax refund. Confirm your " +
+                "bank details to receive your ATO refund: ato-refund.online/claim"
+        ),
+        SampleScam(
+            "CommBank",
+            "CommBank: a new payee 'J SMITH' was added and a \$980 transfer is pending. " +
+                "If this wasn't you, call our fraud team now on 02 8014 7720."
+        ),
+        SampleScam(
+            "myGov",
+            "myGov: your account has been suspended after 3 failed login attempts. Reactivate " +
+                "within 24 hours to avoid permanent closure: my-gov.au-secure.com/restore"
+        ),
+        SampleScam(
+            "+61 491 570 156",
+            "Hi mum, I smashed my phone and I'm texting from a temporary number. I can't get " +
+                "into my banking — could you pay a bill for me today? I'll pay you back x"
+        ),
+        SampleScam(
+            "Netflix",
+            "Netflix: your payment was declined and your membership is on hold. Update your " +
+                "billing within 24h to avoid cancellation: netflix-billing.account-verify.com"
+        ),
+    )
+
+    private var sampleIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +99,7 @@ class SmsScamActivity : AppCompatActivity() {
 
         btnBack = findViewById(R.id.btnBack)
         btnSettings = findViewById(R.id.btnSettings)
+        btnResetVerdicts = findViewById(R.id.btnResetVerdicts)
         rvVerdicts = findViewById(R.id.rvVerdicts)
         emptyState = findViewById(R.id.emptyState)
         statusPill = findViewById(R.id.statusPill)
@@ -71,8 +123,37 @@ class SmsScamActivity : AppCompatActivity() {
         }
         statusPill.setOnClickListener { checkConnection() }
         btnTrySample.setOnClickListener { insertSampleScam() }
+        btnResetVerdicts.setOnClickListener { confirmResetVerdicts() }
 
         loadVerdicts()
+    }
+
+    /**
+     * Clears every stored verdict (after a confirm), so the screen can be reset to a clean
+     * slate between demos. No-ops with a toast when there is nothing to clear.
+     */
+    private fun confirmResetVerdicts() {
+        lifecycleScope.launch {
+            val dao = ScanDatabase.getInstance(this@SmsScamActivity).smsVerdictDao()
+            val count = withContext(Dispatchers.IO) { dao.getCount() }
+            if (count == 0) {
+                Toast.makeText(this@SmsScamActivity, R.string.sms_v4_reset_empty, Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            ScanDialog.confirm(
+                context = this@SmsScamActivity,
+                title = getString(R.string.sms_v4_reset_title),
+                message = getString(R.string.sms_v4_reset_message, count),
+                confirmText = getString(R.string.sms_v4_reset_confirm),
+                cancelText = getString(R.string.sms_v4_reset_cancel),
+            ) {
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) { dao.clearAll() }
+                    Toast.makeText(this@SmsScamActivity, R.string.sms_v4_reset_done, Toast.LENGTH_SHORT).show()
+                    loadVerdicts()
+                }
+            }
+        }
     }
 
     /**
@@ -81,16 +162,15 @@ class SmsScamActivity : AppCompatActivity() {
      */
     private fun insertSampleScam() {
         btnTrySample.isEnabled = false
+        val sample = sampleScams[sampleIndex % sampleScams.size]
+        sampleIndex++
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                val body = "AusPost: your parcel is held pending a \$1.99 release fee. " +
-                    "Pay now to avoid return: auspost-au.info/track"
-                val sender = "+61 400 555 113"
-                val result = ScanAiFallback.classify(this@SmsScamActivity, body)
+                val result = ScanAiFallback.classify(this@SmsScamActivity, sample.body)
                 ScanDatabase.getInstance(this@SmsScamActivity).smsVerdictDao().insert(
                     SmsVerdictEntity(
-                        sender = sender,
-                        messageBody = body,
+                        sender = sample.sender,
+                        messageBody = sample.body,
                         verdict = result.verdict.uppercase(),
                         confidence = result.confidence,
                         explanation = result.reasoning,
