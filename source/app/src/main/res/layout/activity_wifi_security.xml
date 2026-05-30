@@ -36,17 +36,32 @@
                 app:tint="@color/v4_fg1" />
         </FrameLayout>
 
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:fontFamily="@font/montserrat"
-            android:letterSpacing="-0.0125"
-            android:text="@string/wifi_v4_title"
-            android:textColor="@color/v4_fg0"
-            android:textFontWeight="600"
-            android:textSize="16sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="-0.0125"
+                android:text="@string/wifi_v4_title"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvTopSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:textColor="@color/v4_fg3"
+                android:textSize="11sp"
+                tools:text="8 networks in range" />
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/btnRescanTop"
@@ -58,6 +73,7 @@
             android:focusable="true">
 
             <ImageView
+                android:id="@+id/ivRescanIcon"
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:layout_gravity="center"
@@ -92,7 +108,8 @@
                 android:background="@drawable/bg_v4_status_card_warn"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:visibility="gone">
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -119,11 +136,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_marginTop="12dp"
+                    android:fontFamily="@font/montserrat"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:paddingTop="0dp"
                     android:paddingBottom="0dp"
-                    android:fontFamily="@font/montserrat"
                     android:paddingHorizontal="16dp"
                     android:text="@string/wifi_v4_btn_grant"
                     android:textAllCaps="false"
@@ -131,7 +148,7 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
-            <!-- ──────────────────  Hero  ────────────────── -->
+            <!-- ──────────────────  Connected network hero (tappable → detail)  ────────────────── -->
             <LinearLayout
                 android:id="@+id/heroCard"
                 android:layout_width="match_parent"
@@ -140,385 +157,452 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/bg_v4_surface"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="18dp">
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <FrameLayout
-                    android:layout_width="88dp"
-                    android:layout_height="88dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <com.uow.scan.ui.home.widget.WifiScoreGaugeView
-                        android:id="@+id/scoreGauge"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                    <FrameLayout
+                        android:layout_width="72dp"
+                        android:layout_height="72dp">
+
+                        <com.uow.scan.ui.home.widget.WifiScoreGaugeView
+                            android:id="@+id/heroGauge"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvHeroScore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="monospace"
+                                android:includeFontPadding="false"
+                                android:letterSpacing="-0.05"
+                                android:textColor="@color/v4_fg0"
+                                android:textFontWeight="600"
+                                android:textSize="20sp"
+                                tools:text="52" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="1dp"
+                                android:fontFamily="monospace"
+                                android:letterSpacing="0.05"
+                                android:text="@string/wifi_v4_score_unit"
+                                android:textColor="@color/v4_fg3"
+                                android:textFontWeight="600"
+                                android:textSize="7.5sp" />
+                        </LinearLayout>
+                    </FrameLayout>
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/tvScore"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="monospace"
-                            android:includeFontPadding="false"
-                            android:letterSpacing="-0.04"
-                            android:textColor="@color/v4_fg0"
-                            android:textFontWeight="600"
-                            android:textSize="24sp"
-                            tools:text="52" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_wifi"
+                                app:tint="@color/v4_accent" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:fontFamily="@font/montserrat"
+                                android:letterSpacing="0.15"
+                                android:text="@string/wifi_v4_eyebrow_connected"
+                                android:textAllCaps="true"
+                                android:textColor="@color/v4_accent"
+                                android:textFontWeight="700"
+                                android:textSize="9.5sp" />
+                        </LinearLayout>
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvHeroSsid"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:fontFamily="monospace"
-                            android:letterSpacing="0.06"
-                            android:text="@string/wifi_v4_score_unit"
-                            android:textColor="@color/v4_fg3"
+                            android:layout_marginTop="4dp"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="-0.018"
+                            android:maxLines="1"
+                            android:textColor="@color/v4_fg0"
                             android:textFontWeight="600"
-                            android:textSize="9sp" />
+                            android:textSize="16sp"
+                            tools:text="Charlie's Glorious NBN_5G" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvHeroGrade"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/montserrat"
+                                android:letterSpacing="0.1"
+                                android:paddingHorizontal="8dp"
+                                android:paddingVertical="3dp"
+                                android:textAllCaps="true"
+                                android:textFontWeight="700"
+                                android:textSize="9.5sp"
+                                tools:background="@drawable/bg_v4_perm_pill_warn"
+                                tools:text="POOR"
+                                tools:textColor="@color/v4_warn" />
+
+                            <TextView
+                                android:id="@+id/tvHeroSummary"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:fontFamily="monospace"
+                                android:maxLines="1"
+                                android:textColor="@color/v4_fg3"
+                                android:textSize="10.5sp"
+                                tools:text="WPA2 · −45 dBm" />
+                        </LinearLayout>
                     </LinearLayout>
-                </FrameLayout>
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="top"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_glyph_chevron"
+                        app:tint="@color/v4_fg3" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@color/v4_hairline" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="11dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_glyph_document"
+                        app:tint="@color/v4_accent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/montserrat"
+                        android:text="@string/wifi_v4_view_full_report"
+                        android:textColor="@color/v4_accent"
+                        android:textFontWeight="600"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ──────────────────  Not-connected hero placeholder  ────────────────── -->
+            <LinearLayout
+                android:id="@+id/heroDisconnected"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_wifi"
+                    app:tint="@color/v4_fg3" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/ivWifiIcon"
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/ic_glyph_wifi"
-                            app:tint="@color/v4_accent" />
-
-                        <TextView
-                            android:id="@+id/tvHeroEyebrow"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
-                            android:fontFamily="@font/montserrat"
-                            android:letterSpacing="0.15"
-                            android:text="@string/wifi_v4_eyebrow_connected"
-                            android:textAllCaps="true"
-                            android:textColor="@color/v4_accent"
-                            android:textFontWeight="700"
-                            android:textSize="9.5sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvSsid"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:ellipsize="end"
                         android:fontFamily="@font/montserrat"
-                        android:letterSpacing="-0.018"
-                        android:lineSpacingMultiplier="1.25"
-                        android:maxLines="1"
+                        android:text="@string/wifi_v4_no_network"
                         android:textColor="@color/v4_fg0"
                         android:textFontWeight="600"
-                        android:textSize="17sp"
-                        tools:text="Charlie's Glorious NBN_5G" />
+                        android:textSize="14sp" />
 
                     <TextView
-                        android:id="@+id/tvNetworkSummary"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:fontFamily="monospace"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/wifi_v4_connect_prompt"
                         android:textColor="@color/v4_fg3"
-                        android:textSize="11sp"
-                        tools:text="WPA2-Personal · 5 GHz · −45 dBm" />
-
-                    <TextView
-                        android:id="@+id/tvGrade"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/montserrat"
-                        android:letterSpacing="0.12"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
-                        android:textAllCaps="true"
-                        android:textFontWeight="700"
-                        android:textSize="10sp"
-                        tools:background="@drawable/bg_v4_perm_pill_warn"
-                        tools:text="POOR"
-                        tools:textColor="@color/v4_warn" />
+                        android:textSize="11.5sp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ──────────────────  Metric strip  ────────────────── -->
+            <!-- ──────────────────  Threat banner  ────────────────── -->
             <LinearLayout
+                android:id="@+id/threatBanner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
-                android:baselineAligned="false"
+                android:background="@drawable/bg_v4_status_card_bad"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="13dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <FrameLayout
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="@drawable/bg_v4_breach_tile_bad">
+
+                    <ImageView
+                        android:layout_width="17dp"
+                        android:layout_height="17dp"
+                        android:layout_gravity="center"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_glyph_warn"
+                        app:tint="@color/v4_bad" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvThreatTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:textColor="@color/v4_bad"
+                        android:textFontWeight="700"
+                        android:textSize="12.5sp"
+                        tools:text="2 nearby networks need attention" />
+
+                    <TextView
+                        android:id="@+id/tvThreatBody"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:lineSpacingMultiplier="1.4"
+                        android:textColor="@color/v4_fg1"
+                        android:textSize="11sp"
+                        tools:text="A duplicate of your network name was detected — possible evil twin." />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_chevron"
+                    app:tint="@color/v4_bad" />
+            </LinearLayout>
+
+            <!-- ──────────────────  Nearby header + sort  ────────────────── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvNearbyHeader"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_v4_surface"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="11dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat"
-                        android:letterSpacing="0.12"
-                        android:text="@string/wifi_v4_metric_cipher"
-                        android:textAllCaps="true"
-                        android:textColor="@color/v4_fg3"
-                        android:textFontWeight="600"
-                        android:textSize="9.5sp" />
-
-                    <TextView
-                        android:id="@+id/tvCipher"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="monospace"
-                        android:letterSpacing="-0.018"
-                        android:textColor="@color/v4_fg0"
-                        android:textFontWeight="600"
-                        android:textSize="17sp"
-                        tools:text="CCMP" />
-
-                    <TextView
-                        android:id="@+id/tvCipherSub"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:fontFamily="monospace"
-                        android:letterSpacing="0.04"
-                        android:text="@string/wifi_v4_metric_cipher_sub"
-                        android:textColor="@color/v4_fg3"
-                        android:textSize="9.5sp" />
-                </LinearLayout>
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.13"
+                    android:textAllCaps="true"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="600"
+                    android:textSize="10.5sp"
+                    tools:text="Nearby networks · 8" />
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:id="@+id/sortControls"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_v4_surface"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="11dp">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="3dp"
+                        android:letterSpacing="0.03"
+                        android:text="@string/wifi_v4_sort_label"
+                        android:textColor="@color/v4_fg4"
+                        android:textSize="9.5sp" />
+
+                    <TextView
+                        android:id="@+id/btnSortSignal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_v4_perm_pill_accent"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:fontFamily="@font/montserrat"
-                        android:letterSpacing="0.12"
-                        android:text="@string/wifi_v4_metric_pmf"
-                        android:textAllCaps="true"
-                        android:textColor="@color/v4_fg3"
+                        android:paddingHorizontal="9dp"
+                        android:paddingVertical="3dp"
+                        android:text="@string/wifi_v4_sort_signal"
+                        android:textColor="@color/v4_accent"
                         android:textFontWeight="600"
-                        android:textSize="9.5sp" />
+                        android:textSize="10.5sp" />
 
                     <TextView
-                        android:id="@+id/tvPmf"
+                        android:id="@+id/btnSortRisk"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="monospace"
-                        android:letterSpacing="-0.018"
-                        android:textColor="@color/v4_fg0"
-                        android:textFontWeight="600"
-                        android:textSize="17sp"
-                        tools:text="Off" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:fontFamily="monospace"
-                        android:letterSpacing="0.04"
-                        android:text="@string/wifi_v4_metric_pmf_sub"
-                        android:textColor="@color/v4_fg3"
-                        android:textSize="9.5sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_v4_surface"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="11dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:fontFamily="@font/montserrat"
-                        android:letterSpacing="0.12"
-                        android:text="@string/wifi_v4_metric_signal"
-                        android:textAllCaps="true"
+                        android:paddingHorizontal="9dp"
+                        android:paddingVertical="3dp"
+                        android:text="@string/wifi_v4_sort_risk"
                         android:textColor="@color/v4_fg3"
                         android:textFontWeight="600"
-                        android:textSize="9.5sp" />
-
-                    <TextView
-                        android:id="@+id/tvSignal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="monospace"
-                        android:letterSpacing="-0.018"
-                        android:textColor="@color/v4_fg0"
-                        android:textFontWeight="600"
-                        android:textSize="17sp"
-                        tools:text="−45" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:fontFamily="monospace"
-                        android:letterSpacing="0.04"
-                        android:text="@string/wifi_v4_metric_signal_sub"
-                        android:textColor="@color/v4_fg3"
-                        android:textSize="9.5sp" />
+                        android:textSize="10.5sp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ──────────────────  Findings  ────────────────── -->
-            <TextView
-                android:id="@+id/tvFindingsHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="22dp"
-                android:layout_marginTop="22dp"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="@font/montserrat"
-                android:letterSpacing="0.13"
-                android:text="@string/wifi_v4_section_findings"
-                android:textAllCaps="true"
-                android:textColor="@color/v4_fg3"
-                android:textFontWeight="600"
-                android:textSize="10.5sp" />
-
-            <LinearLayout
-                android:id="@+id/findingsContainer"
+            <!-- ──────────────────  Nearby list  ────────────────── -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvNearby"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:orientation="vertical" />
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_wifi_network_row" />
 
-            <!-- Legacy view kept as no-op for binding compat -->
+            <!-- ──────────────────  Empty state  ────────────────── -->
             <TextView
-                android:id="@+id/tvFindingsSub"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
-
-            <!-- ──────────────────  Network details  ────────────────── -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="22dp"
-                android:layout_marginTop="22dp"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="@font/montserrat"
-                android:letterSpacing="0.13"
-                android:text="@string/wifi_v4_section_details"
-                android:textAllCaps="true"
-                android:textColor="@color/v4_fg3"
-                android:textFontWeight="600"
-                android:textSize="10.5sp" />
-
-            <LinearLayout
-                android:id="@+id/detailsContainer"
+                android:id="@+id/tvEmpty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/bg_v4_surface"
-                android:orientation="vertical"
-                android:paddingVertical="6dp" />
-
-            <!-- Legacy hidden TextView for binding compat -->
-            <TextView
-                android:id="@+id/tvDetails"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
-
-            <!-- ──────────────────  Actions  ────────────────── -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:orientation="vertical">
+                android:gravity="center_horizontal"
+                android:text="@string/wifi_v4_no_nearby"
+                android:textColor="@color/v4_fg3"
+                android:textSize="12sp"
+                android:visibility="gone" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRescan"
-                    style="@style/V4.Button.Primary"
-                    android:layout_width="match_parent"
-                    android:layout_height="46dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:paddingTop="0dp"
-                    android:paddingBottom="0dp"
-                    app:icon="@drawable/ic_glyph_refresh"
-                    app:iconGravity="textStart"
-                    app:iconPadding="8dp"
-                    app:iconSize="16dp"
-                    app:iconTint="@color/v4_bg"
+            <!-- ──────────────────  Scanning state  ────────────────── -->
+            <LinearLayout
+                android:id="@+id/scanningState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="46dp"
+                android:paddingBottom="40dp"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="96dp"
+                    android:layout_height="96dp">
+
+                    <com.uow.scan.ui.home.widget.RadarPulseView
+                        android:id="@+id/radar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_v4_wifi_scan_disc">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_glyph_wifi"
+                            app:tint="@color/v4_accent" />
+                    </FrameLayout>
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
                     android:fontFamily="@font/montserrat"
-                    android:text="@string/wifi_v4_btn_rescan_full"
-                    android:textAllCaps="false"
+                    android:text="@string/wifi_v4_scanning_title"
+                    android:textColor="@color/v4_fg0"
                     android:textFontWeight="600"
                     android:textSize="13.5sp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnExport"
-                    style="@style/V4.Button.Secondary"
-                    android:layout_width="match_parent"
-                    android:layout_height="46dp"
-                    android:layout_marginTop="10dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:paddingTop="0dp"
-                    android:paddingBottom="0dp"
-                    app:icon="@drawable/ic_glyph_document"
-                    app:iconGravity="textStart"
-                    app:iconPadding="8dp"
-                    app:iconSize="16dp"
-                    app:iconTint="@color/v4_fg1"
-                    android:fontFamily="@font/montserrat"
-                    android:text="@string/wifi_v4_btn_export"
-                    android:textAllCaps="false"
-                    android:textFontWeight="600"
-                    android:textSize="13.5sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="monospace"
+                    android:text="@string/wifi_v4_scanning_sub"
+                    android:textColor="@color/v4_fg3"
+                    android:textSize="11sp" />
             </LinearLayout>
 
+            <!-- ──────────────────  Footer  ────────────────── -->
             <TextView
                 android:id="@+id/tvLastScan"
                 android:layout_width="match_parent"
@@ -526,9 +610,9 @@
                 android:layout_marginTop="18dp"
                 android:fontFamily="monospace"
                 android:gravity="center_horizontal"
+                android:text="@string/wifi_v4_overview_footer"
                 android:textColor="@color/v4_fg3"
-                android:textSize="10.5sp"
-                tools:text="Last scan · 14 min ago" />
+                android:textSize="10.5sp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

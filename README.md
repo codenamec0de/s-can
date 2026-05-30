@@ -6,12 +6,12 @@
 
 **Android privacy & security audit suite**
 
-[![Version](https://img.shields.io/badge/version-1.4.5-1f6feb)](https://github.com/codenamec0de/s-can/releases)
+[![Version](https://img.shields.io/badge/version-1.4.6-1f6feb)](https://github.com/codenamec0de/s-can/releases)
 [![Min SDK](https://img.shields.io/badge/min--sdk-26-3ddc84)](#requirements)
 [![Target SDK](https://img.shields.io/badge/target--sdk-34-3ddc84)](#requirements)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.9-7f52ff)](https://kotlinlang.org)
 [![License](https://img.shields.io/badge/license-Proprietary-red)](LICENSE)
-[![Status](https://img.shields.io/badge/status-V1.4.5%20demo--ready-3ddc84)](#status)
+[![Status](https://img.shields.io/badge/status-V1.4.6%20demo--ready-3ddc84)](#status)
 
 University of Wollongong — final-year project
 
@@ -44,11 +44,12 @@ University of Wollongong — final-year project
 ## What it does
 
 S'CAN audits the apps installed on an Android device for privacy and
-security risks. Active features as of V1.4.5:
+security risks. Active features as of V1.4.6:
 
 | Feature | What it checks |
 |---|---|
-| **Wi-Fi Security** | Auth type, PMF (802.11w), cipher, evil-twin clusters, captive-portal probing, DNS servers in use — flags MITM exposure on the connected network. |
+| **Wi-Fi Security** | Auth type, PMF (802.11w), cipher, evil-twin clusters, captive-portal probing, DNS servers in use — flags MITM exposure on the connected network. Now also lists **every nearby network** (sortable by signal/risk) with a per-network detail screen, offline IEEE-OUI vendor lookup, and a trusted-network allowlist; passive and read-only. |
+| **DNS Leak Detection (Beta)** | Answers "is my browsing private right now?" — inspects the active DNS resolver, Private DNS (DoT) and VPN state and grades the network **PRIVATE / PARTIAL / EXPOSED**, entirely on-device (no DNS queries leave the phone). |
 | **SMS Scam Detection** | Classifies incoming SMS as `SCAM` / `SUSPICIOUS` / `SAFE` — **on-device by default** (nothing leaves the phone), with an optional self-hosted AI sidecar (FastAPI + Ollama) and automatic fail-over back to the on-device classifier. Extracts URLs and flags brand impersonation. |
 | **Breach Checker** | Queries Have I Been Pwned for monitored email addresses; tracks resolution status and per-breach data-class exposure. |
 | **App audit** | Inventories installed packages, surfaces tracker SDKs (Exodus dataset), and rates each app's risk — **behaviour-gated**, so an app is flagged HIGH only when a real finding is observed (a background sensor access or an integrity issue), not merely for the permissions it holds. The activity timeline shows the real observed sensor access (what, how long, when, foreground vs background). |
@@ -63,7 +64,7 @@ The fastest path: grab the signed release APK from the
 
 1. On your Android device, enable **Settings → Apps → Special app access →
    Install unknown apps** for your browser of choice.
-2. Download the APK attached to the latest release (e.g. `scan-v1.4.5.apk`).
+2. Download the APK attached to the latest release (e.g. `scan-v1.4.6.apk`).
 3. Open the APK; Android will prompt you to install.
 4. On first launch, sign in with Google and walk through the permission
    onboarding — SMS scanning is opt-in.
@@ -171,13 +172,15 @@ V1.5 and beyond — coming next:
 
 ## Status
 
-**V1.4.5 — demo-ready.** A reliability and accuracy release. App-risk
-categorisation is now behaviour-gated (HIGH only on a real finding), SMS scam
-detection runs on-device by default, the activity timeline shows real observed
-evidence, every dialog shares one dark-themed component, and a global crash
-handler plus lifecycle-safe screens harden stability. The earlier V1.4 freeze
-items — TLS + certificate pinning to the AI sidecar, and the SMS onboarding
-disclosure — have both shipped.
+**V1.4.6 — demo-ready.** A capability release building on the V1.4.5 reliability
+work. Adds **DNS Leak Detection (Beta)** (on-device PRIVATE/PARTIAL/EXPOSED
+grading of the current network), a much deeper **Wi-Fi Security** area (every
+nearby network with per-network detail, evil-twin detection, offline OUI vendor
+lookup, and a trusted-network allowlist — passive and read-only), and sharper SMS
+scam detection (seven cycling sample scams, a clear-verdicts action, and two new
+on-device fallback patterns). V1.4.5's foundations remain: behaviour-gated app
+risk (HIGH only on a real finding), on-device SMS by default, a shared dark-themed
+dialog, and a global crash handler with lifecycle-safe screens.
 
 See [CHANGELOG.md](CHANGELOG.md) for the full release history.
 

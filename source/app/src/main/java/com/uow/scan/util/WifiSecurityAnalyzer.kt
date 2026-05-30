@@ -11,7 +11,9 @@ import android.net.wifi.ScanResult
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.Parcelable
 import androidx.core.content.ContextCompat
+import kotlinx.parcelize.Parcelize
 import java.net.InetAddress
 
 /**
@@ -68,13 +70,14 @@ object WifiSecurityAnalyzer {
 
     enum class Grade { EXCELLENT, GOOD, FAIR, POOR, CRITICAL }
 
+    @Parcelize
     data class Finding(
         val id: String,
         val severity: Severity,
         val title: String,
         val description: String,
         val recommendation: String? = null
-    )
+    ) : Parcelable
 
     data class WifiSecurityResult(
         /** true when the device is not connected to any Wi-Fi network. */
@@ -102,7 +105,9 @@ object WifiSecurityAnalyzer {
         val captivePortal: Boolean,
         val internetValidated: Boolean,
         val dnsServers: List<String>,
-        val apparentEvilTwin: Boolean,        // same SSID, multiple BSSIDs, differing security
+        val apparentEvilTwin: Boolean,        // same SSID, multiple BSSIDs, differing security (after trust)
+        val apparentEvilTwinRaw: Boolean,     // raw heuristic result, before the trusted-BSSID override
+        val trusted: Boolean,                 // user has marked this BSSID as trusted
         val nearbySameSsidCount: Int,
 
         val findings: List<Finding>,
@@ -202,152 +207,33 @@ object WifiSecurityAnalyzer {
         //   changes between them (e.g. one open, one WPA2), that's a classic evil-twin
         //   fingerprint. A legitimate mesh / multi-AP deployment would advertise the
         //   same security across BSSIDs.
-        val (evilTwin, sameSsidCount) = detectEvilTwin(scanResults, ssid, caps)
+        val (rawEvilTwin, sameSsidCount) = detectEvilTwin(scanResults, ssid, caps)
 
-        val findings = mutableListOf<Finding>()
-        var score = 0
+        // A BSSID the user has explicitly trusted is never treated as an evil twin,
+        // even when another AP nearby copies its SSID (the design's "add the legitimate
+        // BSSID to a trusted list" recommendation).
+        val trusted = bssid != null && PreferencesManager.isWifiBssidTrusted(context, bssid)
+        val effectiveEvilTwin = rawEvilTwin && !trusted
 
-        // 1. Auth type (weight 40)
-        val (authPts, authFinding) = evaluateAuthType(authType)
-        score += authPts
-        findings += authFinding
-
-        // 2. Cipher (weight 10)
-        val (cipherPts, cipherFinding) = evaluateCipher(caps)
-        score += cipherPts
-        cipherFinding?.let { findings += it }
-
-        // 3. PMF (weight 15)
-        val (pmfPts, pmfFinding) = evaluatePmf(caps, authType)
-        score += pmfPts
-        findings += pmfFinding
-
-        // 4. Band (weight 8)
-        val (bandPts, bandFinding) = evaluateBand(bandMhz)
-        score += bandPts
-        bandFinding?.let { findings += it }
-
-        // 5. Signal (weight 5)
-        score += (signalQuality * 5) / 100
-
-        // 6. MAC randomization (weight 7)
-        if (macRandomized == true) {
-            score += 7
-            findings += Finding(
-                "mac_random",
-                Severity.OK,
-                "MAC randomization active",
-                "Your device is presenting a random MAC to this network, which prevents persistent tracking across visits.",
-            )
-        } else if (macRandomized == false) {
-            findings += Finding(
-                "mac_random",
-                Severity.LOW,
-                "MAC address not randomized",
-                "Your device is exposing its factory MAC address to this AP - that allows the network owner to track you across sessions.",
-                "In Wi-Fi settings for this network, enable MAC randomization."
-            )
-        }
-
-        // 7. Hidden SSID
-        if (hiddenSsid) {
-            findings += Finding(
-                "hidden_ssid",
-                Severity.LOW,
-                "Hidden network",
-                "This network is configured to not broadcast its SSID. This offers no real security and forces your phone to continually probe for it, leaking your preferred-network list to everyone within range.",
-                "Ask the network owner to broadcast the SSID - hiding it is not a security feature."
-            )
-        }
-
-        // 8. WPS
-        if (caps.wpsEnabled) {
-            findings += Finding(
-                "wps",
-                Severity.MEDIUM,
-                "WPS is enabled",
-                "Wi-Fi Protected Setup (WPS) is advertised on this AP. The WPS PIN mechanism is brute-forceable in roughly 10 hours using tools like Reaver, effectively bypassing a strong WPA2 password.",
-                "Disable WPS in the router's admin page."
-            )
-        } else {
-            score += 3
-        }
-
-        // 9. Evil-twin
-        if (evilTwin) {
-            score -= 20
-            findings += Finding(
-                "evil_twin",
-                Severity.CRITICAL,
-                "Possible evil-twin AP detected",
-                "Multiple access points within range are broadcasting the SSID \"$ssid\" but with different security configurations. This is a classic fingerprint for a rogue AP attempting to impersonate the legitimate network and harvest credentials.",
-                "Disconnect immediately. Verify with the network owner. If you often connect here, consider adding the legitimate BSSID to a trusted list."
-            )
-        } else if (sameSsidCount > 1) {
-            findings += Finding(
-                "multi_bssid",
-                Severity.INFO,
-                "$sameSsidCount access points share this SSID",
-                "This is normal for enterprise or mesh deployments (roaming between APs). Their security profile is consistent, so we do not flag this as suspicious.",
-            )
-        }
-
-        // 10. Captive portal
-        if (captivePortal) {
-            findings += Finding(
-                "captive",
-                Severity.MEDIUM,
-                "Captive portal intercepting traffic",
-                "This network is routing you through a login / terms-of-service page. Until you complete it, all outbound traffic is redirected through the gateway - avoid entering real passwords for unrelated services while the portal is active.",
-                "Complete the portal only if you trust the venue. Prefer logging in with throwaway credentials."
-            )
-        } else if (!internetValidated) {
-            findings += Finding(
-                "no_internet",
-                Severity.INFO,
-                "Internet not validated",
-                "The Android connectivity check did not confirm full internet access on this network. This can be benign (slow DHCP, DNS hiccup) or indicate a constrained network.",
-            )
-        }
-
-        // 11. Open / OWE public network → remind about MITM
-        if (authType == AuthType.OPEN) {
-            findings += Finding(
-                "open_mitm",
-                Severity.HIGH,
-                "Unencrypted network - MITM risk",
-                "All traffic between your phone and the AP is sent in the clear. Anyone within radio range can passively capture DNS, cleartext HTTP, metadata from TLS handshakes (SNI), and inject ARP / DNS spoofing attacks.",
-                "Avoid entering credentials. Use a VPN before accessing email, banking, or cloud accounts."
-            )
-        }
-
-        // 12. WEP is permanently broken
-        if (authType == AuthType.WEP) {
-            findings += Finding(
-                "wep_broken",
-                Severity.CRITICAL,
-                "WEP encryption is broken",
-                "WEP can be cracked in minutes with publicly available tools. Treat this network as equivalent to an open network.",
-                "Do not send credentials or sensitive data. Encourage the network owner to upgrade to WPA2/WPA3."
-            )
-        }
-
-        // 13. WPA2 transition mode warning
-        if (authType == AuthType.WPA2_WPA3_MIXED) {
-            findings += Finding(
-                "transition",
-                Severity.LOW,
-                "WPA2/WPA3 transition mode",
-                "This AP accepts both WPA2 and WPA3. A downgrade attacker in range can force your device to fall back to WPA2, losing the dictionary-attack protection of SAE.",
-                "If your device supports WPA3 exclusively, prefer WPA3-only networks."
-            )
-        }
-
-        // 14. DNS hygiene
-        evaluateDns(dnsServers, link)?.let { findings += it }
-
-        // Clamp
-        score = score.coerceIn(0, 100)
+        // Composite scoring + findings — shared with the per-network (nearby) path so a
+        // nearby AP and the connected AP with identical capabilities score identically.
+        val outcome = scoreFrom(
+            caps = caps,
+            authType = authType,
+            bandMhz = bandMhz,
+            signalQuality = signalQuality,
+            hiddenSsid = hiddenSsid,
+            evilTwin = effectiveEvilTwin,
+            sameSsidCount = sameSsidCount,
+            ssidForMessages = ssid,
+            isConnected = true,
+            macRandomized = macRandomized,
+            captivePortal = captivePortal,
+            internetValidated = internetValidated,
+            dnsServers = dnsServers,
+            link = link,
+            trusted = trusted
+        )
 
         return WifiSecurityResult(
             notConnected = false,
@@ -369,10 +255,12 @@ object WifiSecurityAnalyzer {
             captivePortal = captivePortal,
             internetValidated = internetValidated,
             dnsServers = dnsServers,
-            apparentEvilTwin = evilTwin,
+            apparentEvilTwin = effectiveEvilTwin,
+            apparentEvilTwinRaw = rawEvilTwin,
+            trusted = trusted,
             nearbySameSsidCount = sameSsidCount,
-            findings = findings.sortedBy { it.severity.ordinal },
-            score = score
+            findings = outcome.findings,
+            score = outcome.score
         )
     }
 
@@ -480,18 +368,21 @@ object WifiSecurityAnalyzer {
             }
         }
 
-        // Fall back to parsing capabilities.
-        return when {
-            caps.hasSae && caps.hasPsk -> AuthType.WPA2_WPA3_MIXED
-            caps.hasSae -> AuthType.WPA3_PERSONAL
-            caps.hasOwe -> AuthType.OWE
-            caps.hasEap && caps.hasWpa2 -> AuthType.WPA2_ENTERPRISE
-            caps.hasWpa2 && caps.hasPsk -> AuthType.WPA2_PERSONAL
-            caps.hasWpa && caps.hasPsk -> AuthType.WPA_PERSONAL
-            caps.hasWep -> AuthType.WEP
-            caps.isOpen() -> AuthType.OPEN
-            else -> AuthType.UNKNOWN
-        }
+        // Fall back to parsing capabilities (shared with the nearby-AP path).
+        return resolveAuthTypeFromCaps(caps)
+    }
+
+    /** Resolve auth type from a parsed capabilities string alone (no WifiInfo — nearby APs). */
+    private fun resolveAuthTypeFromCaps(caps: Capabilities): AuthType = when {
+        caps.hasSae && caps.hasPsk -> AuthType.WPA2_WPA3_MIXED
+        caps.hasSae -> AuthType.WPA3_PERSONAL
+        caps.hasOwe -> AuthType.OWE
+        caps.hasEap && caps.hasWpa2 -> AuthType.WPA2_ENTERPRISE
+        caps.hasWpa2 && caps.hasPsk -> AuthType.WPA2_PERSONAL
+        caps.hasWpa && caps.hasPsk -> AuthType.WPA_PERSONAL
+        caps.hasWep -> AuthType.WEP
+        caps.isOpen() -> AuthType.OPEN
+        else -> AuthType.UNKNOWN
     }
 
     private fun evaluateAuthType(type: AuthType): Pair<Int, Finding> =
@@ -779,7 +670,8 @@ object WifiSecurityAnalyzer {
         macRandomized = null,
         captivePortal = false, internetValidated = false,
         dnsServers = emptyList(),
-        apparentEvilTwin = false, nearbySameSsidCount = 0,
+        apparentEvilTwin = false, apparentEvilTwinRaw = false, trusted = false,
+        nearbySameSsidCount = 0,
         findings = listOf(
             Finding(
                 "offline",
@@ -791,7 +683,7 @@ object WifiSecurityAnalyzer {
         score = 100 // not on Wi-Fi → no Wi-Fi exposure
     )
 
-    private val AuthType.display: String
+    internal val AuthType.display: String
         get() = when (this) {
             AuthType.OPEN -> "Open"
             AuthType.OWE -> "Enhanced Open"
@@ -805,10 +697,502 @@ object WifiSecurityAnalyzer {
             AuthType.UNKNOWN -> "Unknown"
         }
 
-    private fun bandLabel(mhz: Int): String = when (mhz) {
+    internal fun bandLabel(mhz: Int): String = when (mhz) {
         2400 -> "2.4 GHz"
         5000 -> "5 GHz"
         6000 -> "6 GHz"
         else -> "${mhz} MHz"
     }
+
+    /** Short band string for a row meta line: "2.4" / "5" / "6". */
+    fun bandShort(mhz: Int?): String = when (mhz) {
+        2400 -> "2.4"
+        5000 -> "5"
+        6000 -> "6"
+        null -> "—"
+        else -> "${mhz / 1000}"
+    }
+
+    /** Short security label for the overview chip (mirrors the design's SecChip). */
+    fun authShortLabel(t: AuthType): String = when (t) {
+        AuthType.OPEN -> "OPEN"
+        AuthType.OWE -> "OWE"
+        AuthType.WEP -> "WEP"
+        AuthType.WPA_PERSONAL -> "WPA"
+        AuthType.WPA2_PERSONAL -> "WPA2"
+        AuthType.WPA2_ENTERPRISE -> "WPA2-E"
+        AuthType.WPA3_PERSONAL -> "WPA3"
+        AuthType.WPA3_ENTERPRISE -> "WPA3-E"
+        AuthType.WPA2_WPA3_MIXED -> "WPA2/3"
+        AuthType.UNKNOWN -> "?"
+    }
+
+    /** Full security label for the detail "Security" row (e.g. "WPA2-Personal"). */
+    fun authLabel(t: AuthType): String = t.display
+
+    enum class SecRisk { BAD, WARN, OK }
+
+    /** Risk band that colours the security chip (bad = red, warn = amber, ok = green). */
+    fun securityRisk(t: AuthType): SecRisk = when (t) {
+        AuthType.OPEN, AuthType.WEP -> SecRisk.BAD
+        AuthType.WPA_PERSONAL, AuthType.WPA2_PERSONAL, AuthType.UNKNOWN -> SecRisk.WARN
+        AuthType.OWE, AuthType.WPA2_ENTERPRISE, AuthType.WPA3_PERSONAL,
+        AuthType.WPA3_ENTERPRISE, AuthType.WPA2_WPA3_MIXED -> SecRisk.OK
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Shared scoring core — used by both analyze() (connected) and scanNearby()
+    // (per-AP), so a nearby AP and the connected AP with identical capabilities
+    // produce the SAME 0-100 score, findings, and grade.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    internal data class ScoreOutcome(val score: Int, val findings: List<Finding>)
+
+    internal fun scoreFrom(
+        caps: Capabilities,
+        authType: AuthType,
+        bandMhz: Int?,
+        signalQuality: Int,
+        hiddenSsid: Boolean,
+        evilTwin: Boolean,
+        sameSsidCount: Int,
+        ssidForMessages: String?,
+        isConnected: Boolean,
+        macRandomized: Boolean? = null,
+        captivePortal: Boolean = false,
+        internetValidated: Boolean = true,
+        dnsServers: List<String> = emptyList(),
+        link: LinkProperties? = null,
+        trusted: Boolean = false
+    ): ScoreOutcome {
+        val findings = mutableListOf<Finding>()
+        var score = 0
+
+        // 1. Auth type (weight 40)
+        val (authPts, authFinding) = evaluateAuthType(authType)
+        score += authPts
+        findings += authFinding
+
+        // 2. Cipher (weight 10)
+        val (cipherPts, cipherFinding) = evaluateCipher(caps)
+        score += cipherPts
+        cipherFinding?.let { findings += it }
+
+        // 3. PMF (weight 15)
+        val (pmfPts, pmfFinding) = evaluatePmf(caps, authType)
+        score += pmfPts
+        findings += pmfFinding
+
+        // 4. Band (weight 8)
+        val (bandPts, bandFinding) = evaluateBand(bandMhz)
+        score += bandPts
+        bandFinding?.let { findings += it }
+
+        // 5. Signal (weight 5)
+        score += (signalQuality * 5) / 100
+
+        // 6. MAC randomization (weight 7) — only meaningful for the *connected* client
+        if (isConnected) {
+            if (macRandomized == true) {
+                score += 7
+                findings += Finding(
+                    "mac_random",
+                    Severity.OK,
+                    "MAC randomization active",
+                    "Your device is presenting a random MAC to this network, which prevents persistent tracking across visits.",
+                )
+            } else if (macRandomized == false) {
+                findings += Finding(
+                    "mac_random",
+                    Severity.LOW,
+                    "MAC address not randomized",
+                    "Your device is exposing its factory MAC address to this AP - that allows the network owner to track you across sessions.",
+                    "In Wi-Fi settings for this network, enable MAC randomization."
+                )
+            }
+        }
+
+        // 7. Hidden SSID
+        if (hiddenSsid) {
+            findings += Finding(
+                "hidden_ssid",
+                Severity.LOW,
+                "Hidden network",
+                "This network is configured to not broadcast its SSID. This offers no real security and forces your phone to continually probe for it, leaking your preferred-network list to everyone within range.",
+                "Ask the network owner to broadcast the SSID - hiding it is not a security feature."
+            )
+        }
+
+        // 8. WPS
+        if (caps.wpsEnabled) {
+            findings += Finding(
+                "wps",
+                Severity.MEDIUM,
+                "WPS is enabled",
+                "Wi-Fi Protected Setup (WPS) is advertised on this AP. The WPS PIN mechanism is brute-forceable in roughly 10 hours using tools like Reaver, effectively bypassing a strong WPA2 password.",
+                "Disable WPS in the router's admin page."
+            )
+        } else {
+            score += 3
+        }
+
+        // 9. Evil-twin
+        if (evilTwin) {
+            score -= 20
+            findings += Finding(
+                "evil_twin",
+                Severity.CRITICAL,
+                "Possible evil-twin AP detected",
+                "Multiple access points within range are broadcasting the SSID \"$ssidForMessages\" but with different security configurations. This is a classic fingerprint for a rogue AP attempting to impersonate the legitimate network and harvest credentials.",
+                "Disconnect immediately. Verify with the network owner. If you often connect here, consider adding the legitimate BSSID to a trusted list."
+            )
+        } else if (sameSsidCount > 1) {
+            findings += Finding(
+                "multi_bssid",
+                Severity.INFO,
+                "$sameSsidCount access points share this SSID",
+                "This is normal for enterprise or mesh deployments (roaming between APs). Their security profile is consistent, so we do not flag this as suspicious.",
+            )
+        }
+
+        // 9b. Trusted BSSID — the user vouched for this AP, so suppress evil-twin alarms.
+        if (trusted) {
+            findings += Finding(
+                "trusted",
+                Severity.OK,
+                "Trusted access point",
+                "You marked this BSSID as trusted, so S'CAN will not flag it as an evil twin even when another nearby access point copies its network name.",
+            )
+        }
+
+        // 10. Captive portal — only observable on the connected network
+        if (isConnected) {
+            if (captivePortal) {
+                findings += Finding(
+                    "captive",
+                    Severity.MEDIUM,
+                    "Captive portal intercepting traffic",
+                    "This network is routing you through a login / terms-of-service page. Until you complete it, all outbound traffic is redirected through the gateway - avoid entering real passwords for unrelated services while the portal is active.",
+                    "Complete the portal only if you trust the venue. Prefer logging in with throwaway credentials."
+                )
+            } else if (!internetValidated) {
+                findings += Finding(
+                    "no_internet",
+                    Severity.INFO,
+                    "Internet not validated",
+                    "The Android connectivity check did not confirm full internet access on this network. This can be benign (slow DHCP, DNS hiccup) or indicate a constrained network.",
+                )
+            }
+        }
+
+        // 11. Open / OWE public network → remind about MITM
+        if (authType == AuthType.OPEN) {
+            findings += Finding(
+                "open_mitm",
+                Severity.HIGH,
+                "Unencrypted network - MITM risk",
+                "All traffic between your phone and the AP is sent in the clear. Anyone within radio range can passively capture DNS, cleartext HTTP, metadata from TLS handshakes (SNI), and inject ARP / DNS spoofing attacks.",
+                "Avoid entering credentials. Use a VPN before accessing email, banking, or cloud accounts."
+            )
+        }
+
+        // 12. WEP is permanently broken
+        if (authType == AuthType.WEP) {
+            findings += Finding(
+                "wep_broken",
+                Severity.CRITICAL,
+                "WEP encryption is broken",
+                "WEP can be cracked in minutes with publicly available tools. Treat this network as equivalent to an open network.",
+                "Do not send credentials or sensitive data. Encourage the network owner to upgrade to WPA2/WPA3."
+            )
+        }
+
+        // 13. WPA2 transition mode warning
+        if (authType == AuthType.WPA2_WPA3_MIXED) {
+            findings += Finding(
+                "transition",
+                Severity.LOW,
+                "WPA2/WPA3 transition mode",
+                "This AP accepts both WPA2 and WPA3. A downgrade attacker in range can force your device to fall back to WPA2, losing the dictionary-attack protection of SAE.",
+                "If your device supports WPA3 exclusively, prefer WPA3-only networks."
+            )
+        }
+
+        // 14. DNS hygiene — only observable on the connected network
+        if (isConnected) {
+            evaluateDns(dnsServers, link)?.let { findings += it }
+        }
+
+        score = score.coerceIn(0, 100)
+        return ScoreOutcome(score, findings.sortedBy { it.severity.ordinal })
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Nearby networks (overview list) — real cached scan results only
+    // ─────────────────────────────────────────────────────────────────────────
+
+    data class NearbyResult(
+        /** The connected network, or null when not on Wi-Fi. */
+        val connected: WifiNetwork?,
+        /** Nearby access points (real cached scan results only), evil-twins flagged. */
+        val nearby: List<WifiNetwork>
+    )
+
+    /**
+     * Builds the overview model: the connected network (live) plus the nearby list.
+     * The nearby list is the device's cached scan results — real networks only. When
+     * those are empty or scan permission is missing, the nearby list is empty and the
+     * overview shows its empty state (no mock/sample data).
+     */
+    @SuppressLint("MissingPermission")
+    fun scanNearby(context: Context): NearbyResult {
+        val wifi = context.applicationContext
+            .getSystemService(Context.WIFI_SERVICE) as? WifiManager
+
+        // Connected network — reuse the full connected analysis, then map to WifiNetwork.
+        val connectedResult = analyze(context)
+        @Suppress("DEPRECATION")
+        val connectedFreq = wifi?.connectionInfo?.frequency ?: 0
+        val connected: WifiNetwork? = if (connectedResult.notConnected) null else WifiNetwork(
+            ssid = connectedResult.ssid ?: "Unknown network",
+            bssid = connectedResult.bssid ?: "",
+            connected = true,
+            authType = connectedResult.authType,
+            cipher = connectedResult.cipher,
+            pmfRequired = connectedResult.pmfRequired,
+            pmfCapable = connectedResult.pmfCapable,
+            wpsEnabled = connectedResult.wpsEnabled,
+            hiddenSsid = connectedResult.hiddenSsid,
+            bandMhz = connectedResult.bandMhz,
+            channel = freqToChannel(connectedFreq),
+            wifiStandard = connectedResult.wifiStandard,
+            vendor = OuiLookup.vendorFor(context, connectedResult.bssid),
+            rssiDbm = connectedResult.rssiDbm ?: 0,
+            signalQuality = connectedResult.signalQuality,
+            macRandomized = connectedResult.macRandomized,
+            captivePortal = connectedResult.captivePortal,
+            internetValidated = connectedResult.internetValidated,
+            dnsServers = connectedResult.dnsServers,
+            evilTwin = connectedResult.apparentEvilTwin,
+            evilTwinRaw = connectedResult.apparentEvilTwinRaw,
+            trusted = connectedResult.trusted,
+            sameSsidCount = connectedResult.nearbySameSsidCount,
+            score = connectedResult.score,
+            findings = connectedResult.findings
+        )
+
+        // Nearby networks — read cached scan results (guarded by permission).
+        val scanAllowed = hasScanPermission(context)
+        val scanResults: List<ScanResult> = if (scanAllowed && wifi != null) {
+            try {
+                @Suppress("DEPRECATION")
+                (wifi.scanResults ?: emptyList())
+            } catch (_: SecurityException) {
+                emptyList()
+            }
+        } else emptyList()
+
+        val connectedBssid = connected?.bssid?.lowercase()
+        val nearby = scanResults.mapNotNull { sr ->
+            val bssid = sr.BSSID?.lowercase() ?: return@mapNotNull null
+            if (bssid == "02:00:00:00:00:00") return@mapNotNull null
+            if (connectedBssid != null && bssid == connectedBssid) return@mapNotNull null
+            @Suppress("DEPRECATION")
+            val ssid = cleanSsid(sr.SSID)
+            networkFromScan(context, sr, ssid, bssid, scanResults)
+        }.distinctBy { it.bssid }
+
+        // Real networks only — no mock/sample fallback. When the scan is empty or scan
+        // permission is missing, the nearby list is genuinely empty and the overview
+        // shows its empty state.
+        return NearbyResult(connected, nearby)
+    }
+
+    private fun networkFromScan(
+        context: Context,
+        sr: ScanResult,
+        ssid: String?,
+        bssid: String,
+        all: List<ScanResult>
+    ): WifiNetwork {
+        val caps = CapabilitiesParser.parse(sr.capabilities)
+        val authType = resolveAuthTypeFromCaps(caps)
+        val bandMhz = bucketBand(sr.frequency)
+        val signalQuality = rssiToQuality(sr.level)
+        val hidden = ssid.isNullOrBlank()
+        val (rawEvilTwin, sameSsidCount) = detectEvilTwin(all, ssid, caps)
+        val trusted = PreferencesManager.isWifiBssidTrusted(context, bssid)
+        val effectiveEvilTwin = rawEvilTwin && !trusted
+        val outcome = scoreFrom(
+            caps = caps,
+            authType = authType,
+            bandMhz = bandMhz,
+            signalQuality = signalQuality,
+            hiddenSsid = hidden,
+            evilTwin = effectiveEvilTwin,
+            sameSsidCount = sameSsidCount,
+            ssidForMessages = ssid,
+            isConnected = false,
+            trusted = trusted
+        )
+        return WifiNetwork(
+            ssid = ssid ?: "— Hidden network —",
+            bssid = bssid,
+            connected = false,
+            authType = authType,
+            cipher = caps.cipherSummary(),
+            pmfRequired = caps.pmfRequired,
+            pmfCapable = caps.pmfCapable,
+            wpsEnabled = caps.wpsEnabled,
+            hiddenSsid = hidden,
+            bandMhz = bandMhz,
+            channel = freqToChannel(sr.frequency),
+            wifiStandard = scanResultStandard(sr),
+            vendor = OuiLookup.vendorFor(context, bssid),
+            rssiDbm = sr.level,
+            signalQuality = signalQuality,
+            macRandomized = null,
+            captivePortal = false,
+            internetValidated = true,
+            dnsServers = emptyList(),
+            evilTwin = effectiveEvilTwin,
+            evilTwinRaw = rawEvilTwin,
+            trusted = trusted,
+            sameSsidCount = sameSsidCount,
+            score = outcome.score,
+            findings = outcome.findings
+        )
+    }
+
+    private fun freqToChannel(freqMhz: Int): Int? = when {
+        freqMhz <= 0 -> null
+        freqMhz == 2484 -> 14
+        freqMhz in 2412..2472 -> (freqMhz - 2407) / 5
+        freqMhz in 5000..5895 -> (freqMhz - 5000) / 5
+        freqMhz in 5925..7125 -> (freqMhz - 5950) / 5   // 6 GHz
+        else -> null
+    }
+
+    private fun scanResultStandard(sr: ScanResult): String? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return null
+        return when (sr.wifiStandard) {
+            ScanResult.WIFI_STANDARD_LEGACY -> "802.11 a/b/g"
+            ScanResult.WIFI_STANDARD_11N -> "Wi-Fi 4"
+            ScanResult.WIFI_STANDARD_11AC -> "Wi-Fi 5"
+            ScanResult.WIFI_STANDARD_11AX -> "Wi-Fi 6"
+            ScanResult.WIFI_STANDARD_11BE -> "Wi-Fi 7"
+            else -> null
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Trust toggle — recompute a network's evil-twin flag, findings and score for a
+    // new trust state without needing fresh scan results. Used by the detail screen
+    // as a fallback when the network is no longer in range (or is sample data).
+    // ─────────────────────────────────────────────────────────────────────────
+
+    fun recompute(net: WifiNetwork, trusted: Boolean): WifiNetwork {
+        val caps = capsOf(net)
+        val effectiveEvilTwin = net.evilTwinRaw && !trusted
+        val outcome = scoreFrom(
+            caps = caps,
+            authType = net.authType,
+            bandMhz = net.bandMhz,
+            signalQuality = net.signalQuality,
+            hiddenSsid = net.hiddenSsid,
+            evilTwin = effectiveEvilTwin,
+            sameSsidCount = net.sameSsidCount,
+            ssidForMessages = net.ssid,
+            isConnected = net.connected,
+            macRandomized = net.macRandomized,
+            captivePortal = net.captivePortal,
+            internetValidated = net.internetValidated,
+            dnsServers = net.dnsServers,
+            link = null,
+            trusted = trusted
+        )
+        return net.copy(
+            evilTwin = effectiveEvilTwin,
+            trusted = trusted,
+            score = outcome.score,
+            findings = outcome.findings
+        )
+    }
+
+    /** Best-effort reconstruction of a [Capabilities] from an already-analysed network. */
+    private fun capsOf(net: WifiNetwork): Capabilities {
+        val cipher = net.cipher?.uppercase().orEmpty()
+        val t = net.authType
+        return Capabilities(
+            hasWpa = t == AuthType.WPA_PERSONAL,
+            hasWpa2 = t == AuthType.WPA2_PERSONAL || t == AuthType.WPA2_ENTERPRISE || t == AuthType.WPA2_WPA3_MIXED,
+            hasWpa3 = t == AuthType.WPA3_PERSONAL || t == AuthType.WPA3_ENTERPRISE || t == AuthType.WPA2_WPA3_MIXED,
+            hasSae = t == AuthType.WPA3_PERSONAL || t == AuthType.WPA3_ENTERPRISE || t == AuthType.WPA2_WPA3_MIXED,
+            hasOwe = t == AuthType.OWE,
+            hasWep = t == AuthType.WEP || cipher.contains("WEP"),
+            hasEap = t == AuthType.WPA2_ENTERPRISE || t == AuthType.WPA3_ENTERPRISE,
+            hasPsk = t == AuthType.WPA_PERSONAL || t == AuthType.WPA2_PERSONAL || t == AuthType.WPA2_WPA3_MIXED,
+            hasCcmp = cipher.contains("CCMP"),
+            hasTkip = cipher.contains("TKIP"),
+            hasGcmp = cipher.contains("GCMP"),
+            pmfRequired = net.pmfRequired,
+            pmfCapable = net.pmfCapable,
+            wpsEnabled = net.wpsEnabled,
+            raw = null
+        )
+    }
+}
+
+/**
+ * A single Wi-Fi network (connected or nearby) for the overview list + detail screen.
+ *
+ * Parcelable so the overview can hand a fully-analysed network to the detail Activity
+ * without re-scanning — scan results differ between Activities, and sample-fallback
+ * networks are not in the live scan at all. Findings are carried with the model so the
+ * detail screen shows exactly the findings that produced the score.
+ */
+@Parcelize
+data class WifiNetwork(
+    val ssid: String,
+    val bssid: String,
+    val connected: Boolean,
+    val authType: WifiSecurityAnalyzer.AuthType,
+    val cipher: String?,
+    val pmfRequired: Boolean,
+    val pmfCapable: Boolean,
+    val wpsEnabled: Boolean,
+    val hiddenSsid: Boolean,
+    val bandMhz: Int?,
+    val channel: Int?,
+    val wifiStandard: String?,
+    val vendor: String?,
+    val rssiDbm: Int,
+    val signalQuality: Int,
+    val macRandomized: Boolean?,
+    val captivePortal: Boolean,
+    val internetValidated: Boolean,
+    val dnsServers: List<String>,
+    val evilTwin: Boolean,                 // effective: raw detection AND not trusted
+    val sameSsidCount: Int,
+    val score: Int,
+    val findings: List<WifiSecurityAnalyzer.Finding>,
+    val evilTwinRaw: Boolean = false,      // raw heuristic, before the trusted override
+    val trusted: Boolean = false           // user marked this BSSID as trusted
+) : Parcelable {
+
+    /** Grade band — identical thresholds to WifiSecurityResult.grade. */
+    val grade: WifiSecurityAnalyzer.Grade
+        get() = when {
+            score >= 90 -> WifiSecurityAnalyzer.Grade.EXCELLENT
+            score >= 75 -> WifiSecurityAnalyzer.Grade.GOOD
+            score >= 55 -> WifiSecurityAnalyzer.Grade.FAIR
+            score >= 30 -> WifiSecurityAnalyzer.Grade.POOR
+            else -> WifiSecurityAnalyzer.Grade.CRITICAL
+        }
+
+    /** A network counts as a threat if it is an evil twin, open, or WEP. */
+    val isThreat: Boolean
+        get() = evilTwin ||
+            authType == WifiSecurityAnalyzer.AuthType.OPEN ||
+            authType == WifiSecurityAnalyzer.AuthType.WEP
 }

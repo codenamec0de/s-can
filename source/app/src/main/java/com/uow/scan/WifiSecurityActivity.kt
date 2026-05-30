@@ -1,15 +1,17 @@
 package com.uow.scan
 
 import android.Manifest
-import android.content.Intent
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.pm.PackageManager
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -17,62 +19,121 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.uow.scan.adapter.WifiNetworkAdapter
+import com.uow.scan.ui.home.widget.RadarPulseView
 import com.uow.scan.ui.home.widget.WifiScoreGaugeView
+import com.uow.scan.util.WifiNetwork
 import com.uow.scan.util.WifiSecurityAnalyzer
-import com.uow.scan.util.WifiSecurityAnalyzer.Severity
+import com.uow.scan.util.WifiSecurityAnalyzer.Grade
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Wi-Fi Security OVERVIEW (S'CAN V4). The connected network is a tappable hero; below
+ * it a threat banner (only when a nearby access point is impersonating a network — an
+ * evil twin) and the nearby-networks list, sorted by signal or risk. Tapping any network
+ * opens
+ * [WifiNetworkDetailActivity]. Refresh runs a short scanning animation.
+ *
+ * Nearby data is a live cached scan with a representative sample fallback (see
+ * [WifiSecurityAnalyzer.scanNearby]).
+ */
 class WifiSecurityActivity : AppCompatActivity() {
+
+    private enum class SortMode { SIGNAL, RISK }
 
     private lateinit var btnBack: View
     private lateinit var btnRescanTop: View
+    private lateinit var ivRescanIcon: ImageView
+    private lateinit var tvTopSubtitle: TextView
 
     private lateinit var cardPermission: LinearLayout
     private lateinit var btnGrantPermission: MaterialButton
 
-    // Hero
     private lateinit var heroCard: LinearLayout
-    private lateinit var scoreGauge: WifiScoreGaugeView
-    private lateinit var tvScore: TextView
-    private lateinit var ivWifiIcon: ImageView
-    private lateinit var tvHeroEyebrow: TextView
-    private lateinit var tvSsid: TextView
-    private lateinit var tvNetworkSummary: TextView
-    private lateinit var tvGrade: TextView
+    private lateinit var heroDisconnected: View
+    private lateinit var heroGauge: WifiScoreGaugeView
+    private lateinit var tvHeroScore: TextView
+    private lateinit var tvHeroSsid: TextView
+    private lateinit var tvHeroGrade: TextView
+    private lateinit var tvHeroSummary: TextView
 
-    // Metric strip
-    private lateinit var tvCipher: TextView
-    private lateinit var tvCipherSub: TextView
-    private lateinit var tvPmf: TextView
-    private lateinit var tvSignal: TextView
+    private lateinit var threatBanner: View
+    private lateinit var tvThreatTitle: TextView
+    private lateinit var tvThreatBody: TextView
 
-    // Findings + details
-    private lateinit var tvFindingsHeader: TextView
-    private lateinit var findingsContainer: LinearLayout
-    private lateinit var detailsContainer: LinearLayout
+    private lateinit var tvNearbyHeader: TextView
+    private lateinit var sortControls: View
+    private lateinit var btnSortSignal: TextView
+    private lateinit var btnSortRisk: TextView
 
-    // Action area
-    private lateinit var btnRescan: MaterialButton
-    private lateinit var btnExport: MaterialButton
+    private lateinit var rvNearby: RecyclerView
+    private lateinit var tvEmpty: TextView
+    private lateinit var scanningState: View
+    private lateinit var radar: RadarPulseView
     private lateinit var tvLastScan: TextView
+
+    private lateinit var adapter: WifiNetworkAdapter
+
+    private var sort = SortMode.SIGNAL
+    private var scanning = false
+    private var lastResult: WifiSecurityAnalyzer.NearbyResult? = null
 
     private val requestPermLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { analyze() }
+    ) { loadNetworks() }
+
+    /**
+     * Passive live scanning: Android delivers [WifiManager.SCAN_RESULTS_AVAILABLE_ACTION]
+     * whenever the system completes one of its periodic scans (the app stays read-only —
+     * it never calls startScan()). When fresh results land while we're not already mid
+     * scan-animation, re-read and re-render so the nearby list updates on its own.
+     */
+    private val scanResultsReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (!scanning) loadNetworks()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wifi_security)
         bindViews()
         setupListeners()
+        rvNearby.layoutManager = LinearLayoutManager(this)
+        adapter = WifiNetworkAdapter { net -> WifiNetworkDetailActivity.start(this, net) }
+        rvNearby.adapter = adapter
+        rvNearby.isNestedScrollingEnabled = false
+        updateSortChips()
     }
 
     override fun onResume() {
         super.onResume()
-        analyze()
+        if (!scanning) loadNetworks()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ContextCompat.registerReceiver(
+            this,
+            scanResultsReceiver,
+            IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            unregisterReceiver(scanResultsReceiver)
+        } catch (_: IllegalArgumentException) {
+            // already unregistered — ignore
+        }
     }
 
     @Suppress("DEPRECATION")
@@ -84,30 +145,33 @@ class WifiSecurityActivity : AppCompatActivity() {
     private fun bindViews() {
         btnBack = findViewById(R.id.btnBack)
         btnRescanTop = findViewById(R.id.btnRescanTop)
+        ivRescanIcon = findViewById(R.id.ivRescanIcon)
+        tvTopSubtitle = findViewById(R.id.tvTopSubtitle)
 
         cardPermission = findViewById(R.id.cardPermission)
         btnGrantPermission = findViewById(R.id.btnGrantPermission)
 
         heroCard = findViewById(R.id.heroCard)
-        scoreGauge = findViewById(R.id.scoreGauge)
-        tvScore = findViewById(R.id.tvScore)
-        ivWifiIcon = findViewById(R.id.ivWifiIcon)
-        tvHeroEyebrow = findViewById(R.id.tvHeroEyebrow)
-        tvSsid = findViewById(R.id.tvSsid)
-        tvNetworkSummary = findViewById(R.id.tvNetworkSummary)
-        tvGrade = findViewById(R.id.tvGrade)
+        heroDisconnected = findViewById(R.id.heroDisconnected)
+        heroGauge = findViewById(R.id.heroGauge)
+        tvHeroScore = findViewById(R.id.tvHeroScore)
+        tvHeroSsid = findViewById(R.id.tvHeroSsid)
+        tvHeroGrade = findViewById(R.id.tvHeroGrade)
+        tvHeroSummary = findViewById(R.id.tvHeroSummary)
 
-        tvCipher = findViewById(R.id.tvCipher)
-        tvCipherSub = findViewById(R.id.tvCipherSub)
-        tvPmf = findViewById(R.id.tvPmf)
-        tvSignal = findViewById(R.id.tvSignal)
+        threatBanner = findViewById(R.id.threatBanner)
+        tvThreatTitle = findViewById(R.id.tvThreatTitle)
+        tvThreatBody = findViewById(R.id.tvThreatBody)
 
-        tvFindingsHeader = findViewById(R.id.tvFindingsHeader)
-        findingsContainer = findViewById(R.id.findingsContainer)
-        detailsContainer = findViewById(R.id.detailsContainer)
+        tvNearbyHeader = findViewById(R.id.tvNearbyHeader)
+        sortControls = findViewById(R.id.sortControls)
+        btnSortSignal = findViewById(R.id.btnSortSignal)
+        btnSortRisk = findViewById(R.id.btnSortRisk)
 
-        btnRescan = findViewById(R.id.btnRescan)
-        btnExport = findViewById(R.id.btnExport)
+        rvNearby = findViewById(R.id.rvNearby)
+        tvEmpty = findViewById(R.id.tvEmpty)
+        scanningState = findViewById(R.id.scanningState)
+        radar = findViewById(R.id.radar)
         tvLastScan = findViewById(R.id.tvLastScan)
     }
 
@@ -117,24 +181,154 @@ class WifiSecurityActivity : AppCompatActivity() {
             @Suppress("DEPRECATION")
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
-        btnRescanTop.setOnClickListener { analyze() }
-        btnRescan.setOnClickListener { analyze() }
-        btnExport.setOnClickListener {
-            startActivity(Intent(this, ExportReportActivity::class.java))
-        }
+        btnRescanTop.setOnClickListener { startScanAnimation() }
         btnGrantPermission.setOnClickListener { requestScanPermission() }
+        btnSortSignal.setOnClickListener { setSort(SortMode.SIGNAL) }
+        btnSortRisk.setOnClickListener { setSort(SortMode.RISK) }
     }
 
-    private fun analyze() {
-        val missing = missingPermissions()
-        cardPermission.visibility = if (missing.isEmpty()) View.GONE else View.VISIBLE
+    // ─────────────────────────────────────────────────────────────────────
+    // Loading
+    // ─────────────────────────────────────────────────────────────────────
 
+    private fun loadNetworks() {
+        updatePermissionCard()
         lifecycleScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                WifiSecurityAnalyzer.analyze(this@WifiSecurityActivity)
+            val res = withContext(Dispatchers.IO) {
+                WifiSecurityAnalyzer.scanNearby(this@WifiSecurityActivity)
             }
-            render(result)
+            if (!scanning) render(res)
         }
+    }
+
+    private fun startScanAnimation() {
+        if (scanning) return
+        scanning = true
+        ivRescanIcon.setColorFilter(ContextCompat.getColor(this, R.color.v4_accent))
+        showScanning(true)
+        radar.start()
+        lifecycleScope.launch {
+            val res = withContext(Dispatchers.IO) {
+                WifiSecurityAnalyzer.scanNearby(this@WifiSecurityActivity)
+            }
+            delay(1900)
+            scanning = false
+            radar.stop()
+            ivRescanIcon.setColorFilter(ContextCompat.getColor(this@WifiSecurityActivity, R.color.v4_fg2))
+            showScanning(false)
+            updatePermissionCard()
+            render(res)
+        }
+    }
+
+    private fun showScanning(active: Boolean) {
+        scanningState.visibility = if (active) View.VISIBLE else View.GONE
+        sortControls.visibility = if (active) View.INVISIBLE else View.VISIBLE
+        tvLastScan.visibility = if (active) View.GONE else View.VISIBLE
+        if (active) {
+            rvNearby.visibility = View.GONE
+            tvEmpty.visibility = View.GONE
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Rendering
+    // ─────────────────────────────────────────────────────────────────────
+
+    private fun render(res: WifiSecurityAnalyzer.NearbyResult) {
+        lastResult = res
+        renderHero(res.connected)
+        renderThreatBanner(res)
+
+        tvNearbyHeader.text = getString(R.string.wifi_v4_nearby_header, res.nearby.size)
+        tvTopSubtitle.text = getString(R.string.wifi_v4_networks_in_range, res.nearby.size)
+
+        adapter.submitList(sortNetworks(res.nearby))
+        val empty = res.nearby.isEmpty()
+        rvNearby.visibility = if (empty) View.GONE else View.VISIBLE
+        tvEmpty.visibility = if (empty) View.VISIBLE else View.GONE
+
+        tvLastScan.setText(R.string.wifi_v4_overview_footer)
+    }
+
+    private fun renderHero(connected: WifiNetwork?) {
+        if (connected == null) {
+            heroCard.visibility = View.GONE
+            heroDisconnected.visibility = View.VISIBLE
+            return
+        }
+        heroCard.visibility = View.VISIBLE
+        heroDisconnected.visibility = View.GONE
+
+        val gradeColorRes = gradeColorRes(connected.grade)
+        tvHeroScore.text = connected.score.toString()
+        heroGauge.setScore(connected.score, gradeColorRes)
+        tvHeroSsid.text = connected.ssid
+
+        val (gradeLabel, gradeBgRes) = gradeBadge(connected.grade)
+        tvHeroGrade.text = gradeLabel
+        tvHeroGrade.setTextColor(ContextCompat.getColor(this, gradeColorRes))
+        tvHeroGrade.setBackgroundResource(gradeBgRes)
+
+        tvHeroSummary.text =
+            "${WifiSecurityAnalyzer.authShortLabel(connected.authType)} · ${connected.rssiDbm} dBm"
+
+        heroCard.setOnClickListener { WifiNetworkDetailActivity.start(this, connected) }
+    }
+
+    /**
+     * The top-of-screen alert is reserved for the one nearby situation that actually
+     * concerns the user: an *evil twin* — a rogue access point copying a network name to
+     * lure devices into connecting. A nearby open or weakly-encrypted AP is just that
+     * network's own posture (the user isn't connected to it), so it never raises an alert
+     * here; flagging every café / guest / printer network would only cause needless worry.
+     */
+    private fun renderThreatBanner(res: WifiSecurityAnalyzer.NearbyResult) {
+        val evilTwins = res.nearby.filter { it.evilTwin }
+        if (evilTwins.isEmpty()) {
+            threatBanner.visibility = View.GONE
+            return
+        }
+        threatBanner.visibility = View.VISIBLE
+        tvThreatTitle.text =
+            resources.getQuantityString(R.plurals.wifi_v4_threat_title, evilTwins.size, evilTwins.size)
+        tvThreatBody.setText(R.string.wifi_v4_threat_evil)
+        threatBanner.setOnClickListener { WifiNetworkDetailActivity.start(this, evilTwins.first()) }
+    }
+
+    private fun sortNetworks(list: List<WifiNetwork>): List<WifiNetwork> = when (sort) {
+        SortMode.SIGNAL -> list.sortedByDescending { it.rssiDbm }
+        SortMode.RISK -> list.sortedBy { it.score }
+    }
+
+    private fun setSort(mode: SortMode) {
+        if (sort == mode) return
+        sort = mode
+        updateSortChips()
+        lastResult?.let { adapter.submitList(sortNetworks(it.nearby)) }
+    }
+
+    private fun updateSortChips() {
+        styleSortChip(btnSortSignal, sort == SortMode.SIGNAL)
+        styleSortChip(btnSortRisk, sort == SortMode.RISK)
+    }
+
+    private fun styleSortChip(chip: TextView, active: Boolean) {
+        if (active) {
+            chip.setBackgroundResource(R.drawable.bg_v4_perm_pill_accent)
+            chip.setTextColor(ContextCompat.getColor(this, R.color.v4_accent))
+        } else {
+            chip.background = null
+            chip.setTextColor(ContextCompat.getColor(this, R.color.v4_fg3))
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Permissions (unchanged entry point for nearby scanning)
+    // ─────────────────────────────────────────────────────────────────────
+
+    private fun updatePermissionCard() {
+        cardPermission.visibility = if (missingPermissions().isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun missingPermissions(): List<String> {
@@ -155,7 +349,7 @@ class WifiSecurityActivity : AppCompatActivity() {
     private fun requestScanPermission() {
         val toRequest = missingPermissions().toTypedArray()
         if (toRequest.isEmpty()) {
-            analyze()
+            loadNetworks()
             return
         }
         val alreadyDeniedForever = toRequest.any { perm ->
@@ -174,279 +368,24 @@ class WifiSecurityActivity : AppCompatActivity() {
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // Rendering
+    // Grade styling
     // ─────────────────────────────────────────────────────────────────────
 
-    private fun render(r: WifiSecurityAnalyzer.WifiSecurityResult) {
-        renderHero(r)
-        renderMetricStrip(r)
-        renderFindings(r)
-        renderDetails(r)
-        tvLastScan.text = getString(R.string.wifi_v4_last_scan_just_now)
+    private fun gradeColorRes(grade: Grade): Int = when (grade) {
+        Grade.EXCELLENT, Grade.GOOD -> R.color.v4_ok
+        Grade.FAIR -> R.color.v4_accent
+        Grade.POOR -> R.color.v4_warn
+        Grade.CRITICAL -> R.color.v4_bad
     }
 
-    private fun renderHero(r: WifiSecurityAnalyzer.WifiSecurityResult) {
-        val gradeColorRes = gradeColorRes(r)
-        tvScore.text = if (r.notConnected) "—" else r.score.toString()
-        tvScore.setTextColor(ContextCompat.getColor(this, R.color.v4_fg0))
-        scoreGauge.setScore(if (r.notConnected) 0 else r.score, gradeColorRes)
-
-        if (r.notConnected) {
-            ivWifiIcon.setImageResource(R.drawable.ic_glyph_wifi)
-            ivWifiIcon.setColorFilter(ContextCompat.getColor(this, R.color.v4_fg3))
-            tvHeroEyebrow.setText(R.string.wifi_v4_eyebrow_not_connected)
-            tvHeroEyebrow.setTextColor(ContextCompat.getColor(this, R.color.v4_fg3))
-            tvSsid.setText(R.string.wifi_v4_no_network)
-            tvNetworkSummary.setText(R.string.wifi_v4_connect_prompt)
-        } else {
-            ivWifiIcon.setImageResource(R.drawable.ic_glyph_wifi)
-            ivWifiIcon.setColorFilter(ContextCompat.getColor(this, R.color.v4_accent))
-            tvHeroEyebrow.setText(R.string.wifi_v4_eyebrow_connected)
-            tvHeroEyebrow.setTextColor(ContextCompat.getColor(this, R.color.v4_accent))
-            tvSsid.text = r.ssid ?: getString(R.string.wifi_v4_unknown_network)
-            tvNetworkSummary.text = buildHeroSummary(r)
-        }
-
-        // Grade pill
-        val (gradeLabel, gradeBgRes) = gradeBadge(r)
-        tvGrade.text = gradeLabel
-        tvGrade.setTextColor(ContextCompat.getColor(this, gradeColorRes))
-        tvGrade.setBackgroundResource(gradeBgRes)
-    }
-
-    private fun buildHeroSummary(r: WifiSecurityAnalyzer.WifiSecurityResult): String {
-        val auth = r.authType.name.replace('_', ' ')
-            .lowercase()
-            .replaceFirstChar { it.titlecase() }
-        val band = r.bandMhz?.let { "${it / 1000} GHz" }
-        val rssi = r.rssiDbm?.let { "$it dBm" }
-        return listOfNotNull(auth, band, rssi).joinToString(" · ")
-    }
-
-    private fun renderMetricStrip(r: WifiSecurityAnalyzer.WifiSecurityResult) {
-        // Cipher
-        val cipher = r.cipher
-        tvCipher.text = cipher ?: if (r.notConnected) "—" else "none"
-        tvCipherSub.setText(R.string.wifi_v4_metric_cipher_sub)
-        tvCipher.setTextColor(
-            ContextCompat.getColor(
-                this,
-                when (cipher) {
-                    "CCMP" -> R.color.v4_ok
-                    "TKIP", "MIXED" -> R.color.v4_warn
-                    null -> R.color.v4_fg2
-                    else -> R.color.v4_fg0
-                }
-            )
-        )
-
-        // PMF
-        val pmfText = when {
-            r.notConnected -> "—"
-            r.pmfRequired -> getString(R.string.wifi_v4_metric_pmf_required)
-            r.pmfCapable -> getString(R.string.wifi_v4_metric_pmf_capable)
-            else -> getString(R.string.wifi_v4_metric_pmf_off)
-        }
-        tvPmf.text = pmfText
-        tvPmf.setTextColor(
-            ContextCompat.getColor(
-                this,
-                when {
-                    r.notConnected -> R.color.v4_fg2
-                    r.pmfRequired -> R.color.v4_ok
-                    r.pmfCapable -> R.color.v4_accent
-                    else -> R.color.v4_warn
-                }
-            )
-        )
-
-        // Signal
-        val rssi = r.rssiDbm
-        tvSignal.text = if (rssi == null) "—" else rssi.toString()
-        tvSignal.setTextColor(
-            ContextCompat.getColor(
-                this,
-                when {
-                    rssi == null -> R.color.v4_fg2
-                    r.signalQuality >= 70 -> R.color.v4_ok
-                    r.signalQuality >= 40 -> R.color.v4_warn
-                    else -> R.color.v4_bad
-                }
-            )
-        )
-    }
-
-    private fun renderFindings(r: WifiSecurityAnalyzer.WifiSecurityResult) {
-        findingsContainer.removeAllViews()
-        val flagged = r.findings.count { it.severity != Severity.OK && it.severity != Severity.INFO }
-        tvFindingsHeader.text = if (r.findings.isEmpty()) {
-            getString(R.string.wifi_v4_section_findings)
-        } else {
-            getString(R.string.wifi_v4_section_findings_count, flagged, r.findings.size)
-        }
-
-        val inflater = LayoutInflater.from(this)
-        for (finding in r.findings) {
-            val row = inflater.inflate(R.layout.item_wifi_finding, findingsContainer, false)
-            bindFindingRow(row, finding)
-            findingsContainer.addView(row)
-        }
-    }
-
-    private fun bindFindingRow(row: View, finding: WifiSecurityAnalyzer.Finding) {
-        val sevTile = row.findViewById<FrameLayout>(R.id.sevTile)
-        val sevIcon = row.findViewById<ImageView>(R.id.sevIcon)
-        val pill = row.findViewById<TextView>(R.id.tvSeverityPill)
-        val (tileBgRes, pillBgRes, colorRes, iconRes, label) = severityStyle(finding.severity)
-        sevTile.setBackgroundResource(tileBgRes)
-        sevIcon.setImageResource(iconRes)
-        sevIcon.setColorFilter(ContextCompat.getColor(this, colorRes))
-        pill.text = label
-        pill.setTextColor(ContextCompat.getColor(this, colorRes))
-        pill.setBackgroundResource(pillBgRes)
-
-        row.findViewById<TextView>(R.id.tvFindingTitle).text = finding.title
-        row.findViewById<TextView>(R.id.tvFindingBody).text = finding.description
-        val fixBox = row.findViewById<LinearLayout>(R.id.fixBox)
-        val tvFix = row.findViewById<TextView>(R.id.tvFindingFix)
-        if (finding.recommendation != null) {
-            fixBox.visibility = View.VISIBLE
-            tvFix.text = finding.recommendation
-        } else {
-            fixBox.visibility = View.GONE
-        }
-    }
-
-    private fun renderDetails(r: WifiSecurityAnalyzer.WifiSecurityResult) {
-        detailsContainer.removeAllViews()
-        if (r.notConnected) {
-            addDetail(detailsContainer, getString(R.string.wifi_v4_detail_status), "—", isLast = true)
-            return
-        }
-        val rows = mutableListOf<Pair<String, String>>()
-        rows += getString(R.string.wifi_v4_detail_bssid) to (r.bssid ?: "—")
-        rows += getString(R.string.wifi_v4_detail_standard) to (r.wifiStandard ?: "—")
-        rows += getString(R.string.wifi_v4_detail_band) to formatBand(r)
-        rows += getString(R.string.wifi_v4_detail_auth) to r.authType.name.replace('_', ' ')
-        rows += getString(R.string.wifi_v4_detail_cipher) to (r.cipher ?: "—")
-        rows += getString(R.string.wifi_v4_detail_pmf) to when {
-            r.pmfRequired -> "required"
-            r.pmfCapable -> "capable"
-            else -> "off"
-        }
-        rows += getString(R.string.wifi_v4_detail_rssi) to (r.rssiDbm?.let { "$it dBm (${r.signalQuality}%)" } ?: "—")
-        rows += getString(R.string.wifi_v4_detail_wps) to if (r.wpsEnabled) "on" else "off"
-        rows += getString(R.string.wifi_v4_detail_hidden) to if (r.hiddenSsid) "yes" else "no"
-        rows += getString(R.string.wifi_v4_detail_mac_rand) to when (r.macRandomized) {
-            true -> "on"
-            false -> "off"
-            null -> "unknown"
-        }
-        rows += getString(R.string.wifi_v4_detail_captive) to if (r.captivePortal) "yes" else "no"
-        rows += getString(R.string.wifi_v4_detail_internet) to if (r.internetValidated) "validated" else "—"
-        rows += getString(R.string.wifi_v4_detail_dns) to if (r.dnsServers.isEmpty()) "—" else r.dnsServers.joinToString(", ")
-        val peers = r.nearbySameSsidCount.toString() +
-            if (r.apparentEvilTwin) " ⚠ divergent" else ""
-        rows += getString(R.string.wifi_v4_detail_peers) to peers
-
-        rows.forEachIndexed { i, (k, v) ->
-            addDetail(detailsContainer, k, v, isLast = i == rows.size - 1)
-        }
-    }
-
-    private fun formatBand(r: WifiSecurityAnalyzer.WifiSecurityResult): String {
-        val mhz = r.bandMhz ?: return "—"
-        return "%.1f GHz".format(mhz / 1000.0)
-    }
-
-    private fun addDetail(container: LinearLayout, key: String, value: String, isLast: Boolean) {
-        val row = LayoutInflater.from(this)
-            .inflate(R.layout.item_wifi_detail_row, container, false)
-        row.findViewById<TextView>(R.id.tvDetailKey).text = key
-        row.findViewById<TextView>(R.id.tvDetailValue).text = value
-        container.addView(row)
-        if (!isLast) container.addView(detailDivider())
-    }
-
-    private fun detailDivider(): View {
-        val v = View(this)
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            (1 * resources.displayMetrics.density).toInt()
-        )
-        lp.marginStart = (16 * resources.displayMetrics.density).toInt()
-        lp.marginEnd = (16 * resources.displayMetrics.density).toInt()
-        v.layoutParams = lp
-        v.setBackgroundColor(ContextCompat.getColor(this, R.color.v4_hairline))
-        return v
-    }
-
-    // ─────────────────────────────────────────────────────────────────────
-    // Severity / grade styling
-    // ─────────────────────────────────────────────────────────────────────
-
-    private data class SevStyle(
-        val tileBgRes: Int,
-        val pillBgRes: Int,
-        val colorRes: Int,
-        val iconRes: Int,
-        val label: String
-    )
-
-    private fun severityStyle(s: Severity): SevStyle = when (s) {
-        Severity.CRITICAL -> SevStyle(
-            R.drawable.bg_v4_breach_tile_bad, R.drawable.bg_v4_perm_pill_bad,
-            R.color.v4_bad, R.drawable.ic_glyph_warn,
-            getString(R.string.wifi_v4_pill_critical)
-        )
-        Severity.HIGH -> SevStyle(
-            R.drawable.bg_v4_breach_tile_bad, R.drawable.bg_v4_perm_pill_bad,
-            R.color.v4_bad, R.drawable.ic_glyph_warn,
-            getString(R.string.wifi_v4_pill_high)
-        )
-        Severity.MEDIUM -> SevStyle(
-            R.drawable.bg_v4_breach_tile_warn, R.drawable.bg_v4_perm_pill_warn,
-            R.color.v4_warn, R.drawable.ic_glyph_warn,
-            getString(R.string.wifi_v4_pill_medium)
-        )
-        Severity.LOW -> SevStyle(
-            R.drawable.bg_v4_breach_tile_warn, R.drawable.bg_v4_perm_pill_warn,
-            R.color.v4_warn, R.drawable.ic_glyph_warn,
-            getString(R.string.wifi_v4_pill_low)
-        )
-        Severity.INFO -> SevStyle(
-            R.drawable.bg_v4_perm_pill_idle, R.drawable.bg_v4_perm_pill_idle,
-            R.color.v4_fg2, R.drawable.ic_glyph_check,
-            getString(R.string.wifi_v4_pill_info)
-        )
-        Severity.OK -> SevStyle(
-            R.drawable.bg_v4_perm_pill_ok, R.drawable.bg_v4_perm_pill_ok,
-            R.color.v4_ok, R.drawable.ic_glyph_check,
-            getString(R.string.wifi_v4_pill_ok)
-        )
-    }
-
-    private fun gradeColorRes(r: WifiSecurityAnalyzer.WifiSecurityResult): Int = when {
-        r.notConnected -> R.color.v4_fg3
-        r.grade == WifiSecurityAnalyzer.Grade.EXCELLENT ||
-            r.grade == WifiSecurityAnalyzer.Grade.GOOD -> R.color.v4_ok
-        r.grade == WifiSecurityAnalyzer.Grade.FAIR -> R.color.v4_accent
-        r.grade == WifiSecurityAnalyzer.Grade.POOR -> R.color.v4_warn
-        else -> R.color.v4_bad
-    }
-
-    private fun gradeBadge(r: WifiSecurityAnalyzer.WifiSecurityResult): Pair<String, Int> {
-        if (r.notConnected) return getString(R.string.wifi_v4_grade_not_connected) to R.drawable.bg_v4_perm_pill_idle
-        return when (r.grade) {
-            WifiSecurityAnalyzer.Grade.EXCELLENT,
-            WifiSecurityAnalyzer.Grade.GOOD ->
-                getString(R.string.wifi_v4_grade_good) to R.drawable.bg_v4_perm_pill_ok
-            WifiSecurityAnalyzer.Grade.FAIR ->
-                getString(R.string.wifi_v4_grade_fair) to R.drawable.bg_v4_perm_pill_accent
-            WifiSecurityAnalyzer.Grade.POOR ->
-                getString(R.string.wifi_v4_grade_poor) to R.drawable.bg_v4_perm_pill_warn
-            WifiSecurityAnalyzer.Grade.CRITICAL ->
-                getString(R.string.wifi_v4_grade_critical) to R.drawable.bg_v4_perm_pill_bad
-        }
+    private fun gradeBadge(grade: Grade): Pair<String, Int> = when (grade) {
+        Grade.EXCELLENT, Grade.GOOD ->
+            getString(R.string.wifi_v4_grade_good) to R.drawable.bg_v4_perm_pill_ok
+        Grade.FAIR ->
+            getString(R.string.wifi_v4_grade_fair) to R.drawable.bg_v4_perm_pill_accent
+        Grade.POOR ->
+            getString(R.string.wifi_v4_grade_poor) to R.drawable.bg_v4_perm_pill_warn
+        Grade.CRITICAL ->
+            getString(R.string.wifi_v4_grade_critical) to R.drawable.bg_v4_perm_pill_bad
     }
 }

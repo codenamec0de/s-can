@@ -324,6 +324,13 @@
     <string name="sms_v4_subtitle">SMS analyzed by S\'CAN\'s AI sidecar.</string>
     <string name="sms_v4_more_analyzed">%d more messages analyzed</string>
     <string name="sms_v4_settings_cd">SMS detection settings</string>
+    <string name="sms_v4_reset_cd">Reset verdicts</string>
+    <string name="sms_v4_reset_title">Reset verdicts?</string>
+    <string name="sms_v4_reset_message">This permanently clears all %1$d saved verdict(s). This can\'t be undone.</string>
+    <string name="sms_v4_reset_confirm">Reset</string>
+    <string name="sms_v4_reset_cancel">Cancel</string>
+    <string name="sms_v4_reset_done">Verdicts cleared</string>
+    <string name="sms_v4_reset_empty">No verdicts to reset</string>
     <string name="sms_v4_no_verdicts_title">No verdicts yet</string>
     <string name="sms_v4_no_verdicts_desc">Incoming messages will be analyzed by S\'CAN\'s AI sidecar and the results will appear here.</string>
     <string name="sms_v4_clear_all">Clear all</string>
@@ -575,8 +582,9 @@
     <string name="home_tool_netmon_title">Network Traffic Monitor</string>
     <string name="home_tool_netmon_desc">Follows network traffic to see where applications talk to — exposing their actual behaviour.</string>
     <string name="home_tool_dns_title">DNS Leak Detection</string>
-    <string name="home_tool_dns_desc">Flags any app that bypasses your chosen DNS resolver — proves, app by app, whether your Private DNS or VPN is honoured.</string>
+    <string name="home_tool_dns_desc">Checks whether your DNS lookups are private — or visible to and redirectable by the network you\'re on.</string>
     <string name="home_tool_coming_soon_pill">Coming soon</string>
+    <string name="home_tool_beta_pill">Beta</string>
     <string name="home_tool_coming_soon_toast">%s ships in a future build.</string>
 
     <!-- Breach Checker (V4) -->
@@ -678,6 +686,105 @@
     <string name="wifi_v4_detail_internet">Internet</string>
     <string name="wifi_v4_detail_dns">DNS</string>
     <string name="wifi_v4_detail_peers">SSID peers</string>
+    <string name="wifi_v4_detail_vendor">Vendor</string>
+    <string name="wifi_v4_detail_security">Security</string>
+
+    <!-- Wi-Fi Security · nearby overview (V4) -->
+    <string name="wifi_v4_networks_in_range">%1$d networks in range</string>
+    <string name="wifi_v4_view_full_report">View full security report</string>
+    <string name="wifi_v4_threat_evil">A nearby access point is copying a network name. You\'re not connected to it — but avoid connecting, as it may be impersonating the real network.</string>
+    <string name="wifi_v4_nearby_header">Nearby networks · %1$d</string>
+    <string name="wifi_v4_sort_label">SORT</string>
+    <string name="wifi_v4_sort_signal">Signal</string>
+    <string name="wifi_v4_sort_risk">Risk</string>
+    <string name="wifi_v4_scanning_title">Scanning for networks…</string>
+    <string name="wifi_v4_scanning_sub">Listening on 2.4 + 5 GHz</string>
+    <string name="wifi_v4_overview_footer">Last scan · just now · tap any network to inspect</string>
+    <string name="wifi_v4_duplicate_tag">Duplicate</string>
+    <string name="wifi_v4_meta_format">%1$s GHz · ch %2$s · %3$d dBm</string>
+    <string name="wifi_v4_no_nearby">No networks found in range</string>
+    <plurals name="wifi_v4_threat_title">
+        <item quantity="one">Possible evil twin nearby</item>
+        <item quantity="other">%1$d possible evil twins nearby</item>
+    </plurals>
+
+    <!-- Wi-Fi network detail (V4) -->
+    <string name="wifi_v4_detail_title_connected">Connected network</string>
+    <string name="wifi_v4_detail_title_nearby">Network detail</string>
+    <string name="wifi_v4_eyebrow_nearby">Nearby</string>
+    <string name="wifi_v4_duplicate_badge">Duplicate SSID</string>
+    <string name="wifi_v4_evil_card_title">Do not connect to this network</string>
+    <string name="wifi_v4_evil_card_body">It impersonates your trusted network but is unencrypted and run by an unknown device. This is a likely man-in-the-middle attack.</string>
+    <string name="wifi_v4_btn_connect">Connect to network</string>
+    <string name="wifi_v4_btn_connect_anyway">Connect anyway</string>
+    <string name="wifi_v4_btn_trust">Trust this network</string>
+    <string name="wifi_v4_btn_untrust">Trusted · tap to remove</string>
+    <string name="wifi_v4_toast_trusted">Added to your trusted networks</string>
+    <string name="wifi_v4_toast_untrusted">Removed from trusted networks</string>
+
+    <!-- DNS Leak Detection (V4 · Beta) -->
+    <string name="dns_v4_title">DNS Leak Detection</string>
+    <string name="dns_v4_subtitle">Is your browsing private?</string>
+    <!-- First-run / empty -->
+    <string name="dns_v4_empty_title">Can your network see\nthe sites you visit?</string>
+    <string name="dns_v4_empty_body">Every site you open starts with a DNS lookup. This check tells you whether yours are private — or visible to and redirectable by your network.</string>
+    <string name="dns_v4_empty_check_encrypted">Whether lookups are encrypted</string>
+    <string name="dns_v4_empty_check_resolver">Who your DNS resolver is</string>
+    <string name="dns_v4_empty_check_vpn">VPN status &amp; result tampering</string>
+    <string name="dns_v4_btn_check">Check my DNS</string>
+    <string name="dns_v4_empty_footnote">Runs on-device · ~3 seconds · nothing leaves your phone</string>
+    <!-- Scanning -->
+    <string name="dns_v4_scanning_title">Testing your DNS…</string>
+    <string name="dns_v4_step_resolver">Reading active resolver</string>
+    <string name="dns_v4_step_encryption">Testing for encryption</string>
+    <string name="dns_v4_step_vpn">Checking VPN &amp; tunnel</string>
+    <string name="dns_v4_step_tamper">Probing for tampering</string>
+    <string name="dns_v4_step_running">running</string>
+    <string name="dns_v4_step_done">done</string>
+    <!-- Error / offline -->
+    <string name="dns_v4_error_title">Couldn\'t complete the test</string>
+    <string name="dns_v4_error_body">We couldn\'t read your DNS configuration. You appear to be offline, or a firewall is blocking the probe. Check your connection and try again.</string>
+    <string name="dns_v4_btn_try_again">Try again</string>
+    <!-- Result -->
+    <string name="dns_v4_score_unit">/ 100</string>
+    <string name="dns_v4_section_resolver">Resolver summary</string>
+    <string name="dns_v4_tile_resolver">Resolver</string>
+    <string name="dns_v4_tile_encrypted">Encrypted</string>
+    <string name="dns_v4_tile_network">Network</string>
+    <string name="dns_v4_tile_vpn">VPN</string>
+    <string name="dns_v4_clean_banner">You\'re protected. Lookups are encrypted to a trusted resolver and nothing on this network can read or redirect them.</string>
+    <string name="dns_v4_section_findings_clean">Checks · all %1$d passed</string>
+    <string name="dns_v4_section_findings_count">Findings · %1$d of %2$d need attention</string>
+    <string name="dns_v4_grade_private">Private</string>
+    <string name="dns_v4_grade_partial">Partial</string>
+    <string name="dns_v4_grade_exposed">Exposed</string>
+    <string name="dns_v4_grade_intercepted">Intercepted</string>
+    <string name="dns_v4_pill_high">High</string>
+    <string name="dns_v4_pill_medium">Medium</string>
+    <string name="dns_v4_pill_ok">OK</string>
+    <string name="dns_v4_yes">Yes</string>
+    <string name="dns_v4_no">No</string>
+    <string name="dns_v4_on">On</string>
+    <string name="dns_v4_off">Off</string>
+    <string name="dns_v4_vpn_sub_on">tunnel active</string>
+    <string name="dns_v4_vpn_sub_off">no tunnel</string>
+    <string name="dns_v4_proto_unencrypted">unencrypted</string>
+    <string name="dns_v4_resolver_proto_format">%1$s · %2$s</string>
+    <string name="dns_v4_btn_private_dns">Turn on Private DNS</string>
+    <string name="dns_v4_btn_recheck">Re-check now</string>
+    <string name="dns_v4_btn_run_again">Run check again</string>
+    <string name="dns_v4_section_advanced">Advanced</string>
+    <string name="dns_v4_deeptest_title">Deep test</string>
+    <string name="dns_v4_deeptest_badge">Coming soon</string>
+    <string name="dns_v4_deeptest_body">Trace which resolvers your traffic actually reaches — provider names and locations, mapped per request.</string>
+    <string name="dns_v4_deeptest_toast">Deep test ships in a future build.</string>
+    <string name="dns_v4_footer">Last check · just now · on-device</string>
+    <string name="dns_v4_footer_demo">Last check · just now · demo data</string>
+    <string name="dns_v4_private_dns_hint">Open Private DNS, then set it to a provider like \"one.one.one.one\".</string>
+    <!-- Demo override (long-press the title) -->
+    <string name="dns_v4_demo_auto">Demo off · live detection</string>
+    <string name="dns_v4_demo_exposed">Demo · forcing EXPOSED result</string>
+    <string name="dns_v4_demo_protected">Demo · forcing PROTECTED result</string>
 
     <!-- Export Report (V4) -->
     <string name="export_v4_title">Export Report</string>

@@ -1,5 +1,44 @@
 # S'CAN — Release Notes
 
+## v1.4.6 (2026-05-30)
+
+A capability release: two new network-privacy tools, a much deeper Wi-Fi Security area, and
+demo-ready SMS detection — all on a refreshed, reproducible build toolchain.
+
+### 🌐 DNS Leak Detection (Beta)
+- A new **DNS Leak Detection** tool answers "is my browsing private right now?" It inspects
+  your current network's active DNS resolver, **Private DNS (DoT)**, and VPN state and grades
+  it **PRIVATE / PARTIAL / EXPOSED**.
+- Plain-language **findings** explain what's protecting you and what's exposing your lookups,
+  with per-resolver detail tiles and a one-tap shortcut toward the Private DNS setting.
+- Runs **entirely on-device** from the system network configuration — no DNS queries are sent
+  to us.
+- Launchable from a new cyan **Beta** card on the Home screen.
+
+### 📶 Wi-Fi Security — nearby networks & evil-twin detection
+- Wi-Fi Security now shows **every network in range**, not just the one you're connected to —
+  sortable by signal or risk, each with its own security grade.
+- **Evil-twin detection** flags a rogue access point that copies a nearby network's name to
+  lure a connection — the one nearby case that genuinely warrants a warning.
+- A new **per-network detail screen** breaks down any network's encryption, signal, vendor and
+  posture, with a clear "do not connect" call-out for evil twins.
+- **Manufacturer lookup** — networks now show their hardware vendor (router/AP maker) via a
+  bundled IEEE OUI database, resolved **entirely offline**.
+- **Trusted networks** — mark an access point you recognise as trusted so it's never flagged as
+  an evil twin again.
+- Nearby networks **refresh automatically** as Android scans (passive and read-only — the app
+  never changes your Wi-Fi).
+- **Quieter by design:** a nearby open/weak network is *its* posture, not a threat to you while
+  you're not connected to it, so it no longer raises an alarm.
+
+### 📩 SMS scam — sharper live detection
+- **"Try a sample scam"** now cycles through **seven varied, realistic examples** (parcel, road
+  toll, tax refund, bank, myGov, family-impersonation, streaming) instead of a single one.
+- New **Clear verdicts** action wipes the verdict history for a clean slate.
+- Two new on-device fallback patterns (myGov account-suspension, streaming-billing phishing).
+
+---
+
 ## v1.4.5 (2026-05-30)
 
 A reliability and accuracy release. The headline features now behave correctly and honestly,

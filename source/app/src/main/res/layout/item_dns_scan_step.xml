@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One row of the DNS scanning checklist. State (idle / active / done) is applied
+     by DnsLeakActivity, which swaps the tile background, the dot/check, and the
+     trailing status word. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:id="@+id/stepTile"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:background="@drawable/bg_v4_dns_step_idle">
+
+        <View
+            android:id="@+id/stepDot"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_v4_dns_dot"
+            android:backgroundTint="@color/v4_fg4" />
+
+        <ImageView
+            android:id="@+id/stepIcon"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_glyph_check"
+            android:visibility="gone"
+            app:tint="@color/v4_ok" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/stepLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:fontFamily="@font/montserrat"
+        android:textColor="@color/v4_fg3"
+        android:textFontWeight="500"
+        android:textSize="12.5sp"
+        tools:text="Reading active resolver" />
+
+    <TextView
+        android:id="@+id/stepStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="monospace"
+        android:textColor="@color/v4_fg3"
+        android:textSize="10sp"
+        android:visibility="gone"
+        tools:text="running" />
+</LinearLayout>
