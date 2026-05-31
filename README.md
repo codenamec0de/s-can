@@ -6,12 +6,12 @@
 
 **Android privacy & security audit suite**
 
-[![Version](https://img.shields.io/badge/version-1.4.6-1f6feb)](https://github.com/codenamec0de/s-can/releases)
+[![Version](https://img.shields.io/badge/version-1.4.7-1f6feb)](https://github.com/codenamec0de/s-can/releases)
 [![Min SDK](https://img.shields.io/badge/min--sdk-26-3ddc84)](#requirements)
 [![Target SDK](https://img.shields.io/badge/target--sdk-34-3ddc84)](#requirements)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.9-7f52ff)](https://kotlinlang.org)
 [![License](https://img.shields.io/badge/license-Proprietary-red)](LICENSE)
-[![Status](https://img.shields.io/badge/status-V1.4.6%20demo--ready-3ddc84)](#status)
+[![Status](https://img.shields.io/badge/status-V1.4.7%20demo--ready-3ddc84)](#status)
 
 University of Wollongong — final-year project
 
@@ -44,12 +44,12 @@ University of Wollongong — final-year project
 ## What it does
 
 S'CAN audits the apps installed on an Android device for privacy and
-security risks. Active features as of V1.4.6:
+security risks. Active features as of V1.4.7:
 
 | Feature | What it checks |
 |---|---|
 | **Wi-Fi Security** | Auth type, PMF (802.11w), cipher, evil-twin clusters, captive-portal probing, DNS servers in use — flags MITM exposure on the connected network. Now also lists **every nearby network** (sortable by signal/risk) with a per-network detail screen, offline IEEE-OUI vendor lookup, and a trusted-network allowlist; passive and read-only. |
-| **DNS Leak Detection (Beta)** | Answers "is my browsing private right now?" — inspects the active DNS resolver, Private DNS (DoT) and VPN state and grades the network **PRIVATE / PARTIAL / EXPOSED**, entirely on-device (no DNS queries leave the phone). |
+| **DNS Leak Detection & Protection (Beta)** | Answers "is my browsing private right now?" — inspects the active resolver, Private DNS (DoT) and VPN state and grades it **PRIVATE / PARTIAL / EXPOSED**. New in V1.4.7: a one-tap **DNS Protection** fix — a local DNS-over-HTTPS `VpnService` that encrypts your lookups to Cloudflare (the score only reaches PRIVATE while the tunnel is genuinely up) — plus a server-backed **Deep test** that proves which resolver your DNS actually exits through. |
 | **SMS Scam Detection** | Classifies incoming SMS as `SCAM` / `SUSPICIOUS` / `SAFE` — **on-device by default** (nothing leaves the phone), with an optional self-hosted AI sidecar (FastAPI + Ollama) and automatic fail-over back to the on-device classifier. Extracts URLs and flags brand impersonation. |
 | **Breach Checker** | Queries Have I Been Pwned for monitored email addresses; tracks resolution status and per-breach data-class exposure. |
 | **App audit** | Inventories installed packages, surfaces tracker SDKs (Exodus dataset), and rates each app's risk — **behaviour-gated**, so an app is flagged HIGH only when a real finding is observed (a background sensor access or an integrity issue), not merely for the permissions it holds. The activity timeline shows the real observed sensor access (what, how long, when, foreground vs background). |
@@ -64,7 +64,7 @@ The fastest path: grab the signed release APK from the
 
 1. On your Android device, enable **Settings → Apps → Special app access →
    Install unknown apps** for your browser of choice.
-2. Download the APK attached to the latest release (e.g. `scan-v1.4.6.apk`).
+2. Download the APK attached to the latest release (e.g. `scan-v1.4.7.apk`).
 3. Open the APK; Android will prompt you to install.
 4. On first launch, sign in with Google and walk through the permission
    onboarding — SMS scanning is opt-in.
@@ -163,14 +163,14 @@ Sidecar: Python ≥ 3.10, Ollama ≥ 0.1.30, ~8 GB RAM free for the LLM.
 V1.5 and beyond — coming next:
 
 - **Network Traffic Monitor** — passive capture of egress endpoints per app.
-- **DNS Leak Detection** — check whether DNS queries follow the active VPN
-  tunnel.
 - **Terminator** — auto-revoke sensitive permissions when an app is
   minimised.
 
 ---
 
 ## Status
+
+**V1.4.7 — demo-ready.** Turns the DNS tool from informational into **actionable**: a one-tap **DNS Protection** fix brings up a local DNS-over-HTTPS `VpnService` that encrypts the device's DNS to Cloudflare, so the leak score reaches **PRIVATE** only while the tunnel is genuinely up — never cosmetically. Adds the server-backed **Deep test** that names the real resolver your DNS exits through (ISP vs public resolver), and hardens the tunnel (valid IPv6 config so it actually establishes; the app is no longer excluded from its own tunnel, so the Deep test reflects the real protected egress). Ships the first in-repo app README (`source/README.md`).
 
 **V1.4.6 — demo-ready.** A capability release building on the V1.4.5 reliability
 work. Adds **DNS Leak Detection (Beta)** (on-device PRIVATE/PARTIAL/EXPOSED

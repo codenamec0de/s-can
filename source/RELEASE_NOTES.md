@@ -1,5 +1,35 @@
 # S'CAN — Release Notes
 
+## v1.4.7 (2026-05-31)
+
+The DNS tool goes from *informational* to *actionable*: one tap now encrypts your DNS for real.
+
+### 🔒 DNS Protection — the one-tap fix
+- A new **DNS Protection** brings up a local **DNS-only VPN** that captures the device's DNS and
+  re-issues every query **encrypted over DNS-over-HTTPS** to Cloudflare.
+- The leak score reaches **PRIVATE** only while the tunnel is genuinely up — it is keyed to the
+  live tunnel and can never be cosmetic.
+- A **split tunnel** routes only DNS, so the rest of your traffic is untouched. The OS shows its
+  own consent dialog and a persistent key icon; you can turn it off at any time.
+
+### 🛰️ Deep test — server-backed egress proof
+- Proves **where** your DNS actually exits. Resolves a one-time domain that our own authoritative
+  name-server logs, then names the real resolver (your ISP, a public resolver, or a VPN) with
+  owner, ASN and geo.
+
+### 🛠️ Fixes
+- The tunnel now actually establishes — an invalid IPv6 literal had made `establish()` throw every
+  time (the score was stuck at EXPOSED).
+- The Deep test no longer false-flags a leak: the app no longer excludes itself from its own tunnel,
+  and a public-resolver exit correctly reads as *no leak* (the only real leak is DNS still reaching
+  your ISP).
+
+### ⚠️ Limitations
+- Protects the **system resolver**; an app that hard-codes its own DNS bypasses it — same as
+  Android's built-in Private DNS. Only one VPN runs at a time.
+
+---
+
 ## v1.4.6 (2026-05-30)
 
 A capability release: two new network-privacy tools, a much deeper Wi-Fi Security area, and

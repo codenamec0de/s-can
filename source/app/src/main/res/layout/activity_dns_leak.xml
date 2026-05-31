@@ -785,11 +785,15 @@
                     android:textSize="10.5sp" />
 
                 <LinearLayout
+                    android:id="@+id/cardDeepTest"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/bg_v4_dns_deeptest"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="14dp">
@@ -835,7 +839,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
-                                android:background="@drawable/bg_v4_coming_soon_pill"
+                                android:background="@drawable/bg_v4_beta_pill"
                                 android:fontFamily="@font/montserrat"
                                 android:letterSpacing="0.07"
                                 android:paddingStart="6dp"
@@ -844,7 +848,7 @@
                                 android:paddingBottom="2dp"
                                 android:text="@string/dns_v4_deeptest_badge"
                                 android:textAllCaps="true"
-                                android:textColor="@color/v4_warn"
+                                android:textColor="@color/v4_accent"
                                 android:textFontWeight="700"
                                 android:textSize="9sp" />
                         </LinearLayout>
@@ -865,8 +869,8 @@
                         android:layout_height="14dp"
                         android:layout_marginStart="8dp"
                         android:importantForAccessibility="no"
-                        android:src="@drawable/ic_glyph_lock"
-                        app:tint="@color/v4_fg3" />
+                        android:src="@drawable/ic_glyph_arrow_right"
+                        app:tint="@color/v4_accent" />
                 </LinearLayout>
 
                 <TextView

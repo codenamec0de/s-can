@@ -2,6 +2,7 @@ package com.uow.scan
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.net.VpnService
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +24,10 @@ import com.uow.scan.util.DnsLeakAnalyzer.DemoMode
 import com.uow.scan.util.DnsLeakAnalyzer.DnsResult
 import com.uow.scan.util.DnsLeakAnalyzer.Grade
 import com.uow.scan.util.DnsLeakAnalyzer.Severity
+import com.uow.scan.util.DnsLeakProbe
 import com.uow.scan.util.PreferencesManager
+import com.uow.scan.util.ScanDialog
+import com.uow.scan.vpn.ScanDnsVpnService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -81,9 +86,19 @@ class DnsLeakActivity : AppCompatActivity() {
     private lateinit var btnPrimary: MaterialButton
     private lateinit var btnSecondary: MaterialButton
     private lateinit var tvFooter: TextView
+    private lateinit var cardDeepTest: View
 
     private var currentPhase = Phase.EMPTY
     private var scanJob: Job? = null
+    private var lastResult: DnsResult? = null
+
+    /** OS VpnService consent dialog result — on OK, bring up S'CAN DNS Protection. */
+    private val vpnConsent = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) onVpnConsented()
+        else Toast.makeText(this, R.string.dns_protect_failed_toast, Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,6 +153,7 @@ class DnsLeakActivity : AppCompatActivity() {
         btnPrimary = findViewById(R.id.btnPrimary)
         btnSecondary = findViewById(R.id.btnSecondary)
         tvFooter = findViewById(R.id.tvFooter)
+        cardDeepTest = findViewById(R.id.cardDeepTest)
     }
 
     private fun setupSteps() {
@@ -160,6 +176,7 @@ class DnsLeakActivity : AppCompatActivity() {
         btnRefreshTop.setOnClickListener { startScan() }
         btnCheck.setOnClickListener { startScan() }
         btnTryAgain.setOnClickListener { startScan() }
+        cardDeepTest.setOnClickListener { startDeepTest() }
         tvTopTitle.setOnLongClickListener { cycleDemoMode(); true }
     }
 
@@ -259,6 +276,7 @@ class DnsLeakActivity : AppCompatActivity() {
     // ─────────────────────────────────────────────────────────────────────────
 
     private fun renderResult(r: DnsResult) {
+        lastResult = r
         val gradeColor = gradeColorRes(r.grade)
         tvScore.text = r.score.toString()
         dnsGauge.setScore(r.score, gradeColor)
@@ -363,28 +381,135 @@ class DnsLeakActivity : AppCompatActivity() {
     }
 
     private fun renderActions(r: DnsResult) {
-        if (r.isClean) {
-            btnPrimary.visibility = View.GONE
-            btnSecondary.visibility = View.VISIBLE
-            btnSecondary.setText(R.string.dns_v4_btn_recheck)
-            btnSecondary.setIconResource(R.drawable.ic_glyph_refresh)
-            btnSecondary.setOnClickListener { startScan() }
-        } else {
-            btnPrimary.visibility = View.VISIBLE
-            btnPrimary.setText(R.string.dns_v4_btn_private_dns)
-            btnPrimary.setIconResource(R.drawable.ic_glyph_lock)
-            btnPrimary.setOnClickListener { openPrivateDnsSettings() }
-            btnSecondary.visibility = View.VISIBLE
-            btnSecondary.setText(R.string.dns_v4_btn_run_again)
-            btnSecondary.setIconResource(R.drawable.ic_glyph_refresh)
-            btnSecondary.setOnClickListener { startScan() }
+        when {
+            // Protection is live → offer to turn it off (and a quick re-check).
+            PreferencesManager.isDnsProtectionActive(this) -> {
+                btnPrimary.visibility = View.VISIBLE
+                btnPrimary.setText(R.string.dns_v4_btn_stop_protect)
+                btnPrimary.setIconResource(R.drawable.ic_glyph_shield)
+                btnPrimary.setOnClickListener { stopProtection() }
+                btnSecondary.visibility = View.VISIBLE
+                btnSecondary.setText(R.string.dns_v4_btn_recheck)
+                btnSecondary.setIconResource(R.drawable.ic_glyph_refresh)
+                btnSecondary.setOnClickListener { startScan() }
+            }
+            r.isClean -> {
+                btnPrimary.visibility = View.GONE
+                btnSecondary.visibility = View.VISIBLE
+                btnSecondary.setText(R.string.dns_v4_btn_recheck)
+                btnSecondary.setIconResource(R.drawable.ic_glyph_refresh)
+                btnSecondary.setOnClickListener { startScan() }
+            }
+            else -> {
+                btnPrimary.visibility = View.VISIBLE
+                btnPrimary.setText(R.string.dns_v4_btn_protect)
+                btnPrimary.setIconResource(R.drawable.ic_glyph_lock)
+                btnPrimary.setOnClickListener { startProtection() }
+                btnSecondary.visibility = View.VISIBLE
+                btnSecondary.setText(R.string.dns_v4_btn_run_again)
+                btnSecondary.setIconResource(R.drawable.ic_glyph_refresh)
+                btnSecondary.setOnClickListener { startScan() }
+            }
         }
     }
 
     private fun onCta(cta: String) {
         when (cta) {
-            "private-dns" -> openPrivateDnsSettings()
-            "deep-test" -> Toast.makeText(this, R.string.dns_v4_deeptest_toast, Toast.LENGTH_SHORT).show()
+            "private-dns" -> startProtection()
+            "deep-test" -> startDeepTest()
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // DNS Protection (the real fix — local DNS-over-HTTPS VpnService)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /** One-time disclosure, then the OS VpnService consent, then bring the tunnel up. */
+    private fun startProtection() {
+        if (PreferencesManager.hasAcceptedDnsProtectDisclosure(this)) {
+            requestVpnConsent()
+            return
+        }
+        ScanDialog.confirm(
+            this,
+            getString(R.string.dns_protect_consent_title),
+            getString(R.string.dns_protect_consent_body),
+            getString(R.string.dns_protect_consent_accept),
+            getString(R.string.dns_protect_consent_cancel),
+        ) {
+            PreferencesManager.setDnsProtectDisclosureAccepted(this, true)
+            requestVpnConsent()
+        }
+    }
+
+    private fun requestVpnConsent() {
+        val prepare = VpnService.prepare(this)
+        if (prepare != null) vpnConsent.launch(prepare) else onVpnConsented()
+    }
+
+    private fun onVpnConsented() {
+        ScanDnsVpnService.start(this)
+        Toast.makeText(this, R.string.dns_protect_active_toast, Toast.LENGTH_SHORT).show()
+        // Wait until the tunnel actually establishes (the service flips the flag on success)
+        // before re-scanning — otherwise we'd flash a stale "exposed" verdict for our own tunnel.
+        lifecycleScope.launch {
+            awaitProtectionState(true, timeoutMs = 4000)
+            startScan()
+        }
+    }
+
+    private fun stopProtection() {
+        ScanDnsVpnService.stop(this)
+        Toast.makeText(this, R.string.dns_protect_stopped_toast, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            awaitProtectionState(false, timeoutMs = 2500)
+            // The flag clears the instant teardown begins, but ConnectivityManager keeps reporting
+            // the tunnel's virtual DNS (10.111.222.2) for a brief window before the link reverts to
+            // the real router. Let it settle so the rescan doesn't flash that defunct address.
+            delay(700)
+            startScan()
+        }
+    }
+
+    /** Polls the protection flag until it reaches [active] or the timeout elapses. */
+    private suspend fun awaitProtectionState(active: Boolean, timeoutMs: Int) {
+        var waited = 0
+        while (PreferencesManager.isDnsProtectionActive(this) != active && waited < timeoutMs) {
+            delay(150)
+            waited += 150
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Tier-B deep test (server-backed egress probe)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private fun startDeepTest() {
+        if (PreferencesManager.hasAcceptedDnsProbeDisclosure(this)) {
+            runDeepTest()
+            return
+        }
+        ScanDialog.confirm(
+            this,
+            getString(R.string.dns_probe_disclosure_title),
+            getString(R.string.dns_probe_disclosure_body),
+            getString(R.string.dns_probe_disclosure_accept),
+            getString(R.string.dns_probe_disclosure_cancel),
+        ) {
+            PreferencesManager.setDnsProbeDisclosureAccepted(this, true)
+            runDeepTest()
+        }
+    }
+
+    private fun runDeepTest() {
+        Toast.makeText(this, R.string.dns_probe_running, Toast.LENGTH_SHORT).show()
+        val mode = PreferencesManager.getDnsDemoMode(this)
+        val vpnActive = lastResult?.resolver?.vpn ?: false
+        lifecycleScope.launch {
+            val res = DnsLeakProbe.run(mode, vpnActive)
+            val message = if (res.found) "${res.headline}\n\n${res.verdict}"
+            else getString(R.string.dns_probe_unreachable)
+            ScanDialog.notice(this@DnsLeakActivity, getString(R.string.dns_probe_result_title), message)
         }
     }
 

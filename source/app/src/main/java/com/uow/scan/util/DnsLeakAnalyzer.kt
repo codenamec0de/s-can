@@ -19,11 +19,13 @@ import java.net.InetAddress
  * the underlying transport — then scores the result and generates the same findings +
  * resolver-summary tiles the design renders.
  *
- * Two things are deliberately *not* live yet (Phase 2):
- *  - The tamper / "unexpected address" probe needs an actual DNS query to a control
- *    domain, so [DemoMode.AUTO] never claims interception — it floors at [Grade.EXPOSED].
+ * The on-device hijack/tamper probe is live (Tier A): [readLive] runs [DnsHijackProbe], which
+ * compares the system resolver against a trusted public DoH baseline and can pull a confirmed
+ * rewrite down into [Grade.INTERCEPTED]. Two limits remain:
  *  - DNSSEC validation isn't reliably observable from app APIs, so it's reported off in
  *    live mode.
+ *  - Proving *where* a lookup actually egresses (vs. detecting a rewrite) needs the
+ *    server-backed Tier-B "deep test" — not yet wired (the deep-test CTA is a placeholder).
  *
  * For deterministic live demos, [DemoMode.EXPOSED] / [DemoMode.PROTECTED] bypass live
  * reading and return the design's two fixed scenarios verbatim.
@@ -78,7 +80,7 @@ object DnsLeakAnalyzer {
         object Offline : Outcome()
     }
 
-    /** Whether the tamper probe ran, and what it concluded. Live mode never runs it. */
+    /** Whether the tamper probe ran, and what it concluded ([DnsHijackProbe] in live mode). */
     private enum class Tamper { NOT_RUN, CLEAN, SUSPECT }
 
     private data class Scenario(
@@ -96,7 +98,12 @@ object DnsLeakAnalyzer {
         val scenario = when (demoMode) {
             DemoMode.EXPOSED -> exposedScenario()
             DemoMode.PROTECTED -> protectedScenario()
-            DemoMode.AUTO -> readLive(context) ?: return Outcome.Offline
+            DemoMode.AUTO ->
+                // When S'CAN's own DNS Protection (DoH VpnService) is up, the live link shows our
+                // virtual resolver — which would misread as an unencrypted "router". Report the
+                // real, honest posture instead: DNS is genuinely encrypted over DNS-over-HTTPS.
+                if (PreferencesManager.isDnsProtectionActive(context)) scanProtectedScenario(context)
+                else readLive(context) ?: return Outcome.Offline
         }
         val grade = gradeFor(scenario.score)
         return Outcome.Ok(
@@ -167,7 +174,35 @@ object DnsLeakAnalyzer {
             dnssec = false,
             isRouter = isRouter,
         )
-        return Scenario(scoreFor(resolver), resolver, Tamper.NOT_RUN, isDemo = false)
+        // Tier-A hijack/tamper probe: compare the system resolver to a trusted DoH baseline.
+        val tamper = when (DnsHijackProbe.run().verdict) {
+            DnsHijackProbe.Verdict.SUSPECT -> Tamper.SUSPECT
+            DnsHijackProbe.Verdict.CLEAN -> Tamper.CLEAN
+            DnsHijackProbe.Verdict.INCONCLUSIVE -> Tamper.NOT_RUN
+        }
+        return Scenario(scoreFor(resolver, tamper), resolver, tamper, isDemo = false)
+    }
+
+    /**
+     * The posture while S'CAN DNS Protection is active: DNS is carried by our on-device tunnel
+     * and re-issued over DNS-over-HTTPS to Cloudflare, so it is genuinely encrypted to a trusted
+     * resolver and off the local router. Scores into the PRIVATE band — honestly, not cosmetically.
+     */
+    private fun scanProtectedScenario(context: Context): Scenario {
+        val resolver = Resolver(
+            provider = "S'CAN Protected DNS",
+            address = "Cloudflare · DoH",
+            encrypted = true,
+            protocol = "DNS-over-HTTPS",
+            network = "Protected",
+            networkName = "Encrypted tunnel",
+            vpn = true,
+            // DNSSEC validation isn't observable from app APIs (same honesty rule as live mode),
+            // so we don't claim it. Encrypted + off-router + clean still scores into PRIVATE.
+            dnssec = false,
+            isRouter = false,
+        )
+        return Scenario(scoreFor(resolver, Tamper.CLEAN), resolver, Tamper.CLEAN, isDemo = false)
     }
 
     private fun wifiSsid(context: Context): String? {
@@ -180,13 +215,21 @@ object DnsLeakAnalyzer {
         return trimmed
     }
 
-    /** Live scoring rubric. Floors at 35 (EXPOSED) — never claims INTERCEPTED without a tamper probe. */
-    private fun scoreFor(r: Resolver): Int {
+    /**
+     * Live scoring rubric. Floors at 35 (EXPOSED) so posture alone never claims INTERCEPTED. A
+     * *confirmed* rewrite ([Tamper.SUSPECT] from [DnsHijackProbe]) is the worst case: it applies a
+     * heavy penalty and is **capped at the top of the EXPOSED band (59)** — so a detected hijack is
+     * never graded better than EXPOSED regardless of encryption/VPN posture, and on a weak network
+     * (unencrypted router) it drops into INTERCEPTED. Encryption protects confidentiality, but it
+     * cannot make a rewritten lookup "private", so SUSPECT must never reach PARTIAL/PRIVATE.
+     */
+    private fun scoreFor(r: Resolver, tamper: Tamper): Int {
         var s = 60
         s += if (r.encrypted) 32 else -20
         s += if (r.isRouter) -12 else 6
         if (r.vpn) s += 8
         if (r.dnssec) s += 4
+        if (tamper == Tamper.SUSPECT) return (s - 30).coerceIn(5, 59)
         return s.coerceIn(35, 99)
     }
 
@@ -280,12 +323,12 @@ object DnsLeakAnalyzer {
         if (!r.encrypted) f += Finding(
             Severity.BAD, "DNS is not encrypted",
             "Every domain you look up is sent in plain text to the resolver. Anyone on your network — and your ISP — can log exactly which sites you visit, even on HTTPS.",
-            "Turn on Private DNS so lookups travel over an encrypted channel.", "private-dns",
+            "Tap Protect to route your DNS over an encrypted channel (DoH) — no settings to change.", "private-dns",
         )
         if (r.isRouter) f += Finding(
             Severity.BAD, "Resolver is the local router",
             "All lookups terminate at ${r.address}. A compromised or misconfigured router can silently redirect any domain to an address of its choosing.",
-            "Point DNS at a trusted public resolver via Private DNS.", "private-dns",
+            "Tap Protect to send DNS to a trusted resolver over an encrypted channel.", "private-dns",
         )
         if (s.tamper == Tamper.SUSPECT) f += Finding(
             Severity.WARN, "Test domain returned an unexpected address",
@@ -315,6 +358,7 @@ object DnsLeakAnalyzer {
         if (s.tamper == Tamper.CLEAN) f += Finding(
             Severity.OK, "No tampering detected",
             "Control domains all resolved to their expected addresses.",
+            "Run a Deep test to confirm which resolver actually carried your lookups.", "deep-test",
         )
         return f
     }

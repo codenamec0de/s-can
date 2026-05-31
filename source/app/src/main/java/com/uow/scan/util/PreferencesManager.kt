@@ -30,6 +30,9 @@ object PreferencesManager {
     private const val KEY_TOOL_BREACH_ENABLED = "tool_breach_enabled"
     private const val KEY_TOOL_DNS_ENABLED = "tool_dns_enabled"
     private const val KEY_DNS_DEMO_MODE = "dns_demo_mode"
+    private const val KEY_DNS_PROBE_DISCLOSURE_ACCEPTED = "dns_probe_disclosure_accepted"
+    private const val KEY_DNS_PROTECTION_ACTIVE = "dns_protection_active"
+    private const val KEY_DNS_PROTECT_DISCLOSURE_ACCEPTED = "dns_protect_disclosure_accepted"
     private const val KEY_BREACH_ADDRESSES = "breach_monitored_addresses"
     private const val KEY_BREACH_SELECTED = "breach_selected_address"
     private const val KEY_WIFI_TRUSTED_BSSIDS = "wifi_trusted_bssids"
@@ -176,6 +179,39 @@ object PreferencesManager {
 
     fun setDnsDemoMode(context: Context, mode: DnsLeakAnalyzer.DemoMode) {
         getPrefs(context).edit().putString(KEY_DNS_DEMO_MODE, mode.name).apply()
+    }
+
+    /**
+     * Whether the user has accepted the Tier-B "deep test" (server-backed egress) disclosure.
+     * Gates the one-time consent dialog so it shows once before the first deep test, then never
+     * again unless preferences are cleared. Mirrors the SMS-detection disclosure gate.
+     */
+    fun hasAcceptedDnsProbeDisclosure(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_DNS_PROBE_DISCLOSURE_ACCEPTED, false)
+
+    fun setDnsProbeDisclosureAccepted(context: Context, accepted: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_DNS_PROBE_DISCLOSURE_ACCEPTED, accepted).apply()
+    }
+
+    /**
+     * Whether S'CAN's DNS Protection (the local DNS-over-HTTPS VpnService) is currently up.
+     * Set true by [com.uow.scan.vpn.ScanDnsVpnService] only after the tunnel establishes, and
+     * cleared on stop/revoke/destroy. It is the single source of truth the DNS analyzer reads
+     * to honestly report the posture as encrypted while protection is active.
+     */
+    fun isDnsProtectionActive(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_DNS_PROTECTION_ACTIVE, false)
+
+    fun setDnsProtectionActive(context: Context, active: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_DNS_PROTECTION_ACTIVE, active).apply()
+    }
+
+    /** One-time consent gate for DNS Protection, mirroring the deep-test disclosure gate. */
+    fun hasAcceptedDnsProtectDisclosure(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_DNS_PROTECT_DISCLOSURE_ACCEPTED, false)
+
+    fun setDnsProtectDisclosureAccepted(context: Context, accepted: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_DNS_PROTECT_DISCLOSURE_ACCEPTED, accepted).apply()
     }
 
     // Wi-Fi Security: BSSIDs the user has explicitly marked as trusted. A trusted
