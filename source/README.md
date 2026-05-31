@@ -5,7 +5,7 @@ your back — which apps touch the camera/mic/location in the background, whethe
 DNS are safe, whether your accounts have been breached, and whether an incoming SMS is a scam —
 and, where it can, **fixes** the problem with one tap.
 
-- **Package:** `com.uow.scan` &nbsp;·&nbsp; **Version:** 1.4.7 (versionCode 9)
+- **Package:** `com.uow.scan` &nbsp;·&nbsp; **Version:** 1.4.7.5 (versionCode 10)
 - **Platform:** Android 8.0+ (minSdk 26, targetSdk 34) &nbsp;·&nbsp; **Language:** Kotlin
 - **Status:** active development / demo-readiness. Several tools are **Beta**; two are marked *Coming soon*.
 
@@ -58,6 +58,12 @@ real posture.
 > **Limitations (same as Android’s built-in Private DNS):** protects the *system* resolver — an app
 > that hard-codes its own DNS/DoH bypasses it; only one VPN runs at a time; TCP/53 and &gt;4 KB answers
 > aren’t handled yet.
+
+**1.4.7.5 — hardening &amp; polish.** A consistency pass over the DNS tool (no change to the protection
+tunnel itself): the scan now runs concurrently with its progress checklist for a snappier reveal; the
+demo, verdict and finding-severity states were reconciled so the headline grade always matches its
+evidence; the system-resolver lookups shared by both probe tiers were consolidated behind one helper;
+and stale placeholder code/strings left over from the pre-wired deep test were removed.
 
 A standalone architecture reference (diagrams + flows + screenshots) is generated alongside releases.
 

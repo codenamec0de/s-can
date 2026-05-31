@@ -777,7 +777,6 @@
     <string name="dns_v4_deeptest_title">Deep test</string>
     <string name="dns_v4_deeptest_badge">Beta</string>
     <string name="dns_v4_deeptest_body">See which resolver actually carried your lookups — its owner and location, traced live.</string>
-    <string name="dns_v4_deeptest_toast">Deep test ships in a future build.</string>
     <string name="dns_v4_footer">Last check · just now · on-device</string>
     <string name="dns_v4_footer_demo">Last check · just now · demo data</string>
     <!-- Tier-B deep test (server-backed egress probe) -->
@@ -788,7 +787,6 @@
     <string name="dns_probe_running">Tracing where your DNS exits…</string>
     <string name="dns_probe_result_title">DNS egress test</string>
     <string name="dns_probe_unreachable">Couldn\'t confirm the egress resolver. Check your connection and try again.</string>
-    <string name="dns_v4_private_dns_hint">Open Private DNS, then set it to a provider like \"one.one.one.one\".</string>
     <!-- DNS Protection — the real one-tap fix (local DNS-over-HTTPS VPN) -->
     <string name="dns_v4_btn_protect">Protect my DNS</string>
     <string name="dns_v4_btn_stop_protect">Turn off DNS protection</string>
@@ -796,6 +794,9 @@
     <string name="dns_protect_consent_body">S\'CAN can fix this for you. It turns on a private connection that sends every website lookup through an encrypted channel (DNS-over-HTTPS to Cloudflare), so your network and internet provider can no longer see or redirect the sites you visit.\n\nAndroid will ask you to allow the connection. S\'CAN only handles DNS — it never reads, stores, or routes your other traffic, and you can turn it off any time.</string>
     <string name="dns_protect_consent_accept">Encrypt now</string>
     <string name="dns_protect_consent_cancel">Not now</string>
+    <string name="dns_protect_other_vpn_title">Another VPN is active</string>
+    <string name="dns_protect_other_vpn_body">Android runs only one VPN at a time, so turning on DNS Protection will disconnect the VPN you have running now.\n\nTurn that VPN off first if you want to keep it, or continue to replace it with S\'CAN DNS Protection.</string>
+    <string name="dns_protect_other_vpn_continue">Replace &amp; continue</string>
     <string name="dns_protect_active_toast">Protecting your DNS — encrypting lookups…</string>
     <string name="dns_protect_stopped_toast">DNS protection turned off</string>
     <string name="dns_protect_failed_toast">Couldn\'t start DNS protection</string>
@@ -803,7 +804,7 @@
     <string name="dns_protect_notif_text">Your DNS is encrypted · DNS-over-HTTPS (Cloudflare)</string>
     <!-- Demo override (long-press the title) -->
     <string name="dns_v4_demo_auto">Demo off · live detection</string>
-    <string name="dns_v4_demo_exposed">Demo · forcing EXPOSED result</string>
+    <string name="dns_v4_demo_exposed">Demo · forcing INTERCEPTED result</string>
     <string name="dns_v4_demo_protected">Demo · forcing PROTECTED result</string>
 
     <!-- Export Report (V4) -->

@@ -2,9 +2,10 @@ package com.uow.scan
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.VpnService
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
@@ -30,9 +31,9 @@ import com.uow.scan.util.ScanDialog
 import com.uow.scan.vpn.ScanDnsVpnService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * DNS Leak Detection — the Beta tool behind the Home card. A stateful screen that runs
@@ -193,7 +194,7 @@ class DnsLeakActivity : AppCompatActivity() {
         btnRefreshTop.visibility = if (phase == Phase.RESULT) View.VISIBLE else View.GONE
     }
 
-    /** Runs the analyzer off the UI thread, then plays the 4-step checklist before revealing. */
+    /** Runs the analyzer off the UI thread while the 4-step checklist plays, then reveals. */
     private fun startScan() {
         scanJob?.cancel()
         stepRows.forEach { setStepState(it, StepState.IDLE) }
@@ -201,7 +202,11 @@ class DnsLeakActivity : AppCompatActivity() {
         radarPulse.start()
         scanJob = lifecycleScope.launch {
             val mode = PreferencesManager.getDnsDemoMode(this@DnsLeakActivity)
-            val outcome = withContext(Dispatchers.IO) {
+            // Run the real analysis (incl. the up-to-4s Tier-A tamper probe) CONCURRENTLY with the
+            // checklist rather than before it. The reveal gates on whichever finishes last, so a
+            // healthy network completes inside the animation (≈2.2s, snappy) and a slow probe lets
+            // the steps animate while it works instead of freezing them behind it.
+            val analysis = async(Dispatchers.IO) {
                 DnsLeakAnalyzer.analyze(this@DnsLeakActivity, mode)
             }
             for (row in stepRows) {
@@ -210,6 +215,7 @@ class DnsLeakActivity : AppCompatActivity() {
                 setStepState(row, StepState.DONE)
             }
             delay(240)
+            val outcome = analysis.await()
             radarPulse.stop()
             when (outcome) {
                 is DnsLeakAnalyzer.Outcome.Offline -> showPhase(Phase.ERROR)
@@ -424,8 +430,23 @@ class DnsLeakActivity : AppCompatActivity() {
     // DNS Protection (the real fix — local DNS-over-HTTPS VpnService)
     // ─────────────────────────────────────────────────────────────────────────
 
-    /** One-time disclosure, then the OS VpnService consent, then bring the tunnel up. */
+    /** If another VPN is already up, warn first (Android runs only one); then disclosure → consent. */
     private fun startProtection() {
+        if (isAnotherVpnActive()) {
+            ScanDialog.confirm(
+                this,
+                getString(R.string.dns_protect_other_vpn_title),
+                getString(R.string.dns_protect_other_vpn_body),
+                getString(R.string.dns_protect_other_vpn_continue),
+                getString(R.string.dns_protect_consent_cancel),
+            ) { beginProtectionFlow() }
+            return
+        }
+        beginProtectionFlow()
+    }
+
+    /** One-time disclosure, then the OS VpnService consent, then bring the tunnel up. */
+    private fun beginProtectionFlow() {
         if (PreferencesManager.hasAcceptedDnsProtectDisclosure(this)) {
             requestVpnConsent()
             return
@@ -439,6 +460,18 @@ class DnsLeakActivity : AppCompatActivity() {
         ) {
             PreferencesManager.setDnsProtectDisclosureAccepted(this, true)
             requestVpnConsent()
+        }
+    }
+
+    /**
+     * True if a *third-party* VPN is currently active. Checked only before we start our own
+     * protection (the Protect button only shows while ours is off), so any VPN transport seen here
+     * is someone else's — and Android runs only one VPN at a time, so ours would displace it.
+     */
+    private fun isAnotherVpnActive(): Boolean {
+        val cm = getSystemService(ConnectivityManager::class.java) ?: return false
+        return cm.allNetworks.any { net ->
+            cm.getNetworkCapabilities(net)?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) == true
         }
     }
 
@@ -510,24 +543,6 @@ class DnsLeakActivity : AppCompatActivity() {
             val message = if (res.found) "${res.headline}\n\n${res.verdict}"
             else getString(R.string.dns_probe_unreachable)
             ScanDialog.notice(this@DnsLeakActivity, getString(R.string.dns_probe_result_title), message)
-        }
-    }
-
-    /** No public Private-DNS settings action exists; open the closest network screen + hint. */
-    private fun openPrivateDnsSettings() {
-        val opened = listOf(
-            Settings.ACTION_WIRELESS_SETTINGS,
-            Settings.ACTION_SETTINGS,
-        ).any { action ->
-            try {
-                startActivity(Intent(action))
-                true
-            } catch (_: Exception) {
-                false
-            }
-        }
-        if (opened) {
-            Toast.makeText(this, R.string.dns_v4_private_dns_hint, Toast.LENGTH_LONG).show()
         }
     }
 

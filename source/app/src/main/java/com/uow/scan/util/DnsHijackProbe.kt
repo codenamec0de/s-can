@@ -7,9 +7,6 @@ import org.json.JSONObject
 import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.URLEncoder
-import java.util.concurrent.Callable
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
 /**
@@ -73,11 +70,6 @@ object DnsHijackProbe {
             .build()
     }
 
-    /** Daemon-threaded so a hung native DNS lookup can never block process exit. */
-    private val lookupExecutor = Executors.newCachedThreadPool { r ->
-        Thread(r, "dns-probe-lookup").apply { isDaemon = true }
-    }
-
     /**
      * Runs the probe and returns on the **first anchor that yields a usable signal** — the common
      * (non-hijacked) case is one system lookup plus one DoH round-trip. [budgetMs] is an overall
@@ -127,27 +119,14 @@ object DnsHijackProbe {
         Result(Verdict.INCONCLUSIVE, null, emptyList(), emptyList(), reason)
 
     /**
-     * IPv4 A-record answers from the system (active-network) resolver, bounded by [PER_CALL_MS].
-     * [InetAddress.getAllByName] has no timeout of its own, so it runs on a daemon thread and we
-     * wait at most [PER_CALL_MS]; on timeout we abandon it (it can't stall the scan) and report empty.
+     * IPv4 A-record answers from the system (active-network) resolver, bounded by [PER_CALL_MS] via
+     * [SystemDnsLookup] — on timeout the underlying lookup is abandoned (it can't stall the scan)
+     * and we report empty.
      */
-    private fun systemLookup(domain: String): List<String> {
-        val future: Future<List<String>> = lookupExecutor.submit(Callable {
-            try {
-                InetAddress.getAllByName(domain)
-                    .filterIsInstance<Inet4Address>()
-                    .mapNotNull { it.hostAddress }
-            } catch (_: Exception) {
-                emptyList()
-            }
-        })
-        return try {
-            future.get(PER_CALL_MS, TimeUnit.MILLISECONDS)
-        } catch (_: Exception) {
-            future.cancel(true)
-            emptyList()
-        }
-    }
+    private fun systemLookup(domain: String): List<String> =
+        SystemDnsLookup.resolve(domain, PER_CALL_MS)
+            .filterIsInstance<Inet4Address>()
+            .mapNotNull { it.hostAddress }
 
     /** IPv4 A-record answers from a trusted public DoH resolver (Cloudflare → Google fallback). */
     private fun dohLookup(domain: String, deadline: Long): List<String> {
