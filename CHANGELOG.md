@@ -7,6 +7,33 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.7] — 2026-05-31
+
+The DNS tool goes from *informational* to *actionable*: one tap now encrypts your
+DNS for real, and a server-backed test proves where it exits.
+
+### Added
+- **DNS Protection (the one-tap fix)** — `vpn/ScanDnsVpnService.kt`, `vpn/DohClient.kt`,
+  `vpn/DnsPacket.kt`. A DNS-only `VpnService` captures the device's DNS and re-issues it
+  **encrypted over DNS-over-HTTPS** to Cloudflare. The leak score reaches **PRIVATE** only
+  while the tunnel is genuinely up (keyed to live tunnel state — never cosmetic). A split
+  tunnel routes only DNS, so the rest of your traffic is untouched.
+- **Tier-B "Deep test" — server-backed egress proof** — `util/DnsLeakProbe.kt`,
+  `api/DnsLeakProbeClient.kt`, `api/DnsLeakProbeService.kt`. Resolves a one-time token via the
+  system resolver; an authoritative name-server logs which resolver actually queried it, and a
+  `/result` API names it with owner / ASN / geo.
+- **Tier-A hijack probe** — `util/DnsHijackProbe.kt`. Compares the system resolver against a
+  trusted public DoH baseline to catch a rewritten/redirected lookup.
+- First in-repo app **README** (`source/README.md`).
+
+### Fixed
+- DNS Protection now actually establishes — an invalid IPv6 ULA literal had made
+  `VpnService.establish()` throw every time, so the tunnel never came up (score stuck at EXPOSED).
+- The Deep test no longer false-flags a leak: the app no longer excludes itself from its own
+  tunnel, and the egress verdict now treats a public-resolver exit as *no leak* (the only real
+  leak is DNS still reaching your ISP).
+- Smoother off-transition — no stale resolver address flashes after turning protection off.
+
 ## [1.4.6] — 2026-05-30
 
 A capability release: two new network-privacy tools, a much deeper Wi-Fi

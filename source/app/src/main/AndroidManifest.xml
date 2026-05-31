@@ -191,6 +191,22 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <!-- DNS Protection — local DNS-only VpnService that re-issues DNS over DNS-over-HTTPS.
+             BIND_VPN_SERVICE + the android.net.VpnService intent-filter are required by the
+             VPN framework; the OS shows its own consent dialog before the tunnel starts. -->
+        <service
+            android:name=".vpn.ScanDnsVpnService"
+            android:exported="false"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="DNS encryption (DNS-over-HTTPS) to stop the network seeing or redirecting the user's lookups" />
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
+
         <!-- Privacy notification listener — captures system "Camera/Mic in use by X"
              notifications as a second, OS-signed source for OpAccessTracker.
              User must grant Notification Access in Settings; see
