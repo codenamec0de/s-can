@@ -21,11 +21,10 @@ import java.net.InetAddress
  *
  * The on-device hijack/tamper probe is live (Tier A): [readLive] runs [DnsHijackProbe], which
  * compares the system resolver against a trusted public DoH baseline and can pull a confirmed
- * rewrite down into [Grade.INTERCEPTED]. Two limits remain:
- *  - DNSSEC validation isn't reliably observable from app APIs, so it's reported off in
- *    live mode.
- *  - Proving *where* a lookup actually egresses (vs. detecting a rewrite) needs the
- *    server-backed Tier-B "deep test" — not yet wired (the deep-test CTA is a placeholder).
+ * rewrite down into [Grade.INTERCEPTED]. Proving *where* a lookup actually egresses (vs. merely
+ * detecting a rewrite) is the server-backed Tier-B "deep test" ([DnsLeakProbe]), now wired behind
+ * the deep-test CTA. The one remaining blind spot: DNSSEC validation isn't reliably observable
+ * from app APIs, so it's reported off in live mode.
  *
  * For deterministic live demos, [DemoMode.EXPOSED] / [DemoMode.PROTECTED] bypass live
  * reading and return the design's two fixed scenarios verbatim.
@@ -331,7 +330,7 @@ object DnsLeakAnalyzer {
             "Tap Protect to send DNS to a trusted resolver over an encrypted channel.", "private-dns",
         )
         if (s.tamper == Tamper.SUSPECT) f += Finding(
-            Severity.WARN, "Test domain returned an unexpected address",
+            Severity.BAD, "Test domain returned an unexpected address",
             "A known control domain resolved to an IP outside its published range — a signature of captive-portal interception or DNS-based filtering.",
             "Run a Deep test to confirm which resolver handled the request.", "deep-test",
         )
@@ -357,8 +356,7 @@ object DnsLeakAnalyzer {
         )
         if (s.tamper == Tamper.CLEAN) f += Finding(
             Severity.OK, "No tampering detected",
-            "Control domains all resolved to their expected addresses.",
-            "Run a Deep test to confirm which resolver actually carried your lookups.", "deep-test",
+            "Control domains all resolved to their expected addresses. The deep test can confirm which resolver actually carried your lookups.",
         )
         return f
     }
@@ -367,10 +365,14 @@ object DnsLeakAnalyzer {
     // Fixed demo scenarios (verbatim from the design's dns-data)
     // ─────────────────────────────────────────────────────────────────────────
 
+    // The "bad" demo pole. Its evidence is a confirmed tamper on an unencrypted router — exactly
+    // what the live engine grades INTERCEPTED (unencrypted −20, router −12, SUSPECT −30 → floor),
+    // so we grade it INTERCEPTED here too instead of the old cosmetic nudge into EXPOSED. A
+    // redirected lookup is strictly worse than a merely-visible one, and the matching verdict
+    // ("Lookups appear to be redirected by your network") is the more honest headline to show.
+    // (The enum constant is historically named EXPOSED.)
     private fun exposedScenario() = Scenario(
-        // Design data uses 34; nudged to 36 so the rendered grade is EXPOSED (matching the
-        // scenario's name + findings) rather than the off-by-one INTERCEPTED band.
-        score = 36,
+        score = 22,
         resolver = Resolver(
             provider = "Your router", address = "192.168.0.1",
             encrypted = false, protocol = "Plain (Do53)",

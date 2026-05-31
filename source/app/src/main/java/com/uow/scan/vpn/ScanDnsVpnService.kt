@@ -113,6 +113,11 @@ class ScanDnsVpnService : VpnService() {
             val n = try { input.read(buf) } catch (_: Exception) { break }
             if (n < 0) break          // EOF: fd closed by teardown → exit (never busy-spin)
             if (n == 0) continue
+            // DNS is overwhelmingly UDP; we parse only UDP and silently drop anything else (incl.
+            // TCP/53). We never set the truncation (TC) bit on replies, so a client is never asked
+            // to retry over TCP — a rare TCP-first client is the one known gap. DoH answers are
+            // forwarded whole: one larger than the 4096 MTU (big DNSSEC/TXT) would be dropped by
+            // the link rather than fragmented. Both are acceptable for a DNS-only beta tunnel.
             val datagram = DnsPacket.parseUdp(buf, n) ?: continue
             if (datagram.dstPort != DNS_PORT || datagram.payload.isEmpty()) continue
             scope.launch {

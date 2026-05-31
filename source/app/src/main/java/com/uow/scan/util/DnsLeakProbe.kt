@@ -6,16 +6,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import java.net.InetAddress
 import java.security.SecureRandom
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 /**
  * Tier-B "deep test" — the server-backed egress probe.
  *
  * Mints a one-time random token, resolves `<token>.dnsprobe.scan-ai.xyz` through the **system
- * resolver** (plain DNS via [InetAddress], never DoH) so the query travels the real network/VPN
+ * resolver** (plain DNS via the OS resolver, never DoH) so the query travels the real network/VPN
  * path, then polls our `/result` API for the resolver that actually carried it. This proves
  * *where* DNS exits — the half the on-device Tier A can't observe.
  *
@@ -33,10 +30,6 @@ object DnsLeakProbe {
 
     private const val ZONE = "dnsprobe.scan-ai.xyz"
     private const val ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789"
-
-    private val lookupExecutor = Executors.newCachedThreadPool { r ->
-        Thread(r, "dns-egress-lookup").apply { isDaemon = true }
-    }
 
     suspend fun run(demoMode: DnsLeakAnalyzer.DemoMode, vpnActive: Boolean): EgressResult {
         when (demoMode) {
@@ -60,12 +53,7 @@ object DnsLeakProbe {
 
     /** Force the system resolver to look up the token host so the query egresses. Best-effort, bounded. */
     private fun triggerLookup(host: String) {
-        val f = lookupExecutor.submit { runCatching { InetAddress.getAllByName(host) } }
-        try {
-            f.get(2500, TimeUnit.MILLISECONDS)
-        } catch (_: Exception) {
-            f.cancel(true)
-        }
+        SystemDnsLookup.resolve(host, 2500L)
     }
 
     /**
@@ -119,17 +107,23 @@ object DnsLeakProbe {
         return EgressResult(true, headline, verdict, isDemo = false)
     }
 
+    // Egress story for the "bad" demo pole — an unencrypted router with no VPN (DnsLeakAnalyzer's
+    // exposedScenario). The deep test confirms what the on-device check warned: lookups leave via
+    // the ISP, which can see and redirect them. No VPN is presumed — the screen shows none.
     private fun demoExposed() = EgressResult(
         true,
         "Your DNS exited via Telstra Limited — Sydney, AU (AS1221).",
-        "⚠ A VPN is active, but your DNS is still exiting through your ISP — a DNS leak.",
+        "⚠ Your DNS is leaving through your ISP, Telstra — not a private resolver. Your provider can see, log, and redirect every site you visit.",
         isDemo = true,
     )
 
+    // Egress story for the "good" demo pole — encrypted DNS-over-TLS to Cloudflare, no VPN
+    // (DnsLeakAnalyzer's protectedScenario). The deep test confirms egress via Cloudflare, matching
+    // the resolver shown on screen rather than a phantom VPN provider.
     private fun demoProtected() = EgressResult(
         true,
-        "Your DNS exited via Mullvad VPN AB — Gothenburg, SE (AS39351).",
-        "✓ Your VPN is carrying your DNS — no leak detected.",
+        "Your DNS exited via Cloudflare — Sydney, AU (AS13335).",
+        "✓ Your DNS is exiting via Cloudflare over an encrypted channel, not your ISP — no leak detected.",
         isDemo = true,
     )
 }
