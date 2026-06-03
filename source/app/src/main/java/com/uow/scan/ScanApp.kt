@@ -13,9 +13,9 @@ import kotlin.system.exitProcess
  * Application entry point.
  *
  * Two responsibilities, both about presenting a finished, stable product:
- *  1. Force the dark theme. S'CAN has a dark-by-default visual identity and several screens
- *     hardcode light-on-dark text (e.g. the scan screen's large percentage). Pinning night
- *     mode guarantees those render correctly regardless of the device's system theme.
+ *  1. Follow the system light/dark setting. S'CAN has a dark-by-default identity but ships both
+ *     palettes (values/ + values-night/), so it tracks the device theme. Screens that used to
+ *     hardcode light-on-dark text now use DayNight tokens (e.g. the scan screen percentage).
  *  2. Install a last-resort crash handler. Instead of the system "S'CAN keeps stopping"
  *     dialog mid-presentation, an uncaught exception is logged and the app relaunches itself
  *     from the launcher screen. A short loop-guard avoids spinning on an immediate crash.
@@ -24,7 +24,7 @@ class ScanApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         installCrashHandler()
     }
 

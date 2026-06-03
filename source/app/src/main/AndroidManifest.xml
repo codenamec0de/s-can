@@ -116,6 +116,13 @@
             android:exported="false"
             android:theme="@style/Theme.Scan" />
 
+        <!-- Private Password Check -->
+        <activity
+            android:name=".PasswordCheckActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Score History Activity -->
         <activity
             android:name=".ScoreHistoryActivity"
@@ -146,6 +153,12 @@
             android:exported="false"
             android:theme="@style/Theme.Scan" />
 
+        <!-- Terminator per-app detail -->
+        <activity
+            android:name=".TerminatorAppDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
         <!-- V1.4 Wi-Fi Security Activity (nearby networks overview) -->
         <activity
             android:name=".WifiSecurityActivity"
@@ -161,6 +174,16 @@
         <!-- V1.4.5 DNS Leak Detection (Beta) -->
         <activity
             android:name=".DnsLeakActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+
+        <!-- Network Traffic Monitor (V4) — overview + per-app detail -->
+        <activity
+            android:name=".NetworkMonitorActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Scan" />
+        <activity
+            android:name=".NetworkAppDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.Scan" />
 

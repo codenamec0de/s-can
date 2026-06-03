@@ -23,12 +23,12 @@
     <color name="v4_fg3">#8E939E</color>
     <color name="v4_fg4">#C9CCD3</color>
 
-    <!-- Accent (cyan, light-mode = deep variant for AA contrast) -->
-    <color name="v4_accent">#0891B2</color>
-    <color name="v4_accent_soft">#67E8F9</color>
-    <color name="v4_accent_deep">#0891B2</color>
-    <color name="v4_accent_bg">#1E22D3EE</color>
-    <color name="v4_accent_ring">#4022D3EE</color>
+    <!-- Accent (LIME, light-mode = deep variant for AA contrast) -->
+    <color name="v4_accent">#15803D</color>
+    <color name="v4_accent_soft">#86EFAC</color>
+    <color name="v4_accent_deep">#15803D</color>
+    <color name="v4_accent_bg">#1E22C55E</color>
+    <color name="v4_accent_ring">#4022C55E</color>
 
     <!-- Severity -->
     <color name="v4_ok">#059669</color>

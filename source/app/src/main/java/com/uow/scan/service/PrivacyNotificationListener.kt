@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * Why: on Samsung One UI 5+ and AOSP Android 12+, the OS posts a notification
  * (via the permission controller / privacy controller package) every time an
- * app uses a sensitive sensor. These are OS-imzalı signals that survive the
+ * app uses a sensitive sensor. These are OS-signed signals that survive the
  * `CameraManager.AvailabilityCallback` delivery gaps we hit on Samsung when
  * our process is in the background. By listening to them we get a second,
  * independent confirmation channel — enough to honestly tell the user

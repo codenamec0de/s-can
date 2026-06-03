@@ -22,12 +22,12 @@
     <color name="v4_fg3">#5C616B</color>
     <color name="v4_fg4">#3A3E47</color>
 
-    <!-- Accent (cyan, full saturation in dark) -->
-    <color name="v4_accent">#22D3EE</color>
-    <color name="v4_accent_soft">#67E8F9</color>
-    <color name="v4_accent_deep">#0891B2</color>
-    <color name="v4_accent_bg">#2422D3EE</color>
-    <color name="v4_accent_ring">#4D22D3EE</color>
+    <!-- Accent (LIME, full saturation in dark) -->
+    <color name="v4_accent">#22C55E</color>
+    <color name="v4_accent_soft">#86EFAC</color>
+    <color name="v4_accent_deep">#15803D</color>
+    <color name="v4_accent_bg">#2422C55E</color>
+    <color name="v4_accent_ring">#4D22C55E</color>
 
     <!-- Severity (refined, low-noise on dark) -->
     <color name="v4_ok">#34D399</color>

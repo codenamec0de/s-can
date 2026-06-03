@@ -25,8 +25,8 @@ android {
         applicationId = "com.uow.scan"
         minSdk = 26
         targetSdk = 34
-        versionCode = 10
-        versionName = "1.4.7.5"
+        versionCode = 12
+        versionName = "1.5 Pre-Release (Stable)"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

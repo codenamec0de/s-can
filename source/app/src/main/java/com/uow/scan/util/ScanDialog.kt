@@ -55,11 +55,12 @@ object ScanDialog {
         field.requestFocus()
     }
 
-    /** A confirmation with a title + body message and a confirm/cancel pair. */
+    /** A confirmation with a title + body message and a confirm/cancel pair. [message] accepts a
+     *  styled [CharSequence] (e.g. a Spannable) so callers can bold section labels. */
     fun confirm(
         context: Context,
         title: String,
-        message: String,
+        message: CharSequence,
         confirmText: String,
         cancelText: String? = null,
         onConfirm: () -> Unit,
@@ -89,7 +90,7 @@ object ScanDialog {
     fun notice(
         context: Context,
         title: String,
-        message: String,
+        message: CharSequence,
         buttonText: String = "OK",
         onDismiss: () -> Unit = {},
     ) {

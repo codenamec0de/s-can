@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Radar "sweep" arc — a ~90° lime sector that fades from transparent (leading edge)
+     to ~55% (trailing edge), matching the slide. Shown frozen on the launch still;
+     rotated continuously in the dashboard's live badge (HomeFragment). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="230dp"
+    android:height="230dp"
+    android:viewportWidth="300"
+    android:viewportHeight="300">
+    <path android:pathData="M150,150 L150,14 A136,136 0 0 1 270,92 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="150"
+                android:startY="82"
+                android:endX="270"
+                android:endY="82"
+                android:startColor="#0022C55E"
+                android:endColor="#8C22C55E" />
+        </aapt:attr>
+    </path>
+</vector>

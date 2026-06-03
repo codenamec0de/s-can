@@ -1,0 +1,1090 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <!-- ──────────────────  Top bar  ────────────────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="6dp">
+
+        <FrameLayout
+            android:id="@+id/btnBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_v4_top_bar_button"
+            android:clickable="true"
+            android:contentDescription="@string/fp_back_cd"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/v4_fg1" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTopTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="-0.0125"
+                android:text="@string/ntm_title"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvTopSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/ntm_subtitle_off"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="500"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- LIVE pill (shown while monitoring) -->
+        <LinearLayout
+            android:id="@+id/livePill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_ntm_live_pill"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="6dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <View
+                android:id="@+id/livePillDot"
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@drawable/bg_v4_dns_dot"
+                android:backgroundTint="@color/v4_accent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.04"
+                android:text="@string/ntm_live"
+                android:textColor="@color/v4_accent"
+                android:textFontWeight="700"
+                android:textSize="10.5sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ──────────────────  Phase host  ────────────────── -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- ═══════════  OFF / PRE-CONSENT  ═══════════ -->
+        <LinearLayout
+            android:id="@+id/phaseOff"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingHorizontal="32dp">
+
+                <FrameLayout
+                    android:layout_width="104dp"
+                    android:layout_height="104dp"
+                    android:layout_marginBottom="26dp">
+
+                    <View
+                        android:layout_width="88dp"
+                        android:layout_height="88dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_v4_dns_hero_circle" />
+
+                    <ImageView
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:layout_gravity="center"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_glyph_activity"
+                        app:tint="@color/v4_accent" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:letterSpacing="-0.024"
+                    android:lineSpacingMultiplier="1.25"
+                    android:text="@string/ntm_off_headline"
+                    android:textColor="@color/v4_fg0"
+                    android:textFontWeight="600"
+                    android:textSize="21sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.55"
+                    android:maxWidth="300dp"
+                    android:text="@string/ntm_off_desc"
+                    android:textColor="@color/v4_fg2"
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:background="@drawable/bg_v4_perm_icon_tile">
+
+                            <ImageView
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
+                                android:layout_gravity="center"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_trackers"
+                                app:tint="@color/v4_fg2" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/ntm_off_bullet_trackers"
+                            android:textColor="@color/v4_fg1"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="9dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:background="@drawable/bg_v4_perm_icon_tile">
+
+                            <ImageView
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
+                                android:layout_gravity="center"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_block"
+                                app:tint="@color/v4_fg2" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/ntm_off_bullet_block"
+                            android:textColor="@color/v4_fg1"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="9dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:background="@drawable/bg_v4_perm_icon_tile">
+
+                            <ImageView
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
+                                android:layout_gravity="center"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_lock"
+                                app:tint="@color/v4_fg2" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:fontFamily="@font/montserrat"
+                            android:text="@string/ntm_off_bullet_local"
+                            android:textColor="@color/v4_fg1"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                android:paddingBottom="20dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTurnOn"
+                    style="@style/V4.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:fontFamily="@font/montserrat"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="@string/ntm_btn_turn_on"
+                    android:textAllCaps="false"
+                    android:textFontWeight="600"
+                    android:textSize="13.5sp"
+                    app:icon="@drawable/ic_glyph_activity"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
+                    app:iconSize="16dp"
+                    app:iconTint="@color/v4_bg" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:letterSpacing="0.02"
+                    android:text="@string/ntm_off_note"
+                    android:textColor="@color/v4_fg3"
+                    android:textSize="10.5sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ═══════════  STARTING (consent pending)  ═══════════ -->
+        <LinearLayout
+            android:id="@+id/phaseStarting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:layout_width="112dp"
+                android:layout_height="112dp">
+
+                <com.uow.scan.ui.home.widget.RadarPulseView
+                    android:id="@+id/startingRadar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:layout_width="54dp"
+                    android:layout_height="54dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_v4_dns_hero_circle" />
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_activity"
+                    app:tint="@color/v4_accent" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/ntm_starting_title"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center"
+                android:lineSpacingMultiplier="1.55"
+                android:maxWidth="260dp"
+                android:text="@string/ntm_starting_body"
+                android:textColor="@color/v4_fg2"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- ═══════════  EMPTY (live, nothing yet)  ═══════════ -->
+        <LinearLayout
+            android:id="@+id/phaseEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:layout_width="96dp"
+                android:layout_height="96dp">
+
+                <com.uow.scan.ui.home.widget.RadarPulseView
+                    android:id="@+id/emptyRadar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <View
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_v4_dns_hero_circle" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_activity"
+                    app:tint="@color/v4_accent" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/ntm_empty_title"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="14.5sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="monospace"
+                android:text="@string/ntm_empty_sub"
+                android:textColor="@color/v4_fg3"
+                android:textSize="11.5sp" />
+        </LinearLayout>
+
+        <!-- ═══════════  LIVE  ═══════════ -->
+        <ScrollView
+            android:id="@+id/phaseLive"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="30dp">
+
+                <!-- Hero: posture gauge + live throughput -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/bg_v4_surface"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <FrameLayout
+                        android:layout_width="92dp"
+                        android:layout_height="92dp">
+
+                        <com.uow.scan.ui.home.widget.RadarPulseView
+                            android:id="@+id/heroRadar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <com.uow.scan.ui.home.widget.WifiScoreGaugeView
+                            android:id="@+id/postureGauge"
+                            android:layout_width="92dp"
+                            android:layout_height="92dp"
+                            android:layout_gravity="center" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvPostureScore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="monospace"
+                                android:letterSpacing="-0.04"
+                                android:textColor="@color/v4_fg0"
+                                android:textFontWeight="600"
+                                android:textSize="25sp"
+                                tools:text="76" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="monospace"
+                                android:text="@string/ntm_posture_label"
+                                android:textColor="@color/v4_fg3"
+                                android:textFontWeight="600"
+                                android:textSize="8sp" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/gradePill"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="9dp"
+                            android:paddingTop="4dp"
+                            android:paddingEnd="9dp"
+                            android:paddingBottom="4dp">
+
+                            <View
+                                android:id="@+id/gradeDot"
+                                android:layout_width="6dp"
+                                android:layout_height="6dp"
+                                android:background="@drawable/bg_v4_dns_dot"
+                                android:backgroundTint="@color/v4_accent" />
+
+                            <TextView
+                                android:id="@+id/tvGrade"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:fontFamily="@font/montserrat"
+                                android:letterSpacing="0.1"
+                                android:textAllCaps="true"
+                                android:textColor="@color/v4_accent"
+                                android:textFontWeight="700"
+                                android:textSize="10sp"
+                                tools:text="WATCHFUL" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvPostureLine"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="9dp"
+                            android:fontFamily="@font/montserrat"
+                            android:lineSpacingMultiplier="1.4"
+                            android:textColor="@color/v4_fg1"
+                            android:textSize="12.5sp"
+                            tools:text="Monitoring is on, but some apps are leaking." />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="11dp"
+                            android:gravity="bottom"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="11dp"
+                                android:layout_height="11dp"
+                                android:layout_gravity="center_vertical"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_arrow_down"
+                                app:tint="@color/v4_accent" />
+
+                            <TextView
+                                android:id="@+id/tvRate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:fontFamily="monospace"
+                                android:letterSpacing="-0.04"
+                                android:textColor="@color/v4_fg0"
+                                android:textFontWeight="700"
+                                android:textSize="14sp"
+                                tools:text="1.2" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="3dp"
+                                android:layout_marginBottom="1dp"
+                                android:layout_gravity="bottom"
+                                android:fontFamily="monospace"
+                                android:text="@string/ntm_rate_unit"
+                                android:textColor="@color/v4_fg3"
+                                android:textSize="9sp" />
+
+                            <com.uow.scan.ui.home.widget.SparklineView
+                                android:id="@+id/sparkline"
+                                android:layout_width="0dp"
+                                android:layout_height="26dp"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Stat tiles 2×2 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_v4_surface"
+                        android:orientation="vertical"
+                        android:paddingStart="13dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="13dp"
+                        android:paddingBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_block"
+                                app:tint="@color/v4_fg3" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="7dp"
+                                android:fontFamily="@font/montserrat"
+                                android:letterSpacing="0.1"
+                                android:text="@string/ntm_tile_blocked"
+                                android:textAllCaps="true"
+                                android:textColor="@color/v4_fg3"
+                                android:textFontWeight="600"
+                                android:textSize="9.5sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvTileBlocked"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.03"
+                            android:textColor="@color/v4_ok"
+                            android:textFontWeight="600"
+                            android:textSize="21sp"
+                            tools:text="142" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="monospace"
+                            android:text="@string/ntm_tile_session_sub"
+                            android:textColor="@color/v4_fg3"
+                            android:textSize="9.5sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_v4_surface"
+                        android:orientation="vertical"
+                        android:paddingStart="13dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="13dp"
+                        android:paddingBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_trackers"
+                                app:tint="@color/v4_fg3" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="7dp"
+                                android:fontFamily="@font/montserrat"
+                                android:letterSpacing="0.1"
+                                android:text="@string/ntm_tile_phoning"
+                                android:textAllCaps="true"
+                                android:textColor="@color/v4_fg3"
+                                android:textFontWeight="600"
+                                android:textSize="9.5sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvTilePhoning"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.03"
+                            android:textColor="@color/v4_warn"
+                            android:textFontWeight="600"
+                            android:textSize="21sp"
+                            tools:text="8" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="monospace"
+                            android:text="@string/ntm_tile_phoning_sub"
+                            android:textColor="@color/v4_fg3"
+                            android:textSize="9.5sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_v4_surface"
+                        android:orientation="vertical"
+                        android:paddingStart="13dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="13dp"
+                        android:paddingBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_activity"
+                                app:tint="@color/v4_fg3" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="7dp"
+                                android:fontFamily="@font/montserrat"
+                                android:letterSpacing="0.1"
+                                android:text="@string/ntm_tile_connections"
+                                android:textAllCaps="true"
+                                android:textColor="@color/v4_fg3"
+                                android:textFontWeight="600"
+                                android:textSize="9.5sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvTileConns"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.03"
+                            android:textColor="@color/v4_fg0"
+                            android:textFontWeight="600"
+                            android:textSize="21sp"
+                            tools:text="285" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="monospace"
+                            android:text="@string/ntm_tile_session_sub"
+                            android:textColor="@color/v4_fg3"
+                            android:textSize="9.5sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_v4_surface"
+                        android:orientation="vertical"
+                        android:paddingStart="13dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="13dp"
+                        android:paddingBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_glyph_data"
+                                app:tint="@color/v4_fg3" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="7dp"
+                                android:fontFamily="@font/montserrat"
+                                android:letterSpacing="0.1"
+                                android:text="@string/ntm_tile_data"
+                                android:textAllCaps="true"
+                                android:textColor="@color/v4_fg3"
+                                android:textFontWeight="600"
+                                android:textSize="9.5sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvTileData"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.03"
+                            android:textColor="@color/v4_fg0"
+                            android:textFontWeight="600"
+                            android:textSize="21sp"
+                            tools:text="1.21 GB" />
+
+                        <TextView
+                            android:id="@+id/tvTileDataSub"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:fontFamily="monospace"
+                            android:maxLines="1"
+                            android:textColor="@color/v4_fg3"
+                            android:textSize="9.5sp"
+                            tools:text="980 MB Wi-Fi · 196 MB cell" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Protection -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.14"
+                    android:text="@string/ntm_section_protection"
+                    android:textAllCaps="true"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="600"
+                    android:textSize="10.5sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/bg_v4_surface"
+                    android:orientation="vertical">
+
+                    <include
+                        android:id="@+id/swMonitor"
+                        layout="@layout/item_ntm_switch" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="14dp"
+                        android:layout_marginEnd="14dp"
+                        android:background="@color/v4_hairline" />
+
+                    <include
+                        android:id="@+id/swBlock"
+                        layout="@layout/item_ntm_switch" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="14dp"
+                        android:layout_marginEnd="14dp"
+                        android:background="@color/v4_hairline" />
+
+                    <include
+                        android:id="@+id/swEncrypt"
+                        layout="@layout/item_ntm_switch" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="14dp"
+                        android:layout_marginEnd="14dp"
+                        android:background="@color/v4_hairline" />
+
+                    <include
+                        android:id="@+id/swAdvanced"
+                        layout="@layout/item_ntm_switch" />
+                </LinearLayout>
+
+                <!-- Findings -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.14"
+                    android:text="@string/ntm_section_findings"
+                    android:textAllCaps="true"
+                    android:textColor="@color/v4_fg3"
+                    android:textFontWeight="600"
+                    android:textSize="10.5sp" />
+
+                <LinearLayout
+                    android:id="@+id/findingsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="vertical" />
+
+                <!-- Per-app header + sort -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvPerAppHeader"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/montserrat"
+                        android:letterSpacing="0.14"
+                        android:textAllCaps="true"
+                        android:textColor="@color/v4_fg3"
+                        android:textFontWeight="600"
+                        android:textSize="10.5sp"
+                        tools:text="Per-app traffic · 9" />
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginEnd="4dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_glyph_sort"
+                        app:tint="@color/v4_fg4" />
+
+                    <TextView
+                        android:id="@+id/sortData"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_ntm_sort_on"
+                        android:fontFamily="@font/montserrat"
+                        android:paddingStart="7dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="7dp"
+                        android:paddingBottom="3dp"
+                        android:text="@string/ntm_sort_data"
+                        android:textColor="@color/v4_accent"
+                        android:textFontWeight="600"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/sortTrackers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:fontFamily="@font/montserrat"
+                        android:paddingStart="7dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="7dp"
+                        android:paddingBottom="3dp"
+                        android:text="@string/ntm_sort_trackers"
+                        android:textColor="@color/v4_fg3"
+                        android:textFontWeight="600"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/sortRecent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:fontFamily="@font/montserrat"
+                        android:paddingStart="7dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="7dp"
+                        android:paddingBottom="3dp"
+                        android:text="@string/ntm_sort_recent"
+                        android:textColor="@color/v4_fg3"
+                        android:textFontWeight="600"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <!-- Filter chips -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/filterAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_ntm_chip_on"
+                        android:fontFamily="@font/montserrat"
+                        android:paddingStart="11dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="11dp"
+                        android:paddingBottom="5dp"
+                        android:text="@string/ntm_filter_all"
+                        android:textColor="@color/v4_bg"
+                        android:textFontWeight="600"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/filterTrackers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="7dp"
+                        android:background="@drawable/bg_ntm_chip_off"
+                        android:fontFamily="@font/montserrat"
+                        android:paddingStart="11dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="11dp"
+                        android:paddingBottom="5dp"
+                        android:text="@string/ntm_filter_trackers"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/filterBackground"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="7dp"
+                        android:background="@drawable/bg_ntm_chip_off"
+                        android:fontFamily="@font/montserrat"
+                        android:paddingStart="11dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="11dp"
+                        android:paddingBottom="5dp"
+                        android:text="@string/ntm_filter_background"
+                        android:textColor="@color/v4_fg2"
+                        android:textFontWeight="600"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- Per-app list -->
+                <LinearLayout
+                    android:id="@+id/appsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:fontFamily="monospace"
+                    android:gravity="center"
+                    android:text="@string/ntm_footer"
+                    android:textColor="@color/v4_fg3"
+                    android:textSize="10.5sp" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+</LinearLayout>

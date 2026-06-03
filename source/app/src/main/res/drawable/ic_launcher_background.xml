@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Solid V4 page background: deep cool-neutral that lets the logo carry the colour. -->
+<!-- Launcher background: hardcoded deep near-black so the lime S'CAN mark always
+     reads the same, independent of the system light/dark theme. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/v4_bg" />
+    <solid android:color="#0F1116" />
 </shape>

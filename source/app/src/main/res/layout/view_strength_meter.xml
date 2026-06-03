@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Segmented password-strength meter (S'CAN V4). Segments / level color / crack-time / issue
+     chips are all bound in code; segment fill animates over 250ms. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:letterSpacing="0.09"
+            android:text="@string/breach_pw_strength_label"
+            android:textAllCaps="true"
+            android:textColor="@color/v4_fg3"
+            android:textFontWeight="600"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/pwStrengthLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@color/v4_fg3"
+            android:textFontWeight="700"
+            android:textSize="12.5sp"
+            tools:text="Weak" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <View android:id="@+id/pwSeg0" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+        <View android:id="@+id/pwSeg1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="5dp" />
+        <View android:id="@+id/pwSeg2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="5dp" />
+        <View android:id="@+id/pwSeg3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="5dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pwCrackLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="11dp"
+            android:layout_height="11dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_glyph_lock"
+            app:tint="@color/v4_fg3" />
+
+        <TextView
+            android:id="@+id/pwCrackText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:fontFamily="monospace"
+            android:textColor="@color/v4_fg2"
+            android:textSize="11sp"
+            tools:text="Cracks in 3 hours" />
+    </LinearLayout>
+
+    <com.uow.scan.ui.FlowLayout
+        android:id="@+id/pwIssues"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" />
+</LinearLayout>

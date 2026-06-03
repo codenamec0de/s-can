@@ -1,11 +1,13 @@
 package com.uow.scan.ui.home
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -18,11 +20,14 @@ import com.uow.scan.AppDetailActivity
 import com.uow.scan.BreachCheckerActivity
 import com.uow.scan.DnsLeakActivity
 import com.uow.scan.MainActivity
+import com.uow.scan.NetworkMonitorActivity
+import com.uow.scan.TerminatorActivity
 import com.uow.scan.R
 import com.uow.scan.SmsOnboardingActivity
 import com.uow.scan.SmsScamActivity
 import com.uow.scan.WifiSecurityActivity
 import com.uow.scan.data.ScanDatabase
+import com.uow.scan.ui.home.widget.RadarPulseView
 import com.uow.scan.util.AlertStorage
 import com.uow.scan.util.DemoDataSeeder
 import com.uow.scan.util.DeviceSecurityChecker
@@ -59,6 +64,7 @@ class HomeFragment : Fragment() {
     private lateinit var toolDnsLeak: View
 
     private var scanning = false
+    private var sweepAnim: ObjectAnimator? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,6 +87,33 @@ class HomeFragment : Fragment() {
         renderGreetingAndStatus()
         renderTools()
         renderAttention()
+        startLiveBadge()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopLiveBadge()
+    }
+
+    /** Always-on radar badge (top-right corner): pulsing rings + a continuously rotating sweep. */
+    private fun startLiveBadge() {
+        val v = view ?: return
+        v.findViewById<RadarPulseView>(R.id.liveRadar)?.start()
+        val sweep = v.findViewById<View>(R.id.liveSweep) ?: return
+        if (sweepAnim?.isRunning != true) {
+            sweepAnim = ObjectAnimator.ofFloat(sweep, View.ROTATION, 0f, 360f).apply {
+                duration = 3400L
+                repeatCount = ObjectAnimator.INFINITE
+                interpolator = LinearInterpolator()
+                start()
+            }
+        }
+    }
+
+    private fun stopLiveBadge() {
+        view?.findViewById<RadarPulseView>(R.id.liveRadar)?.stop()
+        sweepAnim?.cancel()
+        sweepAnim = null
     }
 
     private fun bindViews(v: View) {
@@ -307,17 +340,39 @@ class HomeFragment : Fragment() {
                 }
             }
         )
-        bindComingSoonCard(
+        bindToolCard(
             view = toolTerminator,
             icon = R.drawable.ic_glyph_terminator,
             titleRes = R.string.home_tool_terminator_title,
             descRes = R.string.home_tool_terminator_desc,
+            isActive = PreferencesManager.isTerminatorToolEnabled(ctx),
+            onToggle = {
+                val flipped = !PreferencesManager.isTerminatorToolEnabled(ctx)
+                PreferencesManager.setTerminatorToolEnabled(ctx, flipped)
+                renderTools()
+            },
+            onCardClick = {
+                if (PreferencesManager.isTerminatorToolEnabled(ctx)) {
+                    startActivity(Intent(ctx, TerminatorActivity::class.java))
+                }
+            }
         )
-        bindComingSoonCard(
+        bindToolCard(
             view = toolNetworkMonitor,
             icon = R.drawable.ic_glyph_activity,
             titleRes = R.string.home_tool_netmon_title,
             descRes = R.string.home_tool_netmon_desc,
+            isActive = PreferencesManager.isNetMonToolEnabled(ctx),
+            onToggle = {
+                val flipped = !PreferencesManager.isNetMonToolEnabled(ctx)
+                PreferencesManager.setNetMonToolEnabled(ctx, flipped)
+                renderTools()
+            },
+            onCardClick = {
+                if (PreferencesManager.isNetMonToolEnabled(ctx)) {
+                    NetworkMonitorActivity.start(ctx)
+                }
+            }
         )
         bindToolCard(
             view = toolDnsLeak,

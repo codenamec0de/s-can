@@ -20,7 +20,7 @@
             android:orientation="vertical"
             android:paddingBottom="24dp">
 
-            <!-- Top bar: wordmark + bell tile -->
+            <!-- Top bar: live animated S'CAN badge (top-left, above the greeting) + bell tile -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -30,11 +30,11 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="4dp">
 
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:contentDescription="@string/cd_app_logo"
-                    android:src="@drawable/scan_logo" />
+                <!-- Always-on animated radar badge (pulsing rings + rotating sweep + mark) -->
+                <include
+                    layout="@layout/view_scan_logo_live"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
 
                 <View
                     android:layout_width="0dp"
@@ -254,7 +254,7 @@
 
                 <include
                     android:id="@+id/toolTerminator"
-                    layout="@layout/item_home_tool_card_coming_soon" />
+                    layout="@layout/item_home_tool_card_beta" />
 
                 <Space
                     android:layout_width="match_parent"
@@ -262,7 +262,7 @@
 
                 <include
                     android:id="@+id/toolNetworkMonitor"
-                    layout="@layout/item_home_tool_card_coming_soon" />
+                    layout="@layout/item_home_tool_card_beta" />
 
                 <Space
                     android:layout_width="match_parent"

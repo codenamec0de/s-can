@@ -38,10 +38,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:contentDescription="@string/cd_app_logo"
-                    android:src="@drawable/ic_v4_wordmark" />
+                    android:src="@drawable/ic_scan_logo" />
 
                 <TextView
                     android:layout_width="wrap_content"

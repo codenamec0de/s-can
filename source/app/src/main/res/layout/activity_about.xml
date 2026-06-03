@@ -44,7 +44,7 @@
                         android:layout_height="56dp"
                         android:layout_gravity="center"
                         android:importantForAccessibility="no"
-                        android:src="@drawable/scan_logo" />
+                        android:src="@drawable/ic_scan_logo" />
                 </FrameLayout>
 
                 <TextView
@@ -110,7 +110,7 @@
                     <TextView
                         android:id="@+id/tvAboutVersion"
                         style="@style/V4MonoValue"
-                        tools:text="1.4.2" />
+                        tools:text="1.4.4" />
                 </LinearLayout>
 
                 <View style="@style/V4SettingsDivider" />
@@ -169,7 +169,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:importantForAccessibility="no"
-                        android:src="@drawable/scan_logo" />
+                        android:src="@drawable/ic_scan_logo" />
 
                     <TextView
                         style="@style/V4SettingsRowSimpleLabel"

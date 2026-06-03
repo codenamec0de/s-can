@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Live S'CAN badge — the animated logo (pulsing radar rings + rotating sweep + mark) for the
+  dashboard top-right corner. HomeFragment starts the radar + sweep so it runs at all times.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="40dp"
+    android:layout_height="40dp">
+
+    <com.uow.scan.ui.home.widget.RadarPulseView
+        android:id="@+id/liveRadar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center" />
+
+    <ImageView
+        android:id="@+id/liveSweep"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_scan_sweep" />
+
+    <ImageView
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/cd_app_logo"
+        android:src="@drawable/ic_scan_logo" />
+</FrameLayout>

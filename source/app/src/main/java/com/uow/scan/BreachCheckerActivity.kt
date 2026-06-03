@@ -104,6 +104,7 @@ class BreachCheckerActivity : AppCompatActivity() {
         btnCheck.setOnClickListener { saveCredentialsAndCheck() }
         btnRescan.setOnClickListener { rescanSelected() }
         btnAddAddress.setOnClickListener { showAddAddressDialog() }
+        findViewById<View>(R.id.pwEntryCard).setOnClickListener { PasswordCheckActivity.start(this) }
     }
 
     /** First open after Firebase login — auto-add the user's account email if list is empty. */

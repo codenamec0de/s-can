@@ -381,6 +381,107 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- ──────────────────  Live safety tests (active verification)  ────────────────── -->
+            <LinearLayout
+                android:id="@+id/wifiTestsCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="13dp">
+                    <FrameLayout android:layout_width="30dp" android:layout_height="30dp" android:background="@drawable/bg_pw_step_tile">
+                        <ImageView android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:importantForAccessibility="no" android:src="@drawable/ic_glyph_activity" app:tint="@color/v4_accent" />
+                    </FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="10dp" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/montserrat" android:text="Live safety tests" android:textColor="@color/v4_fg0" android:textFontWeight="600" android:textSize="13.5sp" />
+                        <TextView android:id="@+id/wifiTestsSub" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="monospace" android:text="on-device" android:textColor="@color/v4_fg3" android:textSize="10.5sp" />
+                    </LinearLayout>
+                    <TextView android:id="@+id/wifiTestsRerun" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_pw_step_tile" android:clickable="true" android:focusable="true" android:fontFamily="@font/montserrat" android:paddingHorizontal="10dp" android:paddingVertical="5dp" android:text="Re-run" android:textColor="@color/v4_accent" android:textFontWeight="600" android:textSize="11sp" android:visibility="gone" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/v4_hairline" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                    <FrameLayout android:id="@+id/wifiTestDnsTile" android:layout_width="30dp" android:layout_height="30dp">
+                        <ImageView android:id="@+id/wifiTestDnsIcon" android:layout_width="15dp" android:layout_height="15dp" android:layout_gravity="center" android:importantForAccessibility="no" android:src="@drawable/ic_glyph_globe" app:tint="@color/v4_fg3" />
+                        <ProgressBar android:id="@+id/wifiTestDnsSpin" style="?android:attr/progressBarStyleSmall" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:indeterminateTint="@color/v4_accent" android:visibility="gone" />
+                    </FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/montserrat" android:text="DNS integrity" android:textColor="@color/v4_fg0" android:textFontWeight="600" android:textSize="13sp" />
+                        <TextView android:id="@+id/wifiTestDnsStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:fontFamily="@font/montserrat" android:text="Not yet tested" android:textColor="@color/v4_fg3" android:textSize="11sp" />
+                    </LinearLayout>
+                    <TextView android:id="@+id/wifiTestDnsChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/montserrat" android:paddingHorizontal="6dp" android:paddingVertical="2dp" android:textAllCaps="true" android:textFontWeight="700" android:textSize="9sp" android:visibility="gone" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/v4_hairline" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                    <FrameLayout android:id="@+id/wifiTestTlsTile" android:layout_width="30dp" android:layout_height="30dp">
+                        <ImageView android:id="@+id/wifiTestTlsIcon" android:layout_width="15dp" android:layout_height="15dp" android:layout_gravity="center" android:importantForAccessibility="no" android:src="@drawable/ic_glyph_lock" app:tint="@color/v4_fg3" />
+                        <ProgressBar android:id="@+id/wifiTestTlsSpin" style="?android:attr/progressBarStyleSmall" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:indeterminateTint="@color/v4_accent" android:visibility="gone" />
+                    </FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/montserrat" android:text="HTTPS / TLS integrity" android:textColor="@color/v4_fg0" android:textFontWeight="600" android:textSize="13sp" />
+                        <TextView android:id="@+id/wifiTestTlsStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:fontFamily="@font/montserrat" android:text="Not yet tested" android:textColor="@color/v4_fg3" android:textSize="11sp" />
+                    </LinearLayout>
+                    <TextView android:id="@+id/wifiTestTlsChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/montserrat" android:paddingHorizontal="6dp" android:paddingVertical="2dp" android:textAllCaps="true" android:textFontWeight="700" android:textSize="9sp" android:visibility="gone" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/v4_hairline" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                    <FrameLayout android:id="@+id/wifiTestCapTile" android:layout_width="30dp" android:layout_height="30dp">
+                        <ImageView android:id="@+id/wifiTestCapIcon" android:layout_width="15dp" android:layout_height="15dp" android:layout_gravity="center" android:importantForAccessibility="no" android:src="@drawable/ic_glyph_data" app:tint="@color/v4_fg3" />
+                        <ProgressBar android:id="@+id/wifiTestCapSpin" style="?android:attr/progressBarStyleSmall" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:indeterminateTint="@color/v4_accent" android:visibility="gone" />
+                    </FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/montserrat" android:text="Captive / injection" android:textColor="@color/v4_fg0" android:textFontWeight="600" android:textSize="13sp" />
+                        <TextView android:id="@+id/wifiTestCapStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:fontFamily="@font/montserrat" android:text="Not yet tested" android:textColor="@color/v4_fg3" android:textSize="11sp" />
+                    </LinearLayout>
+                    <TextView android:id="@+id/wifiTestCapChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/montserrat" android:paddingHorizontal="6dp" android:paddingVertical="2dp" android:textAllCaps="true" android:textFontWeight="700" android:textSize="9sp" android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ──────────────────  Shield this network  ────────────────── -->
+            <LinearLayout
+                android:id="@+id/wifiShieldCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <LinearLayout android:id="@+id/wifiShieldCta" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                        <FrameLayout android:layout_width="44dp" android:layout_height="44dp" android:background="@drawable/bg_pw_step_tile">
+                            <ImageView android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:importantForAccessibility="no" android:src="@drawable/ic_glyph_shield" app:tint="@color/v4_accent" />
+                        </FrameLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="13dp" android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/montserrat" android:text="Shield this network" android:textColor="@color/v4_fg0" android:textFontWeight="600" android:textSize="15sp" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:fontFamily="@font/montserrat" android:lineSpacingMultiplier="1.5" android:text="Encrypt your DNS and watch what leaves your phone on this network." android:textColor="@color/v4_fg2" android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <com.google.android.material.button.MaterialButton android:id="@+id/wifiShieldBtn" style="@style/V4.Button.Primary" android:layout_width="match_parent" android:layout_height="46dp" android:layout_marginTop="14dp" android:fontFamily="@font/montserrat" android:insetTop="0dp" android:insetBottom="0dp" android:text="Shield this network" android:textAllCaps="false" app:icon="@drawable/ic_glyph_shield" app:iconGravity="textStart" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/wifiShieldArmed" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:visibility="gone">
+                    <FrameLayout android:layout_width="38dp" android:layout_height="38dp" android:background="@drawable/bg_pw_step_tile">
+                        <ImageView android:layout_width="19dp" android:layout_height="19dp" android:layout_gravity="center" android:importantForAccessibility="no" android:src="@drawable/ic_glyph_shield" app:tint="@color/v4_ok" />
+                    </FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/montserrat" android:text="Shielded" android:textColor="@color/v4_ok" android:textFontWeight="700" android:textSize="13.5sp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:fontFamily="monospace" android:text="DNS encrypted · traffic monitored" android:textColor="@color/v4_fg1" android:textSize="11sp" />
+                    </LinearLayout>
+                    <TextView android:id="@+id/wifiShieldOff" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_v4_surface" android:clickable="true" android:focusable="true" android:fontFamily="@font/montserrat" android:paddingHorizontal="12dp" android:paddingVertical="7dp" android:text="Off" android:textColor="@color/v4_fg2" android:textFontWeight="600" android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
             <!-- ──────────────────  Threat banner  ────────────────── -->
             <LinearLayout
                 android:id="@+id/threatBanner"
