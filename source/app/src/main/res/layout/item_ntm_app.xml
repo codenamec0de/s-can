@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/bg_v4_surface"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="13dp"
+    android:paddingTop="11dp"
+    android:paddingEnd="13dp"
+    android:paddingBottom="11dp">
+
+    <FrameLayout
+        android:id="@+id/appTile"
+        android:layout_width="38dp"
+        android:layout_height="38dp">
+
+        <TextView
+            android:id="@+id/appMono"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/montserrat"
+            android:textFontWeight="700"
+            android:textSize="15sp"
+            tools:text="d"
+            tools:textColor="@color/v4_accent" />
+
+        <ImageView
+            android:id="@+id/appIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/appName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="-0.015"
+                android:textColor="@color/v4_fg0"
+                android:textFontWeight="600"
+                android:textSize="13.5sp"
+                tools:text="TikTok" />
+
+            <ImageView
+                android:id="@+id/appCleartext"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginStart="7dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_glyph_warn"
+                android:visibility="gone"
+                app:tint="@color/v4_bad"
+                tools:visibility="visible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/appBytes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textColor="@color/v4_fg3"
+                android:textSize="10.5sp"
+                tools:text="312.0 MB" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginEnd="7dp"
+                android:text="·"
+                android:textColor="@color/v4_fg4"
+                android:textSize="10.5sp" />
+
+            <TextView
+                android:id="@+id/appConns"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textColor="@color/v4_fg3"
+                android:textSize="10.5sp"
+                tools:text="48 conns" />
+
+            <TextView
+                android:id="@+id/appState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:fontFamily="@font/montserrat"
+                android:paddingStart="6dp"
+                android:paddingTop="1dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="1dp"
+                android:textFontWeight="600"
+                android:textSize="9.5sp"
+                tools:text="BG"
+                tools:textColor="@color/v4_warn" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/appBarTrack"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_ntm_bar_track"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <View
+                android:id="@+id/appBarFill"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="50" />
+
+            <View
+                android:id="@+id/appBarRest"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="50" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/appTrackerBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_ntm_tracker_badge"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="7dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="3dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <View
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:background="@drawable/bg_v4_dns_dot"
+                android:backgroundTint="@color/v4_bad" />
+
+            <TextView
+                android:id="@+id/appTrackerCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="monospace"
+                android:textColor="@color/v4_bad"
+                android:textFontWeight="700"
+                android:textSize="11.5sp"
+                tools:text="5" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/appCheck"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_glyph_check"
+            android:visibility="gone"
+            app:tint="@color/v4_ok"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginStart="8dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_glyph_chevron"
+            app:tint="@color/v4_fg3" />
+    </LinearLayout>
+</LinearLayout>

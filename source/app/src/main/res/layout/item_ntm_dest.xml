@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/bg_v4_surface"
+    android:gravity="top"
+    android:orientation="horizontal"
+    android:paddingStart="13dp"
+    android:paddingTop="11dp"
+    android:paddingEnd="13dp"
+    android:paddingBottom="11dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/destHostOrg"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:fontFamily="monospace"
+                android:letterSpacing="-0.015"
+                android:maxLines="1"
+                android:textFontWeight="600"
+                android:textSize="12.5sp"
+                tools:text="log.byteoversea.com"
+                tools:textColor="@color/v4_fg0" />
+
+            <LinearLayout
+                android:id="@+id/destProtoBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="5dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="2dp">
+
+                <ImageView
+                    android:id="@+id/destProtoIcon"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:importantForAccessibility="no"
+                    tools:src="@drawable/ic_glyph_lock" />
+
+                <TextView
+                    android:id="@+id/destProtoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:fontFamily="@font/montserrat"
+                    android:letterSpacing="0.05"
+                    android:textFontWeight="700"
+                    android:textSize="8.5sp"
+                    tools:text="HTTPS"
+                    tools:textColor="@color/v4_ok" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/destMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:ellipsize="end"
+            android:fontFamily="monospace"
+            android:maxLines="1"
+            android:textColor="@color/v4_fg3"
+            android:textSize="10sp"
+            tools:text="AS396986 · Hong Kong · :443" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/destTrackerChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="7dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="7dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="7dp"
+                android:paddingBottom="2dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <View
+                    android:id="@+id/destTrackerDot"
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:background="@drawable/bg_v4_dns_dot"
+                    tools:backgroundTint="@color/v4_warn" />
+
+                <TextView
+                    android:id="@+id/destTrackerText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="@font/montserrat"
+                    android:textFontWeight="600"
+                    android:textSize="9.5sp"
+                    tools:text="Pangle · Advertising"
+                    tools:textColor="@color/v4_warn" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/destBytes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textColor="@color/v4_fg3"
+                android:textSize="10sp"
+                tools:text="38.4 MB" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/destBlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="11dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="9dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="9dp"
+        android:paddingBottom="5dp">
+
+        <ImageView
+            android:id="@+id/destBlockIcon"
+            android:layout_width="11dp"
+            android:layout_height="11dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_glyph_block" />
+
+        <TextView
+            android:id="@+id/destBlockText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:fontFamily="@font/montserrat"
+            android:text="@string/ntm_block"
+            android:textFontWeight="600"
+            android:textSize="10.5sp" />
+    </LinearLayout>
+</LinearLayout>

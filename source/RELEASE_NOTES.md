@@ -1,32 +1,80 @@
 # S'CAN — Release Notes
 
-## v1.4.7 (2026-05-31)
+## v1.5 Pre-Release (Stable) (2026-06-02)
 
-The DNS tool goes from *informational* to *actionable*: one tap now encrypts your DNS for real.
+The **demo build** — a brand refresh plus a fairness overhaul of the Wi-Fi safety score.
+Everything below is **device-verified on the A17**; no faked fields.
 
-### 🔒 DNS Protection — the one-tap fix
-- A new **DNS Protection** brings up a local **DNS-only VPN** that captures the device's DNS and
-  re-issues every query **encrypted over DNS-over-HTTPS** to Cloudflare.
-- The leak score reaches **PRIVATE** only while the tunnel is genuinely up — it is keyed to the
-  live tunnel and can never be cosmetic.
-- A **split tunnel** routes only DNS, so the rest of your traffic is untouched. The OS shows its
-  own consent dialog and a persistent key icon; you can turn it off at any time.
+### 🎨 New S'CAN identity
+- Retired the legacy cyan/purple raster logo for a single **lime vector mark**, used everywhere:
+  dashboard, launch screen, **adaptive launcher icon**, login, and about.
+- **Launch screen** is a still "radar" composition — static rings + a frozen sweep wedge + a soft
+  glow behind the mark.
+- **Dashboard** carries an **always-on animated radar badge** (pulsing rings + a rotating sweep) in
+  the top-left, directly above the greeting.
+- Removed the old raster assets (`scan_logo.png`, `app_logo.png`).
 
-### 🛰️ Deep test — server-backed egress proof
-- Proves **where** your DNS actually exits. Resolves a one-time domain that our own authoritative
-  name-server logs, then names the real resolver (your ISP, a public resolver, or a VPN) with
-  owner, ASN and geo.
+### 📶 Wi-Fi Security — a fair, honest 0–100 score
+- **Fixed an unreachable ceiling:** the safety score secretly maxed at **88** (and effectively **93**
+  on modern phones, since Android hides the client MAC from apps), so a flawless network could never
+  read 100. The rubric is now renormalized to a **true 0–100**.
+- **PMF "not advertised" now earns partial credit** instead of a punishing 0 — most WPA2 routers apply
+  802.11w without advertising the token, so zeroing it out over-penalized normal home networks.
+- **Active verification can now *raise* the score, not just dock it:** passing **DNS / TLS / captive**
+  tests and arming the **Shield (DoH)** add up to **+15**. Using the app's own protection is finally
+  rewarded; tested tampering still docks the gauge.
+- **MAC randomization credited by default on Android 10+** — the OS hides the MAC from apps but
+  randomizes it per-network by default, so we credit that default instead of stranding 7 points.
+- Evil-twin penalty rebalanced (−20 → −24) to stay proportional on the new scale.
+- **Net effect:** a strong WPA2 home network moved from **52 ("Poor/Fair") → 78 ("Good")**, and **~86
+  with the Shield on** — device-verified, no mock data.
 
-### 🛠️ Fixes
-- The tunnel now actually establishes — an invalid IPv6 literal had made `establish()` throw every
-  time (the score was stuck at EXPOSED).
-- The Deep test no longer false-flags a leak: the app no longer excludes itself from its own tunnel,
-  and a public-resolver exit correctly reads as *no leak* (the only real leak is DNS still reaching
-  your ISP).
+### 📐 Architecture overview
+- Added **`ARCHITECTURE.md`** — a plain-language, diagram-first tour (Hetzner relay, the scan.xyz domain
+  + TLS, and a per-tool active/passive explainer) for the presentation.
 
-### ⚠️ Limitations
-- Protects the **system resolver**; an app that hard-codes its own DNS bypasses it — same as
-  Android's built-in Private DNS. Only one VPN runs at a time.
+## v1.5.0 (2026-06-02)
+
+A **verification & control** release. The Network Traffic Monitor ships real per-app tracker
+blocking, Wi-Fi Security gains **active on-device verification** with a one-tap Shield, and a new
+privacy-first **Password Check** joins the Breach Checker. Everything is computed live on the
+device — no demo data on the real paths.
+
+### 📶 Wi-Fi Security — active verification & Shield
+- **Live safety tests** now *test* the connected network instead of only reading its label:
+  **DNS integrity** (control-domain resolution vs an encrypted baseline), **HTTPS / TLS integrity**
+  (a cert-validated handshake that catches interception — Android excludes user-installed CAs, so a
+  proxy's certificate fails), and **Captive / injection** (a `generate_204` byte-check). Each reports
+  **Pass / Fail / Inconclusive**.
+- The **Safety Score reacts to tested tampering** — a detected hijack or interception docks the gauge,
+  so the number reflects what was *proven*, not just the encryption type.
+- **Shield this network** arms an on-device **DoH + monitoring** tunnel for the current network in one tap.
+- **Shield-aware:** the DNS probe resolves over the *underlying* network (so it still tests the network
+  while shielded), the DNS row reads **"Protected — DNS encrypted by Shield"** when armed, tests **re-run
+  on toggle**, and the DNS-hijack penalty is waived once the Shield mitigates it.
+
+### 🔑 Private Password Check (Breach Checker)
+- Check whether a password has leaked **without it ever leaving your phone** — **k-anonymity**: only the
+  first 5 characters of a SHA-1 hash are sent to the Pwned Passwords range API and the match happens
+  on-device. **No API key required.**
+- A **local strength meter** (entropy + common-password list + pattern detection) grades the password and
+  estimates crack-time, producing a dual verdict (**breached / weak / strong**).
+- A **"How is this private?"** explainer walks through the k-anonymity flow. Opens from a new entry card on
+  the Breach Checker overview.
+
+### 🛰️ Network Traffic Monitor — real tracker control
+- The per-app **Block** control now genuinely sinkholes a tracker (a user blocklist honored by the tunnel),
+  device-verified.
+- Tap any **tracker card** for a dialog explaining *which* company it is, *what data it collects*, and *why*
+  it's in the app; non-tracker destinations get an honest "not a known tracker" card.
+- The four overview **stat tiles are tappable** with breakdowns (which trackers are blocked, which apps are
+  phoning home, busiest destinations, top data users) and are **block-aware** — block a tracker and
+  "Trackers blocked" rises while "Phoning home" falls. The blocked-connections finding opens a
+  *which-trackers* breakdown.
+
+### 🔧 Under the hood
+- Active probes reuse the existing DNS-hijack probe and the **single unified VpnService** tunnel — **no new
+  permissions**. The strength engine and k-anonymity check are entirely on-device. No Room schema change.
 
 ---
 

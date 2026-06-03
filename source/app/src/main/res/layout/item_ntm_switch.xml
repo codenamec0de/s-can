@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingTop="12dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="12dp">
+
+    <FrameLayout
+        android:id="@+id/swIconTile"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_v4_perm_icon_tile">
+
+        <ImageView
+            android:id="@+id/swIcon"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            app:tint="@color/v4_fg3"
+            tools:src="@drawable/ic_glyph_activity" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/swLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:letterSpacing="-0.008"
+            android:textColor="@color/v4_fg0"
+            android:textFontWeight="600"
+            android:textSize="13sp"
+            tools:text="Monitor network traffic" />
+
+        <TextView
+            android:id="@+id/swSub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/montserrat"
+            android:lineSpacingMultiplier="1.35"
+            android:textColor="@color/v4_fg3"
+            android:textSize="10.5sp"
+            tools:text="Routes traffic through an on-device VPN to inspect it." />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/swTrack"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/bg_ntm_switch_track_off">
+
+        <View
+            android:id="@+id/swThumb"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="2dp"
+            android:background="@drawable/bg_ntm_switch_thumb_off" />
+    </FrameLayout>
+</LinearLayout>

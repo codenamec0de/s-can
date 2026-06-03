@@ -29,6 +29,7 @@ object PreferencesManager {
     private const val KEY_TOOL_VERDICT_ENABLED = "tool_verdict_enabled"
     private const val KEY_TOOL_BREACH_ENABLED = "tool_breach_enabled"
     private const val KEY_TOOL_DNS_ENABLED = "tool_dns_enabled"
+    private const val KEY_TOOL_NETMON_ENABLED = "tool_netmon_enabled"
     private const val KEY_DNS_DEMO_MODE = "dns_demo_mode"
     private const val KEY_DNS_PROBE_DISCLOSURE_ACCEPTED = "dns_probe_disclosure_accepted"
     private const val KEY_DNS_PROTECTION_ACTIVE = "dns_protection_active"
@@ -166,6 +167,13 @@ object PreferencesManager {
         getPrefs(context).edit().putBoolean(KEY_TOOL_DNS_ENABLED, enabled).apply()
     }
 
+    fun isNetMonToolEnabled(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_TOOL_NETMON_ENABLED, true)
+
+    fun setNetMonToolEnabled(context: Context, enabled: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_TOOL_NETMON_ENABLED, enabled).apply()
+    }
+
     /**
      * DNS Leak Detection demo override. AUTO = live on-device detection; EXPOSED /
      * PROTECTED force the design's fixed scenarios so a live demo is deterministic.
@@ -212,6 +220,115 @@ object PreferencesManager {
 
     fun setDnsProtectDisclosureAccepted(context: Context, accepted: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_DNS_PROTECT_DISCLOSURE_ACCEPTED, accepted).apply()
+    }
+
+    // -------------------------------------------------------------------------
+    // Network Traffic Monitor (NTM) — runtime state for the unified tunnel.
+    // SharedPreferences (fast, synchronous): the VpnService writes the *active* flag on
+    // establish/teardown; the toggles + allowlist are user choices. Live traffic data lives in
+    // NtmStore (in-memory), so there is no Room migration / data-wipe risk.
+    // -------------------------------------------------------------------------
+
+    private const val KEY_NETMON_ACTIVE = "netmon_active"
+    private const val KEY_NETMON_BLOCKING = "netmon_blocking"
+    private const val KEY_NETMON_CAPTURE = "netmon_capture"
+    private const val KEY_NETMON_ALLOWLIST = "netmon_allowlist"
+    private const val KEY_NETMON_DEMO = "netmon_demo"
+    private const val KEY_NETMON_DISCLOSURE_ACCEPTED = "netmon_disclosure_accepted"
+
+    /** True while the unified monitor tunnel is up. Set by [com.uow.scan.vpn.ScanDnsVpnService]
+     *  on establish, cleared on stop/revoke/destroy — the source of truth for the NTM live source. */
+    fun isNetMonActive(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_NETMON_ACTIVE, false)
+
+    fun setNetMonActive(context: Context, active: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_NETMON_ACTIVE, active).apply()
+    }
+
+    /** Sinkhole blocking of tracker domains (Stage 3). Default ON — protection is the point. */
+    fun isNetMonBlockingEnabled(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_NETMON_BLOCKING, true)
+
+    fun setNetMonBlockingEnabled(context: Context, enabled: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_NETMON_BLOCKING, enabled).apply()
+    }
+
+    /** Stage-4 full-capture (SNI / cleartext / per-destination bytes). Default OFF — opt-in. */
+    fun isNetMonCaptureEnabled(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_NETMON_CAPTURE, false)
+
+    fun setNetMonCaptureEnabled(context: Context, enabled: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_NETMON_CAPTURE, enabled).apply()
+    }
+
+    private const val KEY_NETMON_ENCRYPT = "netmon_encrypt"
+
+    /** Encrypt DNS over DoH while monitoring (the DNS-over-HTTPS toggle inside NTM). Default ON. */
+    fun isNetMonEncryptEnabled(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_NETMON_ENCRYPT, true)
+
+    fun setNetMonEncryptEnabled(context: Context, enabled: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_NETMON_ENCRYPT, enabled).apply()
+    }
+
+    private const val KEY_NETMON_FORWARDER = "netmon_forwarder"
+
+    /** Stage-4b experimental full-traffic capture forwarder. Default OFF — enabling routes ALL
+     *  IPv4 through a userspace TCP/UDP relay (real cleartext/SNI/ports/bytes); applies on the next
+     *  monitor start. Kept off the main UI; toggled by long-pressing the hostnames switch. */
+    fun isNetMonForwarderEnabled(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_NETMON_FORWARDER, false)
+
+    fun setNetMonForwarderEnabled(context: Context, enabled: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_NETMON_FORWARDER, enabled).apply()
+    }
+
+    /** When true, the NTM screen renders the deterministic demo dataset instead of live data
+     *  (long-press the title to toggle — mirrors the DNS demo override). */
+    fun isNetMonDemoMode(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_NETMON_DEMO, false)
+
+    fun setNetMonDemoMode(context: Context, demo: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_NETMON_DEMO, demo).apply()
+    }
+
+    fun hasAcceptedNetMonDisclosure(context: Context): Boolean =
+        getPrefs(context).getBoolean(KEY_NETMON_DISCLOSURE_ACCEPTED, false)
+
+    fun setNetMonDisclosureAccepted(context: Context, accepted: Boolean) {
+        getPrefs(context).edit().putBoolean(KEY_NETMON_DISCLOSURE_ACCEPTED, accepted).apply()
+    }
+
+    /** Tracker hostnames the user has explicitly allowed (never sinkholed) — lowercased. */
+    fun getNetMonAllowlist(context: Context): Set<String> =
+        getPrefs(context).getStringSet(KEY_NETMON_ALLOWLIST, emptySet())?.toSet() ?: emptySet()
+
+    fun isNetMonAllowed(context: Context, host: String?): Boolean {
+        if (host.isNullOrBlank()) return false
+        return getNetMonAllowlist(context).contains(host.lowercase())
+    }
+
+    fun setNetMonAllowed(context: Context, host: String, allowed: Boolean) {
+        if (host.isBlank()) return
+        val updated = getNetMonAllowlist(context).toMutableSet()  // getStringSet result must not be mutated
+        if (allowed) updated.add(host.lowercase()) else updated.remove(host.lowercase())
+        getPrefs(context).edit().putStringSet(KEY_NETMON_ALLOWLIST, updated).apply()
+    }
+
+    private const val KEY_NETMON_USER_BLOCK = "netmon_user_block"
+
+    /** Hosts the user explicitly blocked from an app's detail — sinkholed even if not on the curated
+     *  list and regardless of the global "Block trackers & ads" toggle. Lowercased. */
+    fun isNetMonUserBlocked(context: Context, host: String?): Boolean {
+        if (host.isNullOrBlank()) return false
+        return getPrefs(context).getStringSet(KEY_NETMON_USER_BLOCK, emptySet())?.contains(host.lowercase()) == true
+    }
+
+    fun setNetMonUserBlocked(context: Context, host: String, blocked: Boolean) {
+        if (host.isBlank()) return
+        val cur = getPrefs(context).getStringSet(KEY_NETMON_USER_BLOCK, emptySet())?.toMutableSet() ?: mutableSetOf()
+        if (blocked) cur.add(host.lowercase()) else cur.remove(host.lowercase())
+        getPrefs(context).edit().putStringSet(KEY_NETMON_USER_BLOCK, cur).apply()
     }
 
     // Wi-Fi Security: BSSIDs the user has explicitly marked as trusted. A trusted

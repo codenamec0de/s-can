@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  V4 splash. One job: show the ScanLogo on the same dark backdrop as the rest
-  of the app while we decide where to route on launch. No tagline, no spinner —
-  the navigation handler in SplashActivity does the waiting.
+  V4 launch screen — the NON-animated S'CAN still: the lime mark with a frozen radar
+  effect (static rings + static sweep) and a soft glow, on the app's dark backdrop.
+  The lively animated version lives in the dashboard's top-right corner.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/v4_bg">
 
+    <View
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_scan_logo_glow" />
+
+    <ImageView
+        android:layout_width="230dp"
+        android:layout_height="230dp"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_scan_radar_static" />
+
+    <ImageView
+        android:layout_width="230dp"
+        android:layout_height="230dp"
+        android:layout_gravity="center"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_scan_sweep" />
+
     <ImageView
         android:id="@+id/ivLogo"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="118dp"
+        android:layout_height="118dp"
         android:layout_gravity="center"
         android:contentDescription="@string/app_name"
         android:scaleType="fitCenter"
-        android:src="@drawable/scan_logo" />
+        android:src="@drawable/ic_scan_logo" />
 </FrameLayout>

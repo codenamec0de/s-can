@@ -47,3 +47,6 @@ app/google-services.json
 
 # Log files
 *.log
+
+# Claude Code session state
+.claude/

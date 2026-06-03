@@ -5,7 +5,7 @@ your back — which apps touch the camera/mic/location in the background, whethe
 DNS are safe, whether your accounts have been breached, and whether an incoming SMS is a scam —
 and, where it can, **fixes** the problem with one tap.
 
-- **Package:** `com.uow.scan` &nbsp;·&nbsp; **Version:** 1.4.7.5 (versionCode 10)
+- **Package:** `com.uow.scan` &nbsp;·&nbsp; **Version:** 1.5 Pre-Release (Stable) (versionCode 12)
 - **Platform:** Android 8.0+ (minSdk 26, targetSdk 34) &nbsp;·&nbsp; **Language:** Kotlin
 - **Status:** active development / demo-readiness. Several tools are **Beta**; two are marked *Coming soon*.
 
@@ -16,12 +16,12 @@ and, where it can, **fixes** the problem with one tap.
 | Tool | What it does | State |
 |---|---|---|
 | **Background-activity monitor** | A foreground service + notification-listener track which apps access camera, mic and location while in the background, with real OS-signed evidence (`OpAccessTracker`). The core of the app. | ✅ |
-| **Wi-Fi Security** | Scans the connected and nearby networks for MITM risk, captive portals, weak crypto, and **evil-twin** APs (same SSID, different BSSID). V4 overview + per-network detail. | ✅ |
+| **Wi-Fi Security** | Scans connected + nearby networks (MITM risk, captive portals, weak crypto, **evil-twin** APs) **and actively verifies** the current network — live **DNS / TLS / captive** tests with a safety score that reacts to *tested* tampering, plus one-tap **Shield** (on-device DoH + monitoring). | ✅ |
 | **SMS Scam Detection** | Classifies incoming SMS as scam/safe. Works **fully offline** via an on-device classifier, and can optionally use a remote AI sidecar over TLS — failing back to on-device so it always produces a verdict. | ✅ |
-| **Breach Checker** | Checks whether your email addresses appear in known data breaches (Have I Been Pwned). API key is injected from a gitignored `local.properties`. | ✅ |
+| **Breach Checker** | Checks whether your email addresses appear in known data breaches (Have I Been Pwned), plus a privacy-first **Password Check** — **k-anonymity** (only 5 chars of a hash leave the device; the password never does) and a local strength meter. API key injected from a gitignored `local.properties`. | ✅ |
 | **DNS Leak Detection &amp; Protection** | Answers “can my network see or redirect the sites I visit?” — and now **fixes** it with a one-tap encrypted-DNS VPN. See below. | 🧪 Beta |
 | **Terminator** | One-tap revocation of camera/mic/location for apps caught running in the background. | 🔜 Coming soon |
-| **Network Traffic Monitor** | Shows where apps actually talk to on the network. | 🔜 Coming soon |
+| **Network Traffic Monitor** | Shows where each app connects, **names the trackers** (Exodus signatures), and **blocks** them via DNS sinkhole on the unified VpnService tunnel. Per-app detail, tap-through tracker dialogs (what data each collects), and block-aware overview tiles. | 🧪 Beta |
 
 Plus: onboarding, Google/email auth (Firebase), scheduled scans (WorkManager), score history,
 PDF report export, and a full settings suite (notifications, quiet hours, data retention).

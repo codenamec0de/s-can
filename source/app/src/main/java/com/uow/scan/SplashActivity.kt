@@ -21,10 +21,9 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // Animate logo
-        val logo = findViewById<ImageView>(R.id.ivLogo)
-        val fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in)
-        logo.startAnimation(fadeIn)
+        // Non-animated launch still — just a gentle one-shot fade-in of the mark, then route.
+        findViewById<ImageView>(R.id.ivLogo)
+            .startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in))
 
         // Navigate after delay
         Handler(Looper.getMainLooper()).postDelayed({

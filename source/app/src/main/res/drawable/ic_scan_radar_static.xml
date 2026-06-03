@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Static radar rings — the frozen "radar effect" for the launch screen still (no animation). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="230dp"
+    android:height="230dp"
+    android:viewportWidth="300"
+    android:viewportHeight="300">
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#22C55E"
+        android:strokeAlpha="0.14"
+        android:strokeWidth="1.4"
+        android:pathData="M10,150 a140,140 0 1,0 280,0 a140,140 0 1,0 -280,0 Z" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#22C55E"
+        android:strokeAlpha="0.26"
+        android:strokeWidth="1.4"
+        android:pathData="M48,150 a102,102 0 1,0 204,0 a102,102 0 1,0 -204,0 Z" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#22C55E"
+        android:strokeAlpha="0.42"
+        android:strokeWidth="1.4"
+        android:pathData="M84,150 a66,66 0 1,0 132,0 a66,66 0 1,0 -132,0 Z" />
+</vector>

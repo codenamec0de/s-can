@@ -6,14 +6,19 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.ColorStateList
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.net.VpnService
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -25,9 +30,11 @@ import com.google.android.material.button.MaterialButton
 import com.uow.scan.adapter.WifiNetworkAdapter
 import com.uow.scan.ui.home.widget.RadarPulseView
 import com.uow.scan.ui.home.widget.WifiScoreGaugeView
+import com.uow.scan.util.WifiActiveTests
 import com.uow.scan.util.WifiNetwork
 import com.uow.scan.util.WifiSecurityAnalyzer
 import com.uow.scan.util.WifiSecurityAnalyzer.Grade
+import com.uow.scan.vpn.ScanDnsVpnService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -83,6 +90,25 @@ class WifiSecurityActivity : AppCompatActivity() {
     private var sort = SortMode.SIGNAL
     private var scanning = false
     private var lastResult: WifiSecurityAnalyzer.NearbyResult? = null
+
+    // Active verification (live safety tests) state
+    private lateinit var wifiTestsCard: View
+    private lateinit var wifiTestsSub: TextView
+    private lateinit var wifiTestsRerun: TextView
+    private lateinit var wifiShieldCard: View
+    private lateinit var wifiShieldCta: View
+    private lateinit var wifiShieldArmed: View
+    private lateinit var wifiShieldBtn: MaterialButton
+    private lateinit var wifiShieldOff: View
+    private var connectedNet: WifiNetwork? = null
+    private var activeReport: WifiActiveTests.Report? = null
+    private var testsRunning = false
+    private var testedBssid: String? = null
+
+    /** OS VPN-consent result → bring the Shield (DoH + monitor) tunnel up. */
+    private val vpnConsent = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { r -> if (r.resultCode == RESULT_OK) armShield() }
 
     private val requestPermLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -159,6 +185,15 @@ class WifiSecurityActivity : AppCompatActivity() {
         tvHeroGrade = findViewById(R.id.tvHeroGrade)
         tvHeroSummary = findViewById(R.id.tvHeroSummary)
 
+        wifiTestsCard = findViewById(R.id.wifiTestsCard)
+        wifiTestsSub = findViewById(R.id.wifiTestsSub)
+        wifiTestsRerun = findViewById(R.id.wifiTestsRerun)
+        wifiShieldCard = findViewById(R.id.wifiShieldCard)
+        wifiShieldCta = findViewById(R.id.wifiShieldCta)
+        wifiShieldArmed = findViewById(R.id.wifiShieldArmed)
+        wifiShieldBtn = findViewById(R.id.wifiShieldBtn)
+        wifiShieldOff = findViewById(R.id.wifiShieldOff)
+
         threatBanner = findViewById(R.id.threatBanner)
         tvThreatTitle = findViewById(R.id.tvThreatTitle)
         tvThreatBody = findViewById(R.id.tvThreatBody)
@@ -185,6 +220,12 @@ class WifiSecurityActivity : AppCompatActivity() {
         btnGrantPermission.setOnClickListener { requestScanPermission() }
         btnSortSignal.setOnClickListener { setSort(SortMode.SIGNAL) }
         btnSortRisk.setOnClickListener { setSort(SortMode.RISK) }
+        wifiTestsRerun.setOnClickListener { connectedNet?.let { runActiveTests(it, force = true) } }
+        wifiShieldBtn.setOnClickListener { requestShield() }
+        wifiShieldOff.setOnClickListener {
+            ScanDnsVpnService.stop(this)
+            connectedNet?.let { refreshShieldUi(it); runActiveTests(it, force = true) }   // #1: re-test the now-exposed network
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -238,6 +279,7 @@ class WifiSecurityActivity : AppCompatActivity() {
     private fun render(res: WifiSecurityAnalyzer.NearbyResult) {
         lastResult = res
         renderHero(res.connected)
+        manageActiveLayer(res.connected)
         renderThreatBanner(res)
 
         tvNearbyHeader.text = getString(R.string.wifi_v4_nearby_header, res.nearby.size)
@@ -250,6 +292,218 @@ class WifiSecurityActivity : AppCompatActivity() {
 
         tvLastScan.setText(R.string.wifi_v4_overview_footer)
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Active verification — live safety tests, reactive score, Shield
+    // ─────────────────────────────────────────────────────────────────────
+
+    /** Show/refresh the active layer for the connected network; auto-run tests on a new network. */
+    private fun manageActiveLayer(connected: WifiNetwork?) {
+        connectedNet = connected
+        if (connected == null) {
+            wifiTestsCard.visibility = View.GONE
+            wifiShieldCard.visibility = View.GONE
+            testedBssid = null
+            return
+        }
+        when {
+            testsRunning -> wifiTestsCard.visibility = View.VISIBLE
+            connected.bssid != testedBssid || activeReport == null -> runActiveTests(connected, force = false)
+            else -> {
+                wifiTestsCard.visibility = View.VISIBLE
+                applyReport(activeReport!!)
+                applyDockedScore(connected, activeReport!!)
+            }
+        }
+        refreshShieldUi(connected)
+    }
+
+    private fun runActiveTests(net: WifiNetwork, force: Boolean) {
+        if (testsRunning) return
+        if (!force && net.bssid == testedBssid && activeReport != null) { wifiTestsCard.visibility = View.VISIBLE; return }
+        testsRunning = true
+        testedBssid = net.bssid
+        wifiTestsCard.visibility = View.VISIBLE
+        wifiTestsRerun.visibility = View.GONE
+        wifiTestsSub.text = "Testing on-device…"
+        setTestRow("dns", running = true, result = null)
+        setTestRow("tls", running = true, result = null)
+        setTestRow("cap", running = true, result = null)
+        val wifiNet = underlyingWifiNetwork()   // #3: resolve DNS over the network, not our tunnel
+        lifecycleScope.launch {
+            val report = withContext(Dispatchers.IO) { WifiActiveTests.run(wifiNet) }
+            testsRunning = false
+            activeReport = report
+            if (connectedNet?.bssid == net.bssid) {
+                applyReport(report)
+                applyDockedScore(net, report)
+                refreshShieldUi(net)
+            }
+        }
+    }
+
+    private fun applyReport(report: WifiActiveTests.Report) {
+        // #2: while shielded, lookups are encrypted by us — show the DNS row as Protected rather
+        // than reporting on the network we're no longer exposed to.
+        if (isShielded()) setDnsProtectedRow() else setTestRow("dns", running = false, result = report.dns)
+        setTestRow("tls", running = false, result = report.tls)
+        setTestRow("cap", running = false, result = report.captive)
+        wifiTestsSub.text = "on-device · tested just now"
+        wifiTestsRerun.visibility = View.VISIBLE
+    }
+
+    /** DNS row in the "Protected by Shield" state (#2). */
+    private fun setDnsProtectedRow() {
+        val ids = rowIds("dns")
+        findViewById<ProgressBar>(ids[2]).visibility = View.GONE
+        val icon = findViewById<ImageView>(ids[1])
+        icon.visibility = View.VISIBLE
+        icon.setImageResource(R.drawable.ic_glyph_shield); icon.imageTintList = csl(R.color.v4_ok)
+        findViewById<FrameLayout>(ids[0]).background = tileBg(c(R.color.v4_ok_bg), withAlpha(c(R.color.v4_ok), 0x44), 9f)
+        val status = findViewById<TextView>(ids[3])
+        status.text = "Protected — DNS encrypted by Shield"; status.setTextColor(c(R.color.v4_ok))
+        val chip = findViewById<TextView>(ids[4])
+        chip.visibility = View.VISIBLE; chip.text = "Shielded"; chip.setTextColor(c(R.color.v4_ok))
+        chip.background = tileBg(c(R.color.v4_ok_bg), withAlpha(c(R.color.v4_ok), 0x33), 5f)
+    }
+
+    private fun isShielded(): Boolean = ScanDnsVpnService.tunnelUp
+
+    /** The underlying Wi-Fi transport (never the VPN), so the DNS probe tests the real network (#3). */
+    private fun underlyingWifiNetwork(): android.net.Network? {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as? android.net.ConnectivityManager ?: return null
+        @Suppress("DEPRECATION")
+        return cm.allNetworks.firstOrNull { n ->
+            val caps = cm.getNetworkCapabilities(n)
+            caps != null &&
+                caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI) &&
+                !caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_VPN)
+        }
+    }
+
+    private fun setTestRow(which: String, running: Boolean, result: WifiActiveTests.Result?) {
+        val ids = rowIds(which)
+        val tile = findViewById<FrameLayout>(ids[0])
+        val icon = findViewById<ImageView>(ids[1])
+        val spin = findViewById<ProgressBar>(ids[2])
+        val status = findViewById<TextView>(ids[3])
+        val chip = findViewById<TextView>(ids[4])
+        if (running) {
+            spin.visibility = View.VISIBLE; icon.visibility = View.GONE
+            tile.background = tileBg(c(R.color.v4_surf3), c(R.color.v4_hairline), 9f)
+            status.text = "Testing…"; status.setTextColor(c(R.color.v4_fg3))
+            chip.visibility = View.GONE
+            return
+        }
+        if (result == null) return
+        spin.visibility = View.GONE; icon.visibility = View.VISIBLE
+        val colorRes = when (result) {
+            WifiActiveTests.Result.PASS -> R.color.v4_ok
+            WifiActiveTests.Result.FAIL -> R.color.v4_bad
+            WifiActiveTests.Result.INCONCLUSIVE -> R.color.v4_warn
+        }
+        val bgRes = when (result) {
+            WifiActiveTests.Result.PASS -> R.color.v4_ok_bg
+            WifiActiveTests.Result.FAIL -> R.color.v4_bad_bg
+            WifiActiveTests.Result.INCONCLUSIVE -> R.color.v4_warn_bg
+        }
+        val resIcon = when (result) {
+            WifiActiveTests.Result.PASS -> R.drawable.ic_glyph_check
+            WifiActiveTests.Result.FAIL -> R.drawable.ic_glyph_block
+            WifiActiveTests.Result.INCONCLUSIVE -> R.drawable.ic_glyph_warn
+        }
+        val word = when (result) {
+            WifiActiveTests.Result.PASS -> "Pass"
+            WifiActiveTests.Result.FAIL -> "Fail"
+            WifiActiveTests.Result.INCONCLUSIVE -> "Inconclusive"
+        }
+        icon.setImageResource(resIcon); icon.imageTintList = csl(colorRes)
+        tile.background = tileBg(c(bgRes), withAlpha(c(colorRes), 0x44), 9f)
+        status.text = copyFor(which, result); status.setTextColor(c(colorRes))
+        chip.visibility = View.VISIBLE; chip.text = word; chip.setTextColor(c(colorRes))
+        chip.background = tileBg(c(bgRes), withAlpha(c(colorRes), 0x33), 5f)
+    }
+
+    private fun rowIds(which: String): IntArray = when (which) {
+        "dns" -> intArrayOf(R.id.wifiTestDnsTile, R.id.wifiTestDnsIcon, R.id.wifiTestDnsSpin, R.id.wifiTestDnsStatus, R.id.wifiTestDnsChip)
+        "tls" -> intArrayOf(R.id.wifiTestTlsTile, R.id.wifiTestTlsIcon, R.id.wifiTestTlsSpin, R.id.wifiTestTlsStatus, R.id.wifiTestTlsChip)
+        else -> intArrayOf(R.id.wifiTestCapTile, R.id.wifiTestCapIcon, R.id.wifiTestCapSpin, R.id.wifiTestCapStatus, R.id.wifiTestCapChip)
+    }
+
+    private fun copyFor(which: String, r: WifiActiveTests.Result): String = when (which) {
+        "dns" -> when (r) {
+            WifiActiveTests.Result.PASS -> "DNS answers are honest"
+            WifiActiveTests.Result.FAIL -> "This network is redirecting DNS"
+            WifiActiveTests.Result.INCONCLUSIVE -> "Finish the Wi-Fi login to test"
+        }
+        "tls" -> when (r) {
+            WifiActiveTests.Result.PASS -> "No interception detected"
+            WifiActiveTests.Result.FAIL -> "A proxy is intercepting HTTPS"
+            WifiActiveTests.Result.INCONCLUSIVE -> "Couldn't reach test host"
+        }
+        else -> when (r) {
+            WifiActiveTests.Result.PASS -> "No redirection or injection"
+            WifiActiveTests.Result.FAIL -> "Content is being injected"
+            WifiActiveTests.Result.INCONCLUSIVE -> "Captive portal active"
+        }
+    }
+
+    /** The gauge reacts to live verification: passing probes + the Shield (DoH) *raise* the passive
+     *  score (real-time protection the crypto scan can't see), while tested tampering docks it. */
+    private fun applyDockedScore(net: WifiNetwork, report: WifiActiveTests.Report) {
+        val shielded = isShielded()
+        val adjusted = net.score + report.activeCredit(shielded) - report.scoreDock(shielded)
+        val docked = adjusted.coerceIn(if (report.actionableFail(shielded)) 5 else 0, 100)
+        val grade = gradeForScore(docked)
+        val colorRes = gradeColorRes(grade)
+        tvHeroScore.text = docked.toString()
+        heroGauge.setScore(docked, colorRes)
+        val (label, bgRes) = gradeBadge(grade)
+        tvHeroGrade.text = label
+        tvHeroGrade.setBackgroundResource(bgRes)
+        tvHeroGrade.setTextColor(c(colorRes))
+    }
+
+    private fun gradeForScore(s: Int): Grade = when {
+        s >= 90 -> Grade.EXCELLENT
+        s >= 75 -> Grade.GOOD
+        s >= 55 -> Grade.FAIR
+        s >= 30 -> Grade.POOR
+        else -> Grade.CRITICAL
+    }
+
+    private fun refreshShieldUi(net: WifiNetwork) {
+        val shielded = ScanDnsVpnService.tunnelUp
+        val recommend = shielded || activeReport?.anyFail == true || net.score < 55
+        wifiShieldCard.visibility = if (recommend) View.VISIBLE else View.GONE
+        wifiShieldCta.visibility = if (shielded) View.GONE else View.VISIBLE
+        wifiShieldArmed.visibility = if (shielded) View.VISIBLE else View.GONE
+    }
+
+    private fun requestShield() {
+        val prep = VpnService.prepare(this)
+        if (prep != null) vpnConsent.launch(prep) else armShield()
+    }
+
+    private fun armShield() {
+        ScanDnsVpnService.startMonitor(this, block = true, encrypt = true, capture = false)
+        wifiShieldCard.visibility = View.VISIBLE
+        wifiShieldCta.visibility = View.GONE
+        wifiShieldArmed.visibility = View.VISIBLE
+        // #1: re-test so the DNS row flips to "Protected" and the score un-docks the (now-mitigated)
+        // DNS penalty. The DNS probe runs over the underlying network, so it completes after the
+        // tunnel is up and reads the shielded state.
+        connectedNet?.let { runActiveTests(it, force = true) }
+    }
+
+    private fun tileBg(fill: Int, stroke: Int, radiusDp: Float): GradientDrawable = GradientDrawable().apply {
+        cornerRadius = radiusDp * resources.displayMetrics.density
+        setColor(fill); setStroke((resources.displayMetrics.density).toInt(), stroke)
+    }
+
+    private fun c(res: Int): Int = ContextCompat.getColor(this, res)
+    private fun csl(res: Int): ColorStateList = ColorStateList.valueOf(c(res))
+    private fun withAlpha(color: Int, a: Int): Int = (a shl 24) or (color and 0xFFFFFF)
 
     private fun renderHero(connected: WifiNetwork?) {
         if (connected == null) {

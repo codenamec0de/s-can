@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/v4_bg"
+    android:orientation="vertical">
+
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="6dp">
+
+        <FrameLayout
+            android:id="@+id/btnBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_v4_top_bar_button"
+            android:clickable="true"
+            android:contentDescription="@string/fp_back_cd"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/v4_fg1" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:letterSpacing="-0.0125"
+            android:text="@string/ntm_detail_title"
+            android:textColor="@color/v4_fg0"
+            android:textFontWeight="600"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/btnAdv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="6dp">
+
+            <ImageView
+                android:id="@+id/advIcon"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_glyph_eye" />
+
+            <TextView
+                android:id="@+id/advText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.03"
+                android:text="@string/ntm_detail_adv"
+                android:textFontWeight="700"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="30dp">
+
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:id="@+id/appTile"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp">
+
+                        <TextView
+                            android:id="@+id/appMono"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/montserrat"
+                            android:textFontWeight="700"
+                            android:textSize="20sp"
+                            tools:text="d" />
+
+                        <ImageView
+                            android:id="@+id/appIcon"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="fitCenter"
+                            android:visibility="gone"
+                            tools:ignore="ContentDescription" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="13dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvAppName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="-0.022"
+                            android:textColor="@color/v4_fg0"
+                            android:textFontWeight="600"
+                            android:textSize="18sp"
+                            tools:text="TikTok" />
+
+                        <TextView
+                            android:id="@+id/tvAppPkg"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:ellipsize="end"
+                            android:fontFamily="monospace"
+                            android:maxLines="1"
+                            android:textColor="@color/v4_fg3"
+                            android:textSize="10.5sp"
+                            tools:text="com.zhiliaoapp.musically" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- data splits -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_v4_perm_icon_tile"
+                        android:orientation="vertical"
+                        android:paddingStart="10dp"
+                        android:paddingTop="9dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="9dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="0.09"
+                            android:text="@string/ntm_detail_total"
+                            android:textAllCaps="true"
+                            android:textColor="@color/v4_fg3"
+                            android:textFontWeight="600"
+                            android:textSize="9sp" />
+
+                        <TextView
+                            android:id="@+id/tvDetailTotal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.02"
+                            android:textColor="@color/v4_fg0"
+                            android:textFontWeight="600"
+                            android:textSize="14sp"
+                            tools:text="312.0 MB" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_v4_perm_icon_tile"
+                        android:orientation="vertical"
+                        android:paddingStart="10dp"
+                        android:paddingTop="9dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="9dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="0.09"
+                            android:text="@string/ntm_detail_fg"
+                            android:textAllCaps="true"
+                            android:textColor="@color/v4_fg3"
+                            android:textFontWeight="600"
+                            android:textSize="9sp" />
+
+                        <TextView
+                            android:id="@+id/tvDetailFg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.02"
+                            android:textColor="@color/v4_fg1"
+                            android:textFontWeight="600"
+                            android:textSize="14sp"
+                            tools:text="192 MB" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_v4_perm_icon_tile"
+                        android:orientation="vertical"
+                        android:paddingStart="10dp"
+                        android:paddingTop="9dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="9dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat"
+                            android:letterSpacing="0.09"
+                            android:text="@string/ntm_detail_bg"
+                            android:textAllCaps="true"
+                            android:textColor="@color/v4_fg3"
+                            android:textFontWeight="600"
+                            android:textSize="9sp" />
+
+                        <TextView
+                            android:id="@+id/tvDetailBg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:fontFamily="monospace"
+                            android:letterSpacing="-0.02"
+                            android:textFontWeight="600"
+                            android:textSize="14sp"
+                            tools:text="120 MB"
+                            tools:textColor="@color/v4_warn" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_glyph_wifi"
+                        app:tint="@color/v4_fg3" />
+
+                    <TextView
+                        android:id="@+id/tvDataLine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="monospace"
+                        android:textColor="@color/v4_fg3"
+                        android:textSize="10.5sp"
+                        tools:text="268 MB Wi-Fi · 50 MB mobile" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Cleartext callout -->
+            <LinearLayout
+                android:id="@+id/cleartextCallout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_ntm_cleartext_callout"
+                android:orientation="horizontal"
+                android:padding="14dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="1dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_warn"
+                    app:tint="@color/v4_bad" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvCleartextTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:textColor="@color/v4_bad"
+                        android:textFontWeight="700"
+                        android:textSize="13sp"
+                        tools:text="4 connections are unencrypted (HTTP)" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/montserrat"
+                        android:lineSpacingMultiplier="1.5"
+                        android:text="@string/ntm_cleartext_body"
+                        android:textColor="@color/v4_fg1"
+                        android:textSize="11.5sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Tracker summary -->
+            <TextView
+                android:id="@+id/tvTrackerSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.14"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp"
+                tools:text="Contacts 5 tracking companies" />
+
+            <HorizontalScrollView
+                android:id="@+id/trackerScroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:padding="13dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/trackerChips"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
+            <LinearLayout
+                android:id="@+id/noTrackersCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_v4_surface"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_check"
+                    app:tint="@color/v4_ok" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/ntm_no_trackers"
+                    android:textColor="@color/v4_fg1"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- Destinations -->
+            <TextView
+                android:id="@+id/tvDestHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/montserrat"
+                android:letterSpacing="0.14"
+                android:textAllCaps="true"
+                android:textColor="@color/v4_fg3"
+                android:textFontWeight="600"
+                android:textSize="10.5sp"
+                tools:text="Destinations · 7" />
+
+            <LinearLayout
+                android:id="@+id/advHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_ntm_dashed"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_glyph_eye"
+                    app:tint="@color/v4_fg3" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/montserrat"
+                    android:lineSpacingMultiplier="1.45"
+                    android:text="@string/ntm_adv_hint"
+                    android:textColor="@color/v4_fg2"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:id="@+id/advHintEnable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/ntm_enable"
+                    android:textColor="@color/v4_accent"
+                    android:textFontWeight="600"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/destsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:id="@+id/blockAllWrap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBlockAll"
+                    style="@style/V4.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:fontFamily="@font/montserrat"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:textAllCaps="false"
+                    android:textFontWeight="600"
+                    android:textSize="13.5sp"
+                    app:icon="@drawable/ic_glyph_block"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
+                    app:iconSize="16dp"
+                    app:iconTint="@color/v4_bg"
+                    tools:text="Block all trackers for TikTok" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:text="@string/ntm_detail_footer"
+                android:textColor="@color/v4_fg3"
+                android:textSize="10.5sp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

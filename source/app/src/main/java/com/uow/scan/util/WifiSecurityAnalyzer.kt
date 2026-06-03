@@ -387,28 +387,28 @@ object WifiSecurityAnalyzer {
 
     private fun evaluateAuthType(type: AuthType): Pair<Int, Finding> =
         when (type) {
-            AuthType.WPA3_ENTERPRISE -> 40 to Finding(
+            AuthType.WPA3_ENTERPRISE -> 44 to Finding(
                 "auth", Severity.OK,
                 "WPA3-Enterprise",
                 "Strongest consumer Wi-Fi profile. 802.1X authentication plus SAE handshake, and with 192-bit GCMP on top.",
             )
-            AuthType.WPA3_PERSONAL -> 38 to Finding(
+            AuthType.WPA3_PERSONAL -> 42 to Finding(
                 "auth", Severity.OK,
                 "WPA3-Personal (SAE)",
                 "SAE handshake resists offline dictionary attacks that break WPA2. Forward secrecy per session.",
             )
-            AuthType.WPA2_ENTERPRISE -> 34 to Finding(
+            AuthType.WPA2_ENTERPRISE -> 37 to Finding(
                 "auth", Severity.OK,
                 "WPA2-Enterprise",
                 "802.1X with per-user credentials. Strong, though the underlying handshake is still vulnerable to offline brute-force if RADIUS credentials leak.",
             )
-            AuthType.WPA2_WPA3_MIXED -> 30 to Finding(
+            AuthType.WPA2_WPA3_MIXED -> 34 to Finding(
                 "auth", Severity.LOW,
                 "WPA2 / WPA3 transition",
                 "Mixed-mode network. Your device likely negotiated WPA3 (SAE), but the AP still accepts WPA2, which keeps a downgrade path open.",
                 "Consider a WPA3-only SSID where possible."
             )
-            AuthType.WPA2_PERSONAL -> 28 to Finding(
+            AuthType.WPA2_PERSONAL -> 30 to Finding(
                 "auth", Severity.LOW,
                 "WPA2-Personal (PSK)",
                 "Still widely acceptable, but vulnerable to offline dictionary attack if an attacker captures the 4-way handshake. A long, high-entropy password is essential.",
@@ -420,7 +420,7 @@ object WifiSecurityAnalyzer {
                 "Pre-WPA2 protocol. TKIP is deprecated and the MIC key can be recovered in hours.",
                 "Upgrade the router to WPA2 or WPA3."
             )
-            AuthType.OWE -> 24 to Finding(
+            AuthType.OWE -> 25 to Finding(
                 "auth", Severity.MEDIUM,
                 "Enhanced Open (OWE)",
                 "Unauthenticated but encrypted - better than a traditional open network, but still vulnerable to active MITM since there is no identity for the AP.",
@@ -438,7 +438,7 @@ object WifiSecurityAnalyzer {
                 "There is no link-layer encryption. Any device nearby can read your traffic.",
                 "Use a VPN before doing anything sensitive."
             )
-            AuthType.UNKNOWN -> 10 to Finding(
+            AuthType.UNKNOWN -> 12 to Finding(
                 "auth", Severity.MEDIUM,
                 "Security type could not be determined",
                 "The capabilities string could not be parsed. This is usually due to missing Wi-Fi scan permission or an unusual AP configuration.",
@@ -449,23 +449,23 @@ object WifiSecurityAnalyzer {
     private fun evaluateCipher(caps: Capabilities): Pair<Int, Finding?> {
         if (caps.isOpen()) return 0 to null
         return when {
-            caps.hasGcmp -> 10 to Finding(
+            caps.hasGcmp -> 13 to Finding(
                 "cipher", Severity.OK,
                 "GCMP-256 cipher",
                 "Strongest Wi-Fi cipher; required for the 192-bit WPA3-Enterprise suite.",
             )
-            caps.hasCcmp && !caps.hasTkip -> 10 to Finding(
+            caps.hasCcmp && !caps.hasTkip -> 13 to Finding(
                 "cipher", Severity.OK,
                 "CCMP (AES) cipher",
                 "AES-CCMP is the modern Wi-Fi cipher and is not affected by KRACK's most damaging variants.",
             )
-            caps.hasCcmp && caps.hasTkip -> 5 to Finding(
+            caps.hasCcmp && caps.hasTkip -> 7 to Finding(
                 "cipher", Severity.MEDIUM,
                 "Mixed CCMP+TKIP",
                 "The AP accepts both AES and the deprecated TKIP cipher. A downgrade attacker can force TKIP on your device.",
                 "Ask the network owner to disable TKIP on the router."
             )
-            caps.hasTkip -> 2 to Finding(
+            caps.hasTkip -> 3 to Finding(
                 "cipher", Severity.HIGH,
                 "TKIP cipher",
                 "TKIP is deprecated by the Wi-Fi Alliance and has known practical attacks.",
@@ -475,29 +475,32 @@ object WifiSecurityAnalyzer {
         }
     }
 
-    private fun evaluatePmf(caps: Capabilities, type: AuthType): Pair<Int, Finding> {
+    private fun evaluatePmf(caps: Capabilities, type: AuthType): Pair<Int, Finding?> {
         return when {
-            caps.pmfRequired -> 15 to Finding(
+            type == AuthType.OPEN || type == AuthType.WEP -> 0 to null  // no handshake to protect
+            caps.pmfRequired -> 17 to Finding(
                 "pmf", Severity.OK,
                 "Protected Management Frames (required)",
                 "802.11w is enforced, which blocks deauth/disassoc flooding and hardens the 4-way handshake against KRACK-style attacks.",
             )
-            caps.pmfCapable -> 8 to Finding(
+            type == AuthType.WPA3_PERSONAL || type == AuthType.WPA3_ENTERPRISE -> 17 to Finding(
+                "pmf", Severity.OK,
+                "PMF implied by WPA3",
+                "WPA3 mandates PMF even if the capabilities string does not advertise the MFPR token."
+            )
+            caps.pmfCapable -> 11 to Finding(
                 "pmf", Severity.LOW,
                 "Protected Management Frames (optional)",
                 "The AP supports 802.11w but does not require it, so a legacy client on the same BSS weakens the protection for everyone.",
                 "Enable PMF-required on the router (sometimes called \"Management Frame Protection: Mandatory\")."
             )
-            type == AuthType.WPA3_PERSONAL || type == AuthType.WPA3_ENTERPRISE -> 15 to Finding(
-                "pmf", Severity.OK,
-                "PMF implied by WPA3",
-                "WPA3 mandates PMF even if the capabilities string does not advertise the MFPR token."
-            )
-            else -> 0 to Finding(
-                "pmf", Severity.MEDIUM,
-                "No Management Frame Protection",
-                "Without 802.11w, an attacker in range can send spoofed deauthentication frames and knock you off the network at will - the prerequisite for most MITM attacks.",
-                "Enable PMF on the router and, if possible, use a WPA3 network."
+            // Partial credit: most WPA2 routers don't advertise the MFPR token even when they apply
+            // 802.11w. We can't confirm it, so we neither award full marks nor zero it out.
+            else -> 6 to Finding(
+                "pmf", Severity.LOW,
+                "Management Frame Protection not advertised",
+                "This network does not advertise 802.11w. Many WPA2 routers still apply it; without the flag we can't confirm it, so a deauth / MITM path can't be fully ruled out.",
+                "If this is your router, enable PMF (Management Frame Protection) and prefer WPA3 where possible."
             )
         }
     }
@@ -768,47 +771,61 @@ object WifiSecurityAnalyzer {
         val findings = mutableListOf<Finding>()
         var score = 0
 
-        // 1. Auth type (weight 40)
+        // 1. Auth type (weight 44)
         val (authPts, authFinding) = evaluateAuthType(authType)
         score += authPts
         findings += authFinding
 
-        // 2. Cipher (weight 10)
+        // 2. Cipher (weight 13)
         val (cipherPts, cipherFinding) = evaluateCipher(caps)
         score += cipherPts
         cipherFinding?.let { findings += it }
 
-        // 3. PMF (weight 15)
+        // 3. PMF (weight 17, partial credit when not advertised)
         val (pmfPts, pmfFinding) = evaluatePmf(caps, authType)
         score += pmfPts
-        findings += pmfFinding
+        pmfFinding?.let { findings += it }
 
         // 4. Band (weight 8)
         val (bandPts, bandFinding) = evaluateBand(bandMhz)
         score += bandPts
         bandFinding?.let { findings += it }
 
-        // 5. Signal (weight 5)
-        score += (signalQuality * 5) / 100
+        // 5. Signal (weight 4)
+        score += (signalQuality * 4) / 100
 
-        // 6. MAC randomization (weight 7) — only meaningful for the *connected* client
+        // 6. MAC randomization (weight 7) — only meaningful for the *connected* client.
+        // Android 10+ hides the client MAC from apps (getMacAddress → 02:00:..), so detection is
+        // usually inconclusive. Since the OS randomizes the MAC per-network *by default*, we credit
+        // that default when we can't read it, rather than leaving 7 points permanently unattainable
+        // (which would silently cap every modern device's score at 93).
         if (isConnected) {
-            if (macRandomized == true) {
-                score += 7
-                findings += Finding(
-                    "mac_random",
-                    Severity.OK,
-                    "MAC randomization active",
-                    "Your device is presenting a random MAC to this network, which prevents persistent tracking across visits.",
-                )
-            } else if (macRandomized == false) {
-                findings += Finding(
+            when (macRandomized) {
+                true -> {
+                    score += 7
+                    findings += Finding(
+                        "mac_random",
+                        Severity.OK,
+                        "MAC randomization active",
+                        "Your device is presenting a random MAC to this network, which prevents persistent tracking across visits.",
+                    )
+                }
+                false -> findings += Finding(
                     "mac_random",
                     Severity.LOW,
                     "MAC address not randomized",
                     "Your device is exposing its factory MAC address to this AP - that allows the network owner to track you across sessions.",
                     "In Wi-Fi settings for this network, enable MAC randomization."
                 )
+                null -> {
+                    score += 7
+                    findings += Finding(
+                        "mac_random",
+                        Severity.INFO,
+                        "MAC randomization (Android default)",
+                        "Android hides the Wi-Fi MAC from apps, so we can't read it directly. Modern Android randomizes the MAC per network by default - which is what we assume here.",
+                    )
+                }
             }
         }
 
@@ -833,12 +850,12 @@ object WifiSecurityAnalyzer {
                 "Disable WPS in the router's admin page."
             )
         } else {
-            score += 3
+            score += 7
         }
 
         // 9. Evil-twin
         if (evilTwin) {
-            score -= 20
+            score -= 24
             findings += Finding(
                 "evil_twin",
                 Severity.CRITICAL,

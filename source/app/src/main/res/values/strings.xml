@@ -115,7 +115,7 @@
     <string name="home_tool_wifi_title">Wi-Fi Security</string>
     <string name="home_tool_wifi_desc">Audits networks for MITM risk, captive portals, weak crypto.</string>
     <string name="home_tool_terminator_title">Terminator</string>
-    <string name="home_tool_terminator_desc">One-tap revocation of camera, mic, and location for apps caught running in the background. Coming soon.</string>
+    <string name="home_tool_terminator_desc">Catch apps using your camera, mic, or location in the background. Cut their data through S\'CAN\'s tunnel, or revoke what they abuse.</string>
     <string name="home_tool_sms_title">SMS Scam Detection</string>
     <string name="home_tool_sms_desc">Analyzes incoming SMS via S\'CAN\'s AI sidecar over TLS.</string>
     <string name="home_tool_verdict_title">SMS Verdicts</string>
@@ -581,6 +581,180 @@
     <!-- Home V4 — coming-soon tools -->
     <string name="home_tool_netmon_title">Network Traffic Monitor</string>
     <string name="home_tool_netmon_desc">Follows network traffic to see where applications talk to — exposing their actual behaviour.</string>
+
+    <!-- ───── Network Traffic Monitor (V4) ───── -->
+    <string name="ntm_title">Network Traffic Monitor</string>
+    <string name="ntm_subtitle_live">Live · on-device VPN</string>
+    <string name="ntm_subtitle_off">Off</string>
+    <string name="ntm_subtitle_starting">Starting…</string>
+    <string name="ntm_live">LIVE</string>
+
+    <!-- Off / pre-consent -->
+    <string name="ntm_off_headline">See where your apps\nreally connect</string>
+    <string name="ntm_off_desc">Monitor every connection your apps make — which companies they talk to, what they leak, and block the ones you don’t want.</string>
+    <string name="ntm_off_bullet_trackers">Reveals trackers, app by app</string>
+    <string name="ntm_off_bullet_block">Blocks unwanted connections</string>
+    <string name="ntm_off_bullet_local">Runs on-device — nothing leaves your phone</string>
+    <string name="ntm_btn_turn_on">Turn on monitoring</string>
+    <string name="ntm_off_note">Uses a local VPN · Android will ask your permission</string>
+
+    <!-- Starting / empty -->
+    <string name="ntm_starting_title">Waiting for VPN permission…</string>
+    <string name="ntm_starting_body">Android is asking you to allow S’CAN’s local VPN. Approve it to start monitoring.</string>
+    <string name="ntm_empty_title">Listening for traffic…</string>
+    <string name="ntm_empty_sub">No connections captured yet</string>
+
+    <!-- Hero + tiles -->
+    <string name="ntm_posture_label">POSTURE</string>
+    <string name="ntm_rate_unit">MB/s</string>
+    <string name="ntm_tile_session_sub">this session</string>
+    <string name="ntm_blocked_one_toast">Blocked %s</string>
+    <string name="ntm_allowed_toast">Allowed %s</string>
+    <string name="ntm_tile_blocked">Trackers blocked</string>
+    <string name="ntm_tile_phoning">Phoning home</string>
+    <string name="ntm_tile_phoning_sub">apps</string>
+    <string name="ntm_tile_connections">Connections</string>
+    <string name="ntm_tile_data">Data today</string>
+    <string name="ntm_tile_data_sub_fmt">%1$s Wi-Fi · %2$s cell</string>
+
+    <!-- Sections -->
+    <string name="ntm_section_protection">Protection</string>
+    <string name="ntm_section_findings">Findings</string>
+    <string name="ntm_per_app_header_fmt">Per-app traffic · %d</string>
+
+    <!-- Switches -->
+    <string name="ntm_sw_monitor">Monitor network traffic</string>
+    <string name="ntm_sw_monitor_sub">Routes traffic through an on-device VPN to inspect it.</string>
+    <string name="ntm_sw_block">Block trackers &amp; ads</string>
+    <string name="ntm_sw_block_sub">Drops known tracker connections before they leave.</string>
+    <string name="ntm_sw_encrypt">Encrypt DNS</string>
+    <string name="ntm_sw_encrypt_sub">DNS-over-HTTPS · shares this tunnel.</string>
+    <string name="ntm_sw_advanced">Show full hostnames</string>
+    <string name="ntm_sw_advanced_sub">App details reveal exact domains, not just owners.</string>
+
+    <!-- Sort / filter -->
+    <string name="ntm_sort_data">Data</string>
+    <string name="ntm_sort_trackers">Trackers</string>
+    <string name="ntm_sort_recent">Recent</string>
+    <string name="ntm_filter_all">All</string>
+    <string name="ntm_filter_trackers">Trackers only</string>
+    <string name="ntm_filter_background">Background</string>
+
+    <!-- App row -->
+    <string name="ntm_conns_fmt">%d conns</string>
+    <string name="ntm_fg">FG</string>
+    <string name="ntm_bg">BG</string>
+    <string name="ntm_pill_high">High</string>
+    <string name="ntm_pill_med">Med</string>
+    <string name="ntm_pill_ok">OK</string>
+    <string name="ntm_footer">Monitoring on-device · nothing leaves your phone</string>
+    <string name="ntm_demo_loaded">Demo scenario loaded</string>
+
+    <!-- Disclosure + toasts -->
+    <string name="ntm_disclosure_title">Before you turn this on</string>
+    <string name="ntm_disclosure_body">Network Traffic Monitor uses a local VPN on this phone to inspect connections.\n\n• Everything is analysed on-device\n• No traffic or browsing data is sent to us\n• You choose what to block — nothing is automatic</string>
+    <string name="ntm_disclosure_accept">Turn on</string>
+    <string name="ntm_disclosure_cancel">Not now</string>
+    <string name="ntm_active_toast">Monitoring on</string>
+    <string name="ntm_stopped_toast">Monitoring off</string>
+
+    <!-- App detail -->
+    <string name="ntm_detail_title">App traffic</string>
+    <string name="ntm_detail_adv">ADV</string>
+    <string name="ntm_detail_total">Total</string>
+    <string name="ntm_detail_fg">Foreground</string>
+    <string name="ntm_detail_bg">Background</string>
+    <string name="ntm_detail_data_line_fmt">%1$s Wi-Fi · %2$s mobile</string>
+    <string name="ntm_cleartext_title_fmt">%d connections are unencrypted (HTTP)</string>
+    <string name="ntm_cleartext_body">Data to these destinations is sent in cleartext and can be read or modified by anyone on the network. Block them or avoid this app on untrusted Wi-Fi.</string>
+    <string name="ntm_tracker_summary_one">Contacts 1 tracking company</string>
+    <string name="ntm_tracker_summary_fmt">Contacts %d tracking companies</string>
+    <string name="ntm_no_trackers">No known trackers contacted by this app.</string>
+    <string name="ntm_destinations_fmt">Destinations · %d</string>
+    <string name="ntm_adv_hint">Showing owners only. Turn on full hostnames to see the exact domains contacted.</string>
+    <string name="ntm_enable">Enable</string>
+    <string name="ntm_block">Block</string>
+    <string name="ntm_blocked">Blocked</string>
+    <string name="ntm_block_all_fmt">Block all trackers for %s</string>
+    <string name="ntm_blocked_toast_fmt">Blocked %1$d trackers for %2$s</string>
+    <string name="ntm_detail_footer">This session · on-device capture</string>
+    <string name="ntm_tracker_block">Block this tracker</string>
+    <string name="ntm_tracker_close">Close</string>
+    <!-- Tracker / destination detail dialog -->
+    <string name="ntm_tracker_collects_label">What it collects</string>
+    <string name="ntm_tracker_purpose_label">Why it\'s in this app</string>
+    <string name="ntm_tracker_endpoint_label">Endpoint</string>
+    <string name="ntm_dest_not_tracker">This isn\'t a known tracker — it looks like a normal server (the app\'s own backend, a CDN, or an API) the app talks to.</string>
+    <!-- Plain-English explanation of what each tracker category collects -->
+    <string name="ntm_cat_advertising">Targeted ads, and which ads you see, tap and act on — usually tied to your device\'s advertising ID.</string>
+    <string name="ntm_cat_analytics">How you use the app: screens opened, taps, sessions, events and timings.</string>
+    <string name="ntm_cat_attribution">Links app installs and in-app actions back to the ad that drove them — follows you across apps.</string>
+    <string name="ntm_cat_identification">Device and account identifiers used to recognise you across sessions and apps.</string>
+    <string name="ntm_cat_location">Your location — from GPS, or inferred from your IP address and nearby networks.</string>
+    <string name="ntm_cat_diagnostics">Crash logs and diagnostics, usually bundled with device and session details.</string>
+    <string name="ntm_cat_profiling">Builds a behavioural profile from your activity, for ad targeting or scoring.</string>
+    <string name="ntm_cat_generic">Communicates with a known tracking company. The exact data it collects isn\'t publicly documented.</string>
+
+    <!-- Tile / finding detail dialogs -->
+    <string name="ntm_dlg_blocked_intro">Sunk before they left your device:</string>
+    <string name="ntm_dlg_blocked_none">Nothing blocked yet. With Block trackers &amp; ads on, S\'CAN sinks tracker lookups here as your apps make them.</string>
+    <string name="ntm_dlg_blocked_line_fmt">%1$s · %2$d blocked</string>
+    <string name="ntm_dlg_phoning_intro">Apps still reaching trackers S\'CAN isn\'t blocking:</string>
+    <string name="ntm_dlg_phoning_none">No app is reaching an unblocked tracker right now.</string>
+    <string name="ntm_dlg_phoning_hint">Open an app to block its trackers, or turn on Block trackers &amp; ads.</string>
+    <string name="ntm_dlg_conns_intro_fmt">Your apps reached %d destinations this session. Busiest:</string>
+    <string name="ntm_dlg_conns_note">“Connections” counts the distinct destinations each app contacted — not how many times.</string>
+    <string name="ntm_dlg_data_intro_fmt">Last 24h · %1$s Wi-Fi · %2$s cellular. Top apps:</string>
+    <string name="ntm_dlg_data_note">Reported by Android usage stats — all traffic, not just what crosses the tunnel.</string>
+    <string name="ntm_dlg_and_more_fmt">+ %d more</string>
+
+    <!-- Private Password Check -->
+    <string name="breach_pw_title">Password Check</string>
+    <string name="breach_pw_subtitle">Private · on-device</string>
+    <string name="breach_pw_entry_title">Is your password safe?</string>
+    <string name="breach_pw_entry_sub">Check any password privately — it never leaves your phone.</string>
+    <string name="breach_pw_hero_title">Check a password privately</string>
+    <string name="breach_pw_hero_sub">See if it\'s appeared in known breaches and how strong it is — without it ever leaving your phone.</string>
+    <string name="breach_pw_input_hint">Enter or paste a password</string>
+    <string name="breach_pw_privacy_line">Your password never leaves your phone. We send only 5 characters of a scrambled fingerprint.</string>
+    <string name="breach_pw_privacy_link">How is this private?</string>
+    <string name="breach_pw_btn_check">Check password</string>
+    <string name="breach_pw_microcopy">Not stored · not logged · cleared when you leave</string>
+    <string name="breach_pw_checking_title">Checking privately…</string>
+    <string name="breach_pw_checking_sub">Hashing on-device · sending only 5 characters</string>
+    <string name="breach_pw_strength_label">Strength</string>
+    <string name="breach_pw_strength_section">Strength · computed on-device</string>
+    <string name="breach_pw_cracks_prefix">Cracks in </string>
+    <string name="breach_pw_state_breached">Breached</string>
+    <string name="breach_pw_state_weak">Weak password</string>
+    <string name="breach_pw_state_strong">Safe to use</string>
+    <string name="breach_pw_state_offline">Check unavailable</string>
+    <string name="breach_pw_breached_caption">times this password has appeared in known breaches</string>
+    <string name="breach_pw_breached_guidance">Attackers already have this. Don\'t use it anywhere — and change it immediately on any account where you do.</string>
+    <string name="breach_pw_weak_headline">Not in known breaches — but easy to guess</string>
+    <string name="breach_pw_weak_sub_fmt">A fast attacker could crack it in %s.</string>
+    <string name="breach_pw_weak_guidance">Make it longer and avoid common words, years, and keyboard patterns. Aim for a passphrase of 4+ random words.</string>
+    <string name="breach_pw_strong_headline">Not in any known breach, and strong</string>
+    <string name="breach_pw_strong_sub_fmt">Estimated time to crack: %s.</string>
+    <string name="breach_pw_strong_guidance">Good password. Use it on one account only, and store it in a password manager with 2-factor enabled.</string>
+    <string name="breach_pw_offline_headline">Couldn\'t reach the breach database</string>
+    <string name="breach_pw_offline_sub">Your password still never left your phone.</string>
+    <string name="breach_pw_offline_guidance">We couldn\'t check known breaches just now, but the strength read below was computed entirely on-device.</string>
+    <string name="breach_pw_credential_stuffing">Once a password leaks, attackers try it on your other accounts — this is called credential stuffing, and it\'s why reusing passwords is dangerous.</string>
+    <string name="breach_pw_cred_stuffing_term">credential stuffing</string>
+    <string name="breach_pw_action_another">Check another password</string>
+    <string name="breach_pw_action_retry">Try again</string>
+    <string name="breach_pw_explainer_title">How is this private?</string>
+    <string name="breach_pw_explainer_intro">It uses k-anonymity — a method that proves whether a password leaked without ever revealing it.</string>
+    <string name="breach_pw_explainer_kterm">k-anonymity</string>
+    <string name="breach_pw_step1_title">You type a password</string>
+    <string name="breach_pw_step1_desc">It stays in memory on this phone — never saved, never logged.</string>
+    <string name="breach_pw_step2_title">It becomes a fingerprint</string>
+    <string name="breach_pw_step2_desc">Your phone scrambles it one-way (SHA-1). The original can\'t be recovered from it.</string>
+    <string name="breach_pw_step3_title">Only 5 characters are sent</string>
+    <string name="breach_pw_step3_desc">We send the first 5 of the fingerprint. ~2,000 possible matches come back and we compare the rest here — the server never learns your password.</string>
+    <string name="breach_pw_explainer_btn">Got it</string>
+
     <string name="home_tool_dns_title">DNS Leak Detection</string>
     <string name="home_tool_dns_desc">Checks whether your DNS lookups are private — or visible to and redirectable by the network you\'re on.</string>
     <string name="home_tool_coming_soon_pill">Coming soon</string>

@@ -4,6 +4,7 @@ import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
+import android.net.Network
 import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.URLEncoder
@@ -77,14 +78,14 @@ object DnsHijackProbe {
      * only started when at least that much budget remains, so the total stays bounded even when a
      * network silently drops DNS or DoH.
      */
-    fun run(budgetMs: Long = 4000L): Result {
+    fun run(budgetMs: Long = 4000L, network: Network? = null): Result {
         if (budgetMs <= 0L) return inconclusive("Invalid budget")
         val deadline = System.currentTimeMillis() + budgetMs
 
         for (domain in CONTROL_DOMAINS) {
             if (!budgetRemains(deadline)) break
 
-            val sys = systemLookup(domain)
+            val sys = systemLookup(domain, network)
             if (sys.isEmpty()) continue   // system couldn't resolve this anchor → nothing to compare
 
             // (1) Unambiguous interception — needs NO trusted baseline. A public anchor must never
@@ -123,10 +124,24 @@ object DnsHijackProbe {
      * [SystemDnsLookup] — on timeout the underlying lookup is abandoned (it can't stall the scan)
      * and we report empty.
      */
-    private fun systemLookup(domain: String): List<String> =
-        SystemDnsLookup.resolve(domain, PER_CALL_MS)
+    private fun systemLookup(domain: String, network: Network?): List<String> =
+        if (network != null) networkLookup(network, domain, PER_CALL_MS)
+        else SystemDnsLookup.resolve(domain, PER_CALL_MS)
             .filterIsInstance<Inet4Address>()
             .mapNotNull { it.hostAddress }
+
+    /** Resolve [domain] over a specific [network] (bypassing any active VPN tunnel), bounded by
+     *  [timeoutMs] on a daemon thread so a stalled lookup can never hang the probe. Lets the Wi-Fi
+     *  tool test the *network's* DNS even while the Shield's DoH tunnel is up. */
+    private fun networkLookup(network: Network, domain: String, timeoutMs: Long): List<String> {
+        val out = java.util.concurrent.atomic.AtomicReference<List<String>>(emptyList())
+        Thread {
+            runCatching {
+                network.getAllByName(domain).filterIsInstance<Inet4Address>().mapNotNull { it.hostAddress }
+            }.getOrNull()?.let { out.set(it) }
+        }.apply { isDaemon = true; start() }.join(timeoutMs)
+        return out.get()
+    }
 
     /** IPv4 A-record answers from a trusted public DoH resolver (Cloudflare → Google fallback). */
     private fun dohLookup(domain: String, deadline: Long): List<String> {
