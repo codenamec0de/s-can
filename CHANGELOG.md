@@ -7,6 +7,69 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5 Pre-Release (Stable)] — 2026-06-02
+
+The **demo build**: a brand refresh plus a fairness overhaul of the Wi-Fi safety
+score. Everything below is device-verified on the A17 — no faked fields.
+
+### Added
+- **New S'CAN identity** — a single **lime vector mark** used everywhere (dashboard,
+  launch screen, adaptive launcher icon, login, about). The launch screen is a still
+  "radar" composition (static rings + a frozen sweep + glow behind the mark); the
+  dashboard carries an **always-on animated radar badge** (pulsing rings + rotating
+  sweep) above the greeting.
+- **`ARCHITECTURE.md`** — a plain-language, diagram-first architecture tour for the
+  presentation.
+
+### Changed
+- **Wi-Fi safety score is now a fair, honest 0–100.** The rubric was renormalized so a
+  flawless network can actually reach 100 (it previously maxed at ~88, and ~93 on
+  modern phones that hide the client MAC). **PMF "not advertised" now earns partial
+  credit** instead of a punishing 0; **MAC randomization is credited by default on
+  Android 10+**; the evil-twin penalty was rebalanced (−20 → −24) for the new scale.
+  **Net effect:** a strong WPA2 home network moved **52 → 78**, and **≈86 with the
+  Shield on** — device-verified, no mock data.
+- **Active verification can now *raise* the score, not just dock it** — passing the
+  DNS / TLS / captive tests and arming the Shield (DoH) add up to **+15**.
+
+### Removed
+- The legacy cyan/purple raster logo assets (`scan_logo.png`, `app_logo.png`).
+
+## [1.5.0] — 2026-06-02
+
+A **verification & control** release. The Network Traffic Monitor ships real per-app
+tracker blocking, Wi-Fi Security gains active on-device verification with a one-tap
+Shield, and a privacy-first Password Check joins the Breach Checker. Everything is
+computed live on the device — no demo data on the real paths.
+
+### Added
+- **Network Traffic Monitor — real tracker control.** The per-app **Block** control
+  genuinely sinkholes a tracker (a user blocklist honoured by the unified tunnel,
+  returning `0.0.0.0`/`::`), device-verified. Tap any **tracker card** for a dialog
+  explaining which company it is, what data it collects, and why it's in the app;
+  non-tracker destinations get an honest "not a known tracker" card. The four overview
+  **stat tiles are tappable** and **block-aware** — block a tracker and "Trackers
+  blocked" rises while "Phoning home" falls. Connection owner/ASN/geo is resolved from
+  bundled, offline datasets.
+- **Wi-Fi Security — active verification & Shield.** Live tests now *test* the connected
+  network: **DNS integrity** (control-domain resolution vs an encrypted baseline),
+  **HTTPS/TLS integrity** (a cert-validated handshake that catches interception — Android
+  excludes user-installed CAs, so a proxy's certificate fails), and **Captive/injection**
+  (a `generate_204` byte-check), each reporting **Pass / Fail / Inconclusive**. The safety
+  score reacts to *proven* tampering. **Shield this network** arms an on-device
+  DoH + monitoring tunnel for the current network in one tap; the probes are shield-aware
+  (they test over the underlying network and re-run on toggle).
+- **Private Password Check (Breach Checker).** Check whether a password has leaked
+  **without it ever leaving the phone** via **k-anonymity** — only the first 5 characters
+  of a SHA-1 hash are sent to the Pwned Passwords range API and the match happens on-device
+  (**no API key required**) — plus a local strength/crack-time meter and a "How is this
+  private?" explainer.
+
+### Changed
+- Active probes reuse the existing DNS-hijack probe and the **single unified
+  `VpnService`** tunnel — **no new permissions**. The strength engine and k-anonymity
+  check are entirely on-device. No Room schema change.
+
 ## [1.4.7] — 2026-05-31
 
 The DNS tool goes from *informational* to *actionable*: one tap now encrypts your

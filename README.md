@@ -6,12 +6,12 @@
 
 **Android privacy & security audit suite**
 
-[![Version](https://img.shields.io/badge/version-1.4.7-1f6feb)](https://github.com/codenamec0de/s-can/releases)
+[![Version](https://img.shields.io/badge/version-1.5_Pre--Release-1f6feb)](https://github.com/codenamec0de/s-can/releases)
 [![Min SDK](https://img.shields.io/badge/min--sdk-26-3ddc84)](#requirements)
 [![Target SDK](https://img.shields.io/badge/target--sdk-34-3ddc84)](#requirements)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.9-7f52ff)](https://kotlinlang.org)
 [![License](https://img.shields.io/badge/license-Proprietary-red)](LICENSE)
-[![Status](https://img.shields.io/badge/status-V1.4.7%20demo--ready-3ddc84)](#status)
+[![Status](https://img.shields.io/badge/status-V1.5%20demo--ready-3ddc84)](#status)
 
 University of Wollongong — final-year project
 
@@ -44,14 +44,16 @@ University of Wollongong — final-year project
 ## What it does
 
 S'CAN audits the apps installed on an Android device for privacy and
-security risks. Active features as of V1.4.7:
+security risks. Active features as of V1.5 Pre-Release (Stable):
 
 | Feature | What it checks |
 |---|---|
-| **Wi-Fi Security** | Auth type, PMF (802.11w), cipher, evil-twin clusters, captive-portal probing, DNS servers in use — flags MITM exposure on the connected network. Now also lists **every nearby network** (sortable by signal/risk) with a per-network detail screen, offline IEEE-OUI vendor lookup, and a trusted-network allowlist; passive and read-only. |
+| **Wi-Fi Security** | Auth type, PMF (802.11w), cipher, evil-twin clusters, captive-portal probing, DNS servers in use — flags MITM exposure on the connected network. Now also lists **every nearby network** (sortable by signal/risk) with a per-network detail screen, offline IEEE-OUI vendor lookup, and a trusted-network allowlist; passive and read-only. **New in V1.5:** active on-device verification (DNS-integrity, cert-validated TLS, and a captive `generate_204` check) that can *raise or dock* a renormalized **true 0–100** safety score, plus a one-tap **Shield** (on-device DoH) for the connected network. |
 | **DNS Leak Detection & Protection (Beta)** | Answers "is my browsing private right now?" — inspects the active resolver, Private DNS (DoT) and VPN state and grades it **PRIVATE / PARTIAL / EXPOSED**. New in V1.4.7: a one-tap **DNS Protection** fix — a local DNS-over-HTTPS `VpnService` that encrypts your lookups to Cloudflare (the score only reaches PRIVATE while the tunnel is genuinely up) — plus a server-backed **Deep test** that proves which resolver your DNS actually exits through. |
 | **SMS Scam Detection** | Classifies incoming SMS as `SCAM` / `SUSPICIOUS` / `SAFE` — **on-device by default** (nothing leaves the phone), with an optional self-hosted AI sidecar (FastAPI + Ollama) and automatic fail-over back to the on-device classifier. Extracts URLs and flags brand impersonation. |
-| **Breach Checker** | Queries Have I Been Pwned for monitored email addresses; tracks resolution status and per-breach data-class exposure. |
+| **Breach Checker** | Queries Have I Been Pwned for monitored email addresses; tracks resolution status and per-breach data-class exposure. **New in V1.5 — Private Password Check:** test whether a password has leaked **without it ever leaving the phone** via **k-anonymity** (only the first 5 chars of a SHA-1 hash are sent; the match happens on-device — no API key needed), plus a local strength/crack-time meter. |
+| **Network Traffic Monitor** *(new in V1.5)* | Sees, names, and blocks per-app network egress, on-device. Attributes each DNS query to the owning app (`getConnectionOwnerUid`), names trackers from a bundled signature set, and **blocks them with an on-device DNS sinkhole** — returns `0.0.0.0` / `::` (Pi-hole-style; nothing leaves the phone) — with offline ASN/geo attribution. Runs on the single unified `VpnService`, keeps its ledger in memory, and adds **no new permissions**. An experimental full-hostname (SNI) capture path exists but ships **off by default** behind a hidden toggle. |
+| **Terminator (Privacy Enforcer)** *(new in V1.5)* | Guided one-tap revocation of a risky app's permissions — walks you straight to the exact Android Settings page. Honest by design: a non-privileged app can't force-revoke another app's permissions, so unattended auto-revoke (via Shizuku) is scaffolded for a future elevated path. |
 | **App audit** | Inventories installed packages, surfaces tracker SDKs (Exodus dataset), and rates each app's risk — **behaviour-gated**, so an app is flagged HIGH only when a real finding is observed (a background sensor access or an integrity issue), not merely for the permissions it holds. The activity timeline shows the real observed sensor access (what, how long, when, foreground vs background). |
 | **Background monitor** | A foreground service watches user-selected apps for background sensor/data activity and raises plain-language alerts scored against each app's own 7-day baseline. |
 
@@ -64,7 +66,7 @@ The fastest path: grab the signed release APK from the
 
 1. On your Android device, enable **Settings → Apps → Special app access →
    Install unknown apps** for your browser of choice.
-2. Download the APK attached to the latest release (e.g. `scan-v1.4.7.apk`).
+2. Download the APK attached to the latest release (e.g. `scan-v1.5.apk`).
 3. Open the APK; Android will prompt you to install.
 4. On first launch, sign in with Google and walk through the permission
    onboarding — SMS scanning is opt-in.
@@ -160,15 +162,24 @@ Sidecar: Python ≥ 3.10, Ollama ≥ 0.1.30, ~8 GB RAM free for the LLM.
 
 ## Roadmap
 
-V1.5 and beyond — coming next:
+Shipped in **V1.5** (see [Status](#status)): the **Network Traffic Monitor**
+(per-app egress + on-device tracker blocking) and the guided **Terminator**.
 
-- **Network Traffic Monitor** — passive capture of egress endpoints per app.
-- **Terminator** — auto-revoke sensitive permissions when an app is
-  minimised.
+Beyond V1.5 — coming next:
+
+- **Terminator auto-revoke** — unattended permission revocation when an app is
+  minimised, via a Shizuku/elevated path. (The *guided* manual revocation ships
+  in V1.5; a non-privileged app can't force-revoke on its own.)
+- **Graduate the experimental full-hostname (SNI) capture** in the Network
+  Traffic Monitor from its hidden, off-by-default flag to a supported feature.
+- **Play Store readiness** — `targetSdk 35` and Play Billing for the planned
+  Pro tier.
 
 ---
 
 ## Status
+
+**V1.5 Pre-Release (Stable) — demo build.** A verification & control release. The **Network Traffic Monitor** ships real per-app tracker control — it names the trackers each app talks to and **blocks them with an on-device DNS sinkhole** (returns `0.0.0.0`/`::`, so nothing leaves the phone), with offline ASN/geo attribution, all on the single unified `VpnService` and with **no new permissions**. **Wi-Fi Security** gains **active on-device verification** (DNS-integrity, cert-validated TLS, captive `generate_204`) and a one-tap **Shield** (on-device DoH), feeding a renormalized **true 0–100** safety score that protection can *raise* and *proven* tampering docks — a strong WPA2 home network moved **52 → 78** (≈86 shielded), device-verified. A privacy-first **Password Check** (k-anonymity, on-device match) joins the Breach Checker, and a guided **Terminator** walks you through revoking risky permissions. Ships a lime-vector **brand refresh** (static launch radar + an always-on animated dashboard badge). Everything is computed live on the device — no demo data on the real paths.
 
 **V1.4.7 — demo-ready.** Turns the DNS tool from informational into **actionable**: a one-tap **DNS Protection** fix brings up a local DNS-over-HTTPS `VpnService` that encrypts the device's DNS to Cloudflare, so the leak score reaches **PRIVATE** only while the tunnel is genuinely up — never cosmetically. Adds the server-backed **Deep test** that names the real resolver your DNS exits through (ISP vs public resolver), and hardens the tunnel (valid IPv6 config so it actually establishes; the app is no longer excluded from its own tunnel, so the Deep test reflects the real protected egress). Ships the first in-repo app README (`source/README.md`).
 
